@@ -1,0 +1,40 @@
+# Godot-specific ignores
+.godot/
+*.tmp
+*.out
+*.log
+*.console_history
+*.pck
+
+# Imported translations (if any)
+*.translation
+
+# Export builds (typical folder, though not strictly standard)
+build/
+export/
+
+# Project-specific Files (User Request)
+# "Original project files" (Python Source)
+src/
+__pycache__/
+*.pyc
+
+# User Data / Saves
+# It is good practice to ignore local save files
+savegame.json
+user://
+
+# Mono/C# (If used later, harmless to add)
+.mono/
+*.csproj
+*.sln
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# OS-specific
+.DS_Store
+Thumbs.db
+desktop.ini

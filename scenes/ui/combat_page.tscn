@@ -1,0 +1,259 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/combat_page.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_bg"]
+bg_color = Color(0.1, 0.1, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_fill"]
+bg_color = Color(0, 0.8, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.2, 0.1, 0.1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(1, 0.3, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CombatPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Dashboard" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 5
+
+[node name="TopRow" type="HBoxContainer" parent="Dashboard"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="SectorPanel" type="PanelContainer" parent="Dashboard/TopRow"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Dashboard/TopRow/SectorPanel"]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="Dashboard/TopRow/SectorPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.737255, 0.831373, 1)
+text = "SECTOR MAP"
+horizontal_alignment = 1
+
+[node name="ZoneList" type="ItemList" parent="Dashboard/TopRow/SectorPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TargetingPanel" type="PanelContainer" parent="Dashboard/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="Dashboard/TopRow/TargetingPanel"]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="Dashboard/TopRow/TargetingPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
+text = "TARGETING COMPUTER"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Dashboard/TopRow/TargetingPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EnemyGrid" type="GridContainer" parent="Dashboard/TopRow/TargetingPanel/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="LiveFeedPanel" type="PanelContainer" parent="Dashboard/TopRow"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Dashboard/TopRow/LiveFeedPanel"]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.411765, 0.941176, 0.682353, 1)
+text = "LIVE ENGAGEMENT FEED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Visualizer" type="Control" parent="Dashboard/TopRow/LiveFeedPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerStats" type="VBoxContainer" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="NameLabel" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/PlayerStats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.737255, 0.831373, 1)
+text = "USS Horizon"
+horizontal_alignment = 1
+
+[node name="ShieldBar" type="ProgressBar" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/PlayerStats"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_shield_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_shield_fill")
+
+[node name="HPBar" type="ProgressBar" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/PlayerStats"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+
+[node name="StatsLabel" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/PlayerStats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Shield: 100/100 | Hull: 100/100"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="HSeparator" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/VSeparator"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "VS"
+horizontal_alignment = 1
+
+[node name="EnemyStats" type="VBoxContainer" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 2
+
+[node name="NameLabel" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/EnemyStats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
+text = "No Target"
+horizontal_alignment = 1
+
+[node name="ShieldBar" type="ProgressBar" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/EnemyStats"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_shield_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_shield_fill")
+
+[node name="HPBar" type="ProgressBar" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/EnemyStats"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+
+[node name="StatsLabel" type="Label" parent="Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/EnemyStats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "ATK: - | DEF: -"
+horizontal_alignment = 1
+
+[node name="ControlRow" type="HBoxContainer" parent="Dashboard/TopRow/LiveFeedPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RetreatBtn" type="Button" parent="Dashboard/TopRow/LiveFeedPanel/VBox/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_colors/font_color = Color(1, 0.352941, 0.352941, 1)
+text = "RETREAT"
+
+[node name="UseBtn" type="Button" parent="Dashboard/TopRow/LiveFeedPanel/VBox/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "USE ITEM"
+
+[node name="OptionButton" type="OptionButton" parent="Dashboard/TopRow/LiveFeedPanel/VBox"]
+layout_mode = 2
+
+[node name="AutoCheck" type="CheckBox" parent="Dashboard/TopRow/LiveFeedPanel/VBox"]
+layout_mode = 2
+text = "Auto-Use Consumable"
+
+[node name="BottomPanel" type="PanelContainer" parent="Dashboard"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Dashboard/BottomPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Dashboard/BottomPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "> SYSTEM LOG // OUTPUT"
+
+[node name="LogList" type="ItemList" parent="Dashboard/BottomPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
+theme_override_font_sizes/font_size = 12
+
+[connection signal="item_selected" from="Dashboard/TopRow/SectorPanel/VBox/ZoneList" to="." method="_on_zone_list_item_selected"]
+[connection signal="item_selected" from="Dashboard/TopRow/LiveFeedPanel/VBox/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="pressed" from="Dashboard/TopRow/LiveFeedPanel/VBox/ControlRow/UseBtn" to="." method="_on_use_btn_pressed"]
+[connection signal="toggled" from="Dashboard/TopRow/LiveFeedPanel/VBox/AutoCheck" to="." method="_on_auto_check_toggled"]
+[connection signal="pressed" from="Dashboard/TopRow/LiveFeedPanel/VBox/ControlRow/RetreatBtn" to="." method="_on_retreat_btn_pressed"]

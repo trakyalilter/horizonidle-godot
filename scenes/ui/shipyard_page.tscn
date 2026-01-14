@@ -1,0 +1,114 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/shipyard_page.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_sel"]
+bg_color = Color(0.2, 0.2, 0.2, 1)
+border_width_top = 2
+border_color = Color(0, 0.8, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unsel"]
+bg_color = Color(0.1, 0.1, 0.1, 1)
+border_width_bottom = 1
+border_color = Color(0.3, 0.3, 0.3, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_panel"]
+bg_color = Color(0.1, 0.1, 0.1, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="ShipyardPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Shipyard & Engineering"
+
+[node name="StatsPanel" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/StatsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.737255, 0.831373, 1)
+theme_override_font_sizes/font_size = 18
+text = "STATS:"
+
+[node name="HPLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.411765, 0.941176, 0.682353, 1)
+text = "Structure: 100"
+
+[node name="AtkLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
+text = "Firepower: 10"
+
+[node name="DefLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25098, 0.768627, 1, 1)
+text = "Shield: 0 | Eva: 0%"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
+theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
+
+[node name="Hulls" type="ScrollContainer" parent="VBoxContainer/TabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="HullGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Hulls"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="Modules" type="ScrollContainer" parent="VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="ModuleGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3

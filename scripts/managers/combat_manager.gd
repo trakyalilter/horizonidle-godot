@@ -1,0 +1,512 @@
+extends "res://scripts/core/skill.gd"
+
+var in_combat = false
+var current_zone = null
+var current_enemy = null
+var target_enemy_id = null
+
+# Battle State
+var player_hp = 0
+var player_max_hp = 100
+var player_shield = 0.0
+var player_max_shield = 0.0
+
+var enemy_hp = 0
+var enemy_max_hp = 100
+var enemy_shield = 0.0
+var enemy_max_shield = 0.0
+
+var combat_timer = 0.0
+var attack_interval = 1.0
+
+# Log & Events
+var combat_log: Array[String] = []
+var combat_events: Array[Dictionary] = [] # [{type, text, color, side}]
+
+# Consumables
+var equipped_consumable_id = null
+var auto_consume_enabled = false
+var auto_consume_threshold = 0.3
+var consumable_cooldown = 0.0
+var consumable_cooldown_max = 10.0
+
+# Buffs
+var active_buffs = {} # {buff_name: duration}
+
+var zones = {
+	"lunar_orbit": {
+		"name": "Lunar Orbit",
+		"desc": "Low threat sector populated by rogue mining drones.",
+		"difficulty": 1,
+		"enemies": ["lunar_drone", "dust_mite"]
+	},
+	"asteroid_belt": {
+		"name": "Asteroid Belt",
+		"desc": "Dense field with pirate skiffs and kinetic hazards.",
+		"difficulty": 2,
+		"enemies": ["pirate_skiff", "rock_golem"]
+	},
+	"mars_debris": {
+		"name": "Mars Debris Field",
+		"desc": "Wreckage of the old Martian shipyards. Scavengers abound.",
+		"difficulty": 3,
+		"enemies": ["scavenger_mech", "martian_sentry"]
+	},
+	"titan_halo": {
+		"name": "Titan's Halo",
+		"desc": "Frozen rings around the gas giant. Extreme cold and pirate lords.",
+		"difficulty": 4,
+		"enemies": ["cryo_drone", "pirate_gunship"]
+	},
+	"sector_alpha": {
+		"name": "Sector Alpha",
+		"desc": "Uncharted region rich in Titanium. High threat.",
+		"difficulty": 5,
+		"enemies": ["alien_frigate", "xenon_corvette", "xenon_mothership"],
+		"research_req": "sector_alpha_decryption"
+	}
+}
+
+var enemy_db = {
+	"lunar_drone": {
+		"name": "Lunar Drone",
+		"stats": {"hp": 50, "max_shield": 0, "atk": 5, "def": 20},
+		"loot": [["Scrap", 1, 3], ["Fe", 1, 3]],
+		"rare_loot": [["Cu", 0.4, 1, 2], ["Chip", 0.05, 1, 1]],
+		"xp": 10
+	},
+	"dust_mite": {
+		"name": "Space Dust Mite",
+		"stats": {"hp": 30, "max_shield": 0, "atk": 2, "def": 0},
+		"loot": [["C", 1, 2]],
+		"rare_loot": [["Scrap", 0.2, 1, 1]],
+		"xp": 5
+	},
+	"pirate_skiff": {
+		"name": "Pirate Skiff",
+		"stats": {"hp": 150, "max_shield": 50, "atk": 15, "def": 10},
+		"loot": [["credits", 20, 60], ["Scrap", 3, 6]],
+		"rare_loot": [["Cu", 0.6, 2, 4], ["NavData", 0.1, 1, 1]],
+		"xp": 25
+	},
+	"rock_golem": {
+		"name": "Silicate Golem",
+		"stats": {"hp": 300, "max_shield": 0, "atk": 8, "def": 100},
+		"loot": [["Si", 10, 20]],
+		"rare_loot": [["Ti", 0.1, 1, 2]],
+		"xp": 30
+	},
+	"scavenger_mech": {
+		"name": "Scavenger Mech",
+		"stats": {"hp": 400, "max_shield": 100, "atk": 25, "def": 60},
+		"loot": [["Fe", 5, 10], ["Scrap", 5, 10]],
+		"rare_loot": [["Cu", 0.3, 2, 5], ["W", 0.1, 1, 2]],
+		"xp": 55
+	},
+	"martian_sentry": {
+		"name": "Martian Sentry",
+		"stats": {"hp": 250, "max_shield": 250, "atk": 30, "def": 10},
+		"loot": [["C", 5, 10]],
+		"rare_loot": [["Resin", 0.1, 1, 2], ["Chip", 0.5, 1, 2]],
+		"xp": 60
+	},
+	"cryo_drone": {
+		"name": "Cryo Drone",
+		"stats": {"hp": 300, "max_shield": 400, "atk": 20, "def": 20},
+		"loot": [["H", 5, 15], ["Water", 5, 10]],
+		"rare_loot": [["Mesh", 0.05, 1, 1]],
+		"xp": 75
+	},
+	"pirate_gunship": {
+		"name": "Pirate Gunship",
+		"stats": {"hp": 800, "max_shield": 300, "atk": 45, "def": 40},
+		"loot": [["credits", 50, 150], ["Ti", 1, 3]],
+		"rare_loot": [["Seal", 0.05, 1, 1], ["NavData", 0.2, 1, 3]],
+		"xp": 120
+	},
+	"alien_frigate": {
+		"name": "Xenon Patrol Frigate",
+		"stats": {"hp": 600, "max_shield": 1000, "atk": 25, "def": 5},
+		"loot": [["Ti", 5, 10], ["Scrap", 5, 10]],
+		"rare_loot": [["NavData", 0.2, 1, 2], ["Chip", 0.2, 1, 2], ["VoidArtifact", 0.1, 1, 1]],
+		"xp": 100
+	},
+	"xenon_corvette": {
+		"name": "Xenon Corvette",
+		"stats": {"hp": 600, "max_shield": 3000, "atk": 40, "def": 40},
+		"loot": [["Ti", 2, 5], ["U", 2, 5]],
+		"rare_loot": [["NavData", 0.2, 1, 2], ["VoidArtifact", 0.2, 1, 1]],
+		"xp": 100
+	},
+	"xenon_mothership": {
+		"name": "XENON MOTHERSHIP",
+		"stats": {"hp": 5000, "max_shield": 10000, "atk": 160, "def": 120},
+		"loot": [["Ti", 50, 100], ["Chip", 10, 20]],
+		"rare_loot": [["QuantumCore", 1.0, 1, 1], ["VoidArtifact", 1.0, 2, 5]],
+		"xp": 1000
+	}
+}
+
+func _init():
+	super._init("Combat")
+
+func get_available_zones() -> Array:
+	var available = []
+	for zid in zones:
+		var data = zones[zid]
+		var req = data.get("research_req")
+		if req:
+			if GameState.research_manager.is_tech_unlocked(req):
+				available.append({"id": zid, "data": data})
+		else:
+			available.append({"id": zid, "data": data})
+	return available
+
+func start_expedition(zone_id: String):
+	if not zone_id in zones: return
+	GameState.set_active_manager(self)
+	current_zone = zones[zone_id]
+	in_combat = true
+	spawn_enemy()
+	log_msg("Warped to %s." % current_zone["name"])
+	target_enemy_id = null
+
+func set_target_enemy(enemy_id):
+	if enemy_id and enemy_id in enemy_db:
+		GameState.set_active_manager(self)
+		target_enemy_id = enemy_id
+		if in_combat:
+			spawn_enemy() # Respawn immediately
+		else:
+			in_combat = true
+			spawn_enemy()
+		log_msg("Targeting: %s" % enemy_db[enemy_id]["name"])
+	else:
+		target_enemy_id = null
+		log_msg("Targeting cleared.")
+
+func spawn_enemy():
+	var eid = ""
+	if target_enemy_id:
+		eid = target_enemy_id
+	else:
+		if not current_zone: return
+		var list_enemies = current_zone["enemies"]
+		eid = list_enemies[randi() % list_enemies.size()]
+		
+	var e_data = enemy_db[eid]
+	
+	current_enemy = {
+		"id": eid,
+		"name": e_data["name"],
+		"max_hp": e_data["stats"]["hp"],
+		"atk": e_data["stats"]["atk"],
+		"def": e_data["stats"]["def"],
+		"max_shield": e_data["stats"].get("max_shield", 0),
+		"loot": e_data["loot"],
+		"rare_loot": e_data.get("rare_loot", []),
+		"xp": e_data["xp"]
+	}
+	
+	enemy_hp = current_enemy["max_hp"]
+	enemy_max_hp = current_enemy["max_hp"]
+	enemy_shield = float(current_enemy["max_shield"])
+	enemy_max_shield = float(current_enemy["max_shield"])
+	
+	if player_hp <= 0:
+		var sm = GameState.shipyard_manager
+		player_max_hp = sm.max_hp
+		player_hp = player_max_hp
+		player_max_shield = sm.max_shield
+		player_shield = player_max_shield
+		
+	log_msg("Encountered: " + current_enemy["name"])
+
+func retreat():
+	in_combat = false
+	current_enemy = null
+	combat_timer = 0.0
+	log_msg("Emergency Warp engaged! Expedition aborted.")
+
+func stop_action():
+	retreat()
+
+func process_tick(delta: float):
+	if not in_combat or not current_enemy: return
+	
+	combat_timer += delta
+	if combat_timer >= attack_interval:
+		combat_turn()
+		combat_timer = 0.0
+		
+	# Cooldowns tick per second conceptually, so here we do it per tick (delta)
+	if consumable_cooldown > 0:
+		consumable_cooldown -= delta
+
+func combat_turn():
+	var sm = GameState.shipyard_manager
+	
+	# Auto-Consume
+	if auto_consume_enabled and equipped_consumable_id:
+		var hp_thresh = auto_consume_threshold * player_max_hp
+		if player_hp < hp_thresh:
+			use_consumable()
+		elif equipped_consumable_id == "Mesh": # Shield Item
+			var s_thresh = auto_consume_threshold * player_max_shield
+			if player_shield < s_thresh:
+				use_consumable()
+
+	# Buff Duration Logic
+	if "dmg_bonus_duration" in active_buffs:
+		active_buffs["dmg_bonus_duration"] -= 1
+		if active_buffs["dmg_bonus_duration"] <= 0:
+			if "dmg_bonus_k" in active_buffs: active_buffs.erase("dmg_bonus_k")
+			if "dmg_bonus_e" in active_buffs: active_buffs.erase("dmg_bonus_e")
+			active_buffs.erase("dmg_bonus_duration")
+			log_msg("Ammo depleted.")
+
+	# Shield Regen
+	if player_shield < player_max_shield:
+		player_shield = min(player_max_shield, player_shield + sm.shield_regen)
+		
+	if enemy_shield < enemy_max_shield:
+		enemy_shield = min(enemy_max_shield, enemy_shield + (enemy_max_shield * 0.05))
+
+	# --- Player Turn ---
+	var p_atk_k = sm.attack_kinetic
+	var p_atk_e = sm.attack_energy
+	
+	# Ammo Logic
+	var ammo_bonus_k = 0
+	var ammo_bonus_e = 0
+	var can_fire = true
+	
+	if sm.active_ammo and sm.active_ammo != "":
+		var qty = GameState.resources.get_element_amount(sm.active_ammo)
+		if qty > 0:
+			GameState.resources.remove_element(sm.active_ammo, 1)
+			if sm.active_ammo == "SlugT1": ammo_bonus_k = 5
+			elif sm.active_ammo == "SlugT2": ammo_bonus_k = 15
+			elif sm.active_ammo == "CellT1": ammo_bonus_e = 5
+			elif sm.active_ammo == "CellT2": ammo_bonus_e = 15
+			
+			# Buff Trigger? (from Consumables, here we are checking Ammo Slot)
+			# Python uses Consumables for buffs, but Godot has Ammo Slot separate?
+			# Python: "SlugT1" is a consumable that triggers buff.
+			# Godot: "SlugT1" is active_ammo.
+			# Let's keep Ammo Bonus as direct damage add.
+		else:
+			can_fire = false
+			log_msg("Out of Ammo: %s!" % sm.active_ammo)
+	
+	if not can_fire:
+		log_msg("WEAPONS OFFLINE (No Ammo)")
+		return
+		
+	if p_atk_k == 0 and p_atk_e == 0: p_atk_k = sm.attack
+	
+	# Buff Application
+	p_atk_k += ammo_bonus_k + active_buffs.get("dmg_bonus_k", 0)
+	p_atk_e += ammo_bonus_e + active_buffs.get("dmg_bonus_e", 0)
+	
+	var e_def = current_enemy.get("def", 0)
+	var res = resolve_damage(p_atk_k, p_atk_e, enemy_shield, e_def)
+	# res = [shield_dmg, hull_dmg, is_crit]
+	
+	# Targeting Computer Logic
+	# Force crit check if not already crit
+	if not res[2]: 
+		var crit_chance_bonus = 0.0
+		# Check Ship Loadout for 'targeting_computer'
+		# ShipyardManager exposes loadout?
+		if "loadout" in sm: # Dictionary
+			for slot in sm.loadout:
+				if sm.loadout[slot] == "targeting_computer":
+					crit_chance_bonus += 0.15 # 15% Crit
+					
+		if crit_chance_bonus > 0 and randf() < crit_chance_bonus:
+			res[2] = true # Force Crit
+			res[0] = int(res[0] * 1.5)
+			res[1] = int(res[1] * 1.5)
+	
+	enemy_shield = max(0, enemy_shield - res[0])
+	enemy_hp -= res[1]
+	
+	if res[0] > 0:
+		combat_events.append({"type": "dmg_shield", "text": "-%d" % res[0], "color": Color.CYAN, "side": "enemy"})
+	if res[1] > 0:
+		combat_events.append({"type": "dmg_hull", "text": "-%d" % res[1], "color": Color.RED, "side": "enemy"})
+		
+	var msg = "PLAYER: -%d Shield, -%d Hull" % [res[0], res[1]]
+	if res[2]: msg += " (CRIT!)"
+	if ammo_bonus_k > 0 or ammo_bonus_e > 0: msg += " [AMMO]"
+	log_msg(msg)
+	
+	if enemy_hp <= 0:
+		win_fight()
+		return
+
+	# --- Enemy Turn ---
+	var e_atk = current_enemy["atk"]
+	var e_atk_k = e_atk
+	var e_atk_e = 0
+	if "alien" in current_enemy["id"]: # Simple check
+		e_atk_k = 0
+		e_atk_e = e_atk
+		
+	# Dodge
+	if randf() * 100 < sm.evasion:
+		log_msg("Player Dodged!")
+		combat_events.append({"type": "miss", "text": "MISS", "color": Color.WHITE, "side": "player"})
+	else:
+		var p_def = sm.defense
+		var eres = resolve_damage(e_atk_k, e_atk_e, player_shield, p_def)
+		
+		player_shield = max(0, player_shield - eres[0])
+		player_hp -= eres[1]
+		
+		if eres[0] > 0:
+			combat_events.append({"type": "dmg_shield", "text": "-%d" % eres[0], "color": Color.CYAN, "side": "player"})
+		if eres[1] > 0:
+			combat_events.append({"type": "dmg_hull", "text": "-%d" % eres[1], "color": Color.RED, "side": "player"})
+
+		log_msg("ENEMY: -%d Shield, -%d Hull" % [eres[0], eres[1]])
+
+	if player_hp <= 0:
+		lose_fight()
+
+func resolve_damage(atk_k, atk_e, c_shield, c_armor):
+	var shield_dmg_pot = (atk_k * 0.5) + (atk_e * 1.5)
+	
+	var damage_to_shield = 0.0
+	var bleed_ratio = 1.0
+	
+	if c_shield > 0:
+		if shield_dmg_pot >= c_shield:
+			damage_to_shield = c_shield
+			var remaining = shield_dmg_pot - c_shield
+			bleed_ratio = remaining / shield_dmg_pot if shield_dmg_pot > 0 else 0.0
+		else:
+			damage_to_shield = shield_dmg_pot
+			bleed_ratio = 0.0
+			
+	var damage_to_hull = 0.0
+	if bleed_ratio > 0:
+		var hull_dmg_pot = ((atk_k * 1.2) + (atk_e * 0.5)) * bleed_ratio
+		var mitigation = float(c_armor) / (float(c_armor) + 20.0)
+		damage_to_hull = hull_dmg_pot * (1.0 - mitigation)
+		
+	var variance = randf_range(0.9, 1.1)
+	var is_crit = false
+	if randf() < 0.05:
+		variance *= 1.5
+		is_crit = true
+		
+	return [int(damage_to_shield * variance), int(damage_to_hull * variance), is_crit]
+
+func win_fight():
+	log_msg("Destroyed %s!" % current_enemy["name"])
+	
+	# Loot
+	var loot = current_enemy["loot"]
+	for entry in loot:
+		# entry = [item, min, max]
+		var item = entry[0]
+		var qty = randi_range(entry[1], entry[2])
+		if item == "credits":
+			GameState.resources.add_currency("credits", qty)
+		else:
+			GameState.resources.add_element(item, qty)
+		log_msg("Looted: %d %s" % [qty, item])
+		
+	# Rare Loot
+	var rare = current_enemy["rare_loot"]
+	for entry in rare:
+		# entry = [item, chance, min, max]
+		if randf() < entry[1]:
+			var qty = randi_range(entry[2], entry[3])
+			GameState.resources.add_element(entry[0], qty)
+			log_msg("RARE DROP: %d %s!" % [qty, entry[0]])
+			
+	add_xp(current_enemy["xp"])
+	spawn_enemy()
+
+func lose_fight():
+	log_msg("CRITICAL FAILURE. Ship destroyed.")
+	retreat()
+
+func equip_consumable(item_id):
+	equipped_consumable_id = item_id
+
+func toggle_auto_consume(enabled):
+	auto_consume_enabled = enabled
+
+func use_consumable():
+	if not in_combat or not equipped_consumable_id: return
+	if consumable_cooldown > 0: return
+	
+	if GameState.resources.get_element_amount(equipped_consumable_id) < 1:
+		log_msg("Out of %s!" % equipped_consumable_id)
+		return
+		
+	GameState.resources.remove_element(equipped_consumable_id, 1)
+	consumable_cooldown = consumable_cooldown_max
+	
+	var val = 50
+	var effect = "heal_hull"
+	if equipped_consumable_id == "Mesh":
+		effect = "heal_shield"
+		val = 50
+	elif equipped_consumable_id == "Seal":
+		effect = "heal_hull"
+		val = 50
+		
+	if effect == "heal_shield":
+		player_shield = min(player_max_shield, player_shield + val)
+		combat_events.append({"type": "heal", "text": "+%d Shield" % val, "color": Color.GREEN, "side": "player"})
+	elif effect == "heal_hull":
+		player_hp = min(player_max_hp, player_hp + val)
+		combat_events.append({"type": "heal", "text": "+%d HP" % val, "color": Color.GREEN, "side": "player"})
+		
+	# Buffs (Logic from Python)
+	# If we add buffs here, we need to handle them in combat_turn (already added).
+	# Note: In Python source, SlugT1/T2 etc in Consumable slot apply Buffs.
+	# In Godot, they might be ammo? Let's safeguard.
+	elif equipped_consumable_id == "SlugT1": # Kinetic Buff T1
+		active_buffs["dmg_bonus_k"] = 5
+		active_buffs["dmg_bonus_duration"] = 20
+		combat_events.append({"type": "buff", "text": "+5 KIN", "color": Color.RED, "side": "player"})
+	elif equipped_consumable_id == "SlugT2": # Kinetic Buff T2
+		active_buffs["dmg_bonus_k"] = 15
+		active_buffs["dmg_bonus_duration"] = 20
+		combat_events.append({"type": "buff", "text": "+15 KIN", "color": Color.RED, "side": "player"})
+	elif equipped_consumable_id == "CellT1": # Energy Buff T1
+		active_buffs["dmg_bonus_e"] = 5
+		active_buffs["dmg_bonus_duration"] = 20
+		combat_events.append({"type": "buff", "text": "+5 ENG", "color": Color.CYAN, "side": "player"})
+	elif equipped_consumable_id == "CellT2": # Energy Buff T2
+		active_buffs["dmg_bonus_e"] = 15
+		active_buffs["dmg_bonus_duration"] = 20
+		combat_events.append({"type": "buff", "text": "+15 ENG", "color": Color.CYAN, "side": "player"})
+		
+	log_msg("Used %s" % equipped_consumable_id)
+
+func log_msg(msg: String):
+	combat_log.append(msg)
+	if combat_log.size() > 20:
+		combat_log.pop_front()
+	# Signal?
+	
+func get_save_data_manager() -> Dictionary:
+	var data = get_save_data()
+	# Save XP is handled by base Skill.
+	# We generally don't save mid-combat state for idle games usually, just reset to home.
+	return data
+
+func load_save_data_manager(data: Dictionary):
+	load_save_data(data)
+
+func reset():
+	super.reset()
+	retreat()
+	log_msg("Combat Reset.")

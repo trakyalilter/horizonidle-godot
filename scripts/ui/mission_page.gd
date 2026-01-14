@@ -1,0 +1,29 @@
+extends Control
+
+@onready var grid = $VBoxContainer/ScrollContainer/GridContainer
+
+var manager: RefCounted
+var widget_scene = preload("res://scenes/ui/mission_widget.tscn")
+var widgets = []
+
+func _ready():
+	manager = GameState.mission_manager
+	# We rely on GameState to have initialized it.
+	call_deferred("refresh_list")
+
+func refresh_list():
+	if not grid: return
+	for child in grid.get_children():
+		child.queue_free()
+	widgets.clear()
+	
+	for mid in manager.active_missions:
+		var w = widget_scene.instantiate()
+		grid.add_child(w)
+		var m_data = manager.missions[mid]
+		w.setup(mid, m_data, manager, self)
+		widgets.append(w)
+
+func _process(delta):
+	# Widgets update themselves in their _process
+	pass

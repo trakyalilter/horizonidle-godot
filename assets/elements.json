@@ -1,0 +1,511 @@
+[
+  {
+    "atomic_number": -1,
+    "symbol": "Water",
+    "name": "Water",
+    "mass": 18.015,
+    "category": "Raw Material",
+    "tier": 0,
+    "base_value": 0,
+    "description": "Essential for life and a source of Hydrogen/Oxygen."
+  },
+  {
+    "atomic_number": -2,
+    "symbol": "Dirt",
+    "name": "Dirt",
+    "mass": 100.0,
+    "category": "Raw Material",
+    "tier": 0,
+    "base_value": 0,
+    "description": "Common soil containing trace minerals."
+  },
+  {
+    "atomic_number": -3,
+    "symbol": "Wood",
+    "name": "Wood",
+    "mass": 50.0,
+    "category": "Raw Material",
+    "tier": 0,
+    "base_value": 2,
+    "description": "Organic matter, rich in Carbon."
+  },
+  {
+    "atomic_number": -4,
+    "symbol": "LithiumSalt",
+    "name": "Lithium Salt",
+    "mass": 10.0,
+    "category": "Raw Material",
+    "tier": 0,
+    "base_value": 3,
+    "description": "Unrefined lithium deposits found in planetary orbits."
+  },
+  {
+    "atomic_number": 1,
+    "symbol": "H",
+    "name": "Hydrogen",
+    "mass": 1.008,
+    "category": "Nonmetal",
+    "tier": 1,
+    "base_value": 1,
+    "description": "The most abundant element in the universe. Essential fuel."
+  },
+  {
+    "atomic_number": 2,
+    "symbol": "He",
+    "name": "Helium",
+    "mass": 4.0026,
+    "category": "Noble Gas",
+    "tier": 1,
+    "base_value": 2,
+    "description": "Inert gas used for cooling and pressurization."
+  },
+  {
+    "atomic_number": 3,
+    "symbol": "Li",
+    "name": "Lithium",
+    "mass": 6.94,
+    "category": "Alkali Metal",
+    "tier": 2,
+    "base_value": 5,
+    "description": "Lightweight metal used in advanced batteries."
+  },
+  {
+    "atomic_number": 4,
+    "symbol": "Be",
+    "name": "Beryllium",
+    "mass": 9.0122,
+    "category": "Alkaline Earth Metal",
+    "tier": 2,
+    "base_value": 8,
+    "description": "Strong, lightweight metal used in aerospace."
+  },
+  {
+    "atomic_number": 5,
+    "symbol": "B",
+    "name": "Boron",
+    "mass": 10.81,
+    "category": "Metalloid",
+    "tier": 2,
+    "base_value": 7,
+    "description": "Used in dopants for semiconductors."
+  },
+  {
+    "atomic_number": 6,
+    "symbol": "C",
+    "name": "Carbon",
+    "mass": 12.011,
+    "category": "Nonmetal",
+    "tier": 2,
+    "base_value": 3,
+    "description": "The basis of life and organic chemistry."
+  },
+  {
+    "atomic_number": 7,
+    "symbol": "N",
+    "name": "Nitrogen",
+    "mass": 14.007,
+    "category": "Nonmetal",
+    "tier": 2,
+    "base_value": 3,
+    "description": "Abundant gas, essential for life support systems."
+  },
+  {
+    "atomic_number": 8,
+    "symbol": "O",
+    "name": "Oxygen",
+    "mass": 15.999,
+    "category": "Nonmetal",
+    "tier": 2,
+    "base_value": 3,
+    "description": "Crucial for breathing and combustion."
+  },
+  {
+    "atomic_number": 14,
+    "symbol": "Si",
+    "name": "Silicon",
+    "mass": 28.085,
+    "category": "Metalloid",
+    "tier": 1,
+    "base_value": 4,
+    "description": "Used in electronics and glass making."
+  },
+  {
+    "atomic_number": 26,
+    "symbol": "Fe",
+    "name": "Iron",
+    "mass": 55.845,
+    "category": "Transition Metal",
+    "tier": 1,
+    "base_value": 6,
+    "description": "Strong metal widely used in construction."
+  },
+  {
+    "atomic_number": -10,
+    "symbol": "Steel",
+    "name": "Steel Ingot",
+    "mass": 55.0,
+    "category": "Alloy",
+    "tier": 2,
+    "base_value": 15,
+    "description": "Hardened alloy of Iron and Carbon."
+  },
+  {
+    "atomic_number": -11,
+    "symbol": "Graphite",
+    "name": "Graphite Plate",
+    "mass": 12.0,
+    "category": "Refined Material",
+    "tier": 3,
+    "base_value": 25,
+    "description": "Compressed carbon used in heat shields and electronics."
+  },
+  {
+    "atomic_number": -20,
+    "symbol": "Scrap",
+    "name": "Metal Scrap",
+    "mass": 10.0,
+    "category": "Raw Material",
+    "tier": 1,
+    "base_value": 5,
+    "description": "Mangled parts from destroyed machines. Can be recycled."
+  },
+  {
+    "atomic_number": 29,
+    "symbol": "Cu",
+    "name": "Copper",
+    "mass": 63.546,
+    "category": "Transition Metal",
+    "tier": 2,
+    "base_value": 8,
+    "description": "Excellent conductor for electronics and energy weapons."
+  },
+  {
+    "atomic_number": 22,
+    "symbol": "Ti",
+    "name": "Titanium",
+    "mass": 47.867,
+    "category": "Transition Metal",
+    "tier": 3,
+    "base_value": 20,
+    "description": "High-strength, low-density metal for advanced hulls."
+  },
+  {
+    "atomic_number": 74,
+    "symbol": "W",
+    "name": "Tungsten",
+    "mass": 183.84,
+    "category": "Transition Metal",
+    "tier": 3,
+    "base_value": 25,
+    "description": "Extremely hard and dense metal. Ideal for armor penetration."
+  },
+  {
+    "atomic_number": -30,
+    "symbol": "NavData",
+    "name": "Encrypted Nav-Data",
+    "mass": 0.0,
+    "category": "Data",
+    "tier": 5,
+    "base_value": 50,
+    "description": "Encrypted coordinates to unknown sectors."
+  },
+  {
+    "atomic_number": -35,
+    "symbol": "Glass",
+    "name": "Tempered Glass",
+    "mass": 2.0,
+    "category": "Refined Material",
+    "tier": 1,
+    "base_value": 5,
+    "description": "Transparent silicate used in optics and screens."
+  },
+  {
+    "atomic_number": -36,
+    "symbol": "Hydraulics",
+    "name": "Hydraulic Servo",
+    "mass": 5.0,
+    "category": "Component",
+    "tier": 3,
+    "base_value": 40,
+    "description": "High-power mechanical actuators."
+  },
+  {
+    "atomic_number": -40,
+    "symbol": "Circuit",
+    "name": "Basic Circuitry",
+    "mass": 0.1,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 30,
+    "description": "Integrated circuits required for automation and logic."
+  },
+  {
+    "atomic_number": -50,
+    "symbol": "Mesh",
+    "name": "Nanoweave Mesh",
+    "mass": 0.5,
+    "category": "Consumable",
+    "tier": 2,
+    "base_value": 40,
+    "effect": "heal_shield",
+    "value": 50,
+    "description": "Carbon nanotube mesh. Repairs 50 Shield Integrity."
+  },
+  {
+    "atomic_number": -51,
+    "symbol": "Seal",
+    "name": "Hull Sealant",
+    "mass": 0.5,
+    "category": "Consumable",
+    "tier": 2,
+    "base_value": 40,
+    "effect": "heal_hull",
+    "value": 50,
+    "description": "Rapid-hardening polymer. Repairs 50 Hull Integrity."
+  },
+  {
+    "atomic_number": -60,
+    "symbol": "Fiber",
+    "name": "Carbon Fiber",
+    "mass": 0.1,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 15,
+    "description": "Reinforced carbon strands used in advanced fabrication."
+  },
+  {
+    "atomic_number": -61,
+    "symbol": "Resin",
+    "name": "Polymer Resin",
+    "mass": 0.2,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 15,
+    "description": "Synthetic resin base for sealants and plastics."
+  },
+  {
+    "atomic_number": -80,
+    "symbol": "SlugT1",
+    "name": "Ferrite Rounds",
+    "mass": 0.1,
+    "category": "Ammo",
+    "tier": 1,
+    "base_value": 5,
+    "description": "Standard iron slugs. +5 Kinetic Dmg (20s)."
+  },
+  {
+    "atomic_number": -81,
+    "symbol": "SlugT2",
+    "name": "Tungsten Sabot",
+    "mass": 0.2,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 20,
+    "description": "Armor-piercing heavy slugs. +15 Kinetic Dmg (20s)."
+  },
+  {
+    "atomic_number": -82,
+    "symbol": "CellT1",
+    "name": "Focus Crystal",
+    "mass": 0.1,
+    "category": "Ammo",
+    "tier": 1,
+    "base_value": 5,
+    "description": "Lenses for beam cohesion. +5 Energy Dmg (20s)."
+  },
+  {
+    "atomic_number": -83,
+    "symbol": "CellT2",
+    "name": "Plasma Cell",
+    "mass": 0.2,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 20,
+    "description": "Superheated gas canister. +15 Energy Dmg (20s)."
+  },
+  {
+    "atomic_number": 92,
+    "symbol": "U",
+    "name": "Uranium",
+    "mass": 238.03,
+    "category": "Actinide",
+    "tier": 4,
+    "base_value": 50,
+    "description": "Heavy radioactive metal. Very dense. Handle with care."
+  },
+  {
+    "atomic_number": -84,
+    "symbol": "SlugT3",
+    "name": "Depleted Uranium Round",
+    "mass": 0.5,
+    "category": "Ammo",
+    "tier": 3,
+    "base_value": 50,
+    "description": "Self-sharpening penetrator. +30 Kinetic Dmg (20s)."
+  },
+  {
+    "atomic_number": -85,
+    "symbol": "CellT3",
+    "name": "Vaporizer Cell",
+    "mass": 0.5,
+    "category": "Ammo",
+    "tier": 3,
+    "base_value": 50,
+    "description": "Unstable singularity core. +30 Energy Dmg (20s)."
+  },
+  {
+    "atomic_number": -90,
+    "symbol": "LaserSight",
+    "name": "LaserSight",
+    "mass": 0.1,
+    "category": "Module",
+    "tier": 2,
+    "base_value": 100,
+    "slot_type": "sensor",
+    "stats": {
+      "atk": 5,
+      "accuracy": 10
+    },
+    "description": "Improves targeting accuracy."
+  },
+  {
+    "atomic_number": -110,
+    "symbol": "kinetic_shell",
+    "name": "Kinetic Shells",
+    "mass": 0.5,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 15,
+    "description": "Mass-produced kinetic ammunition. +25 Kinetic Dmg."
+  },
+  {
+    "atomic_number": -111,
+    "symbol": "energy_cell",
+    "name": "Energy Cells",
+    "mass": 0.5,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 15,
+    "description": "Standardized energy batteries. +25 Energy Dmg."
+  },
+  {
+    "atomic_number": -112,
+    "symbol": "missile",
+    "name": "HE Missiles",
+    "mass": 1.0,
+    "category": "Ammo",
+    "tier": 3,
+    "base_value": 40,
+    "description": "High-Explosive ordinance. +50 Kinetic / +20 Energy Dmg."
+  },
+  {
+    "atomic_number": -120,
+    "symbol": "VoidArtifact",
+    "name": "Void Artifact",
+    "mass": 5.0,
+    "category": "Artifact",
+    "tier": 4,
+    "base_value": 500,
+    "description": "Anomalous object reacting to zero-point energy. Required for Capital Ships."
+  },
+  {
+    "atomic_number": -121,
+    "symbol": "QuantumCore",
+    "name": "Quantum Core",
+    "mass": 10.0,
+    "category": "Artifact",
+    "tier": 5,
+    "base_value": 2000,
+    "description": "Stable quantum singularity. The heart of a Dreadnought."
+  },
+  {
+    "atomic_number": -130,
+    "symbol": "AncientComponent",
+    "name": "Ancient Component",
+    "mass": 2.5,
+    "category": "Artifact",
+    "tier": 5,
+    "base_value": 1000,
+    "description": "Unidentifiable machinery from a lost civilization. Highly valuable."
+  },
+  {
+    "atomic_number": -202,
+    "symbol": "SlugT2",
+    "name": "Tungsten Slug",
+    "mass": 0.8,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 5,
+    "description": "Heavy kinetic rounds. (+2 Kinetic Dmg)"
+  },
+  {
+    "atomic_number": -203,
+    "symbol": "SlugT3",
+    "name": "Depleted Uranium Slug",
+    "mass": 1.2,
+    "category": "Ammo",
+    "tier": 3,
+    "base_value": 15,
+    "description": "Advanced kinetic rounds. (+5 Kinetic Dmg)"
+  },
+  {
+    "atomic_number": -211,
+    "symbol": "CellT1",
+    "name": "Power Cell",
+    "mass": 0.2,
+    "category": "Ammo",
+    "tier": 1,
+    "base_value": 2,
+    "description": "Standard energy battery. (+0 Bonus)"
+  },
+  {
+    "atomic_number": -212,
+    "symbol": "CellT2",
+    "name": "Plasma Cell",
+    "mass": 0.2,
+    "category": "Ammo",
+    "tier": 2,
+    "base_value": 5,
+    "description": "High-capacity energy cell. (+2 Energy Dmg)"
+  },
+  {
+    "atomic_number": -213,
+    "symbol": "CellT3",
+    "name": "Antimatter Cell",
+    "mass": 0.2,
+    "category": "Ammo",
+    "tier": 3,
+    "base_value": 15,
+    "description": "Unstable energy source. (+5 Energy Dmg)"
+  },
+  {
+    "atomic_number": -301,
+    "symbol": "BatteryT1",
+    "name": "Lithium-Ion Battery",
+    "mass": 5.0,
+    "category": "Component",
+    "tier": 1,
+    "base_value": 50,
+    "description": "Standard energy storage unit."
+  },
+  {
+    "atomic_number": -302,
+    "symbol": "BatteryT2",
+    "name": "Graphene Matrix Battery",
+    "mass": 4.0,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 150,
+    "description": "High-density advanced energy storage."
+  },
+  {
+    "atomic_number": -303,
+    "symbol": "BatteryT3",
+    "name": "Zero-Point Module",
+    "mass": 3.0,
+    "category": "Component",
+    "tier": 3,
+    "base_value": 500,
+    "description": "Infinite energy extraction from the void (Sort of)."
+  }
+]

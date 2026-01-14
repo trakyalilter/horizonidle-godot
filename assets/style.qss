@@ -1,0 +1,114 @@
+/* Main Window Background */
+QMainWindow, QWidget {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: "Segoe UI", "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+/* Sidebar */
+/* Sidebar */
+QWidget#sidebar {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #050505, stop:1 #111111);
+    border-right: 2px solid #00bcd4; /* Neon Border */
+}
+
+QLabel#sidebarHeader {
+    color: #00bcd4; /* Cyan Neon */
+    font-weight: 900;
+    font-size: 22px;
+    padding: 30px 15px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    border-bottom: 1px solid #333;
+    font-family: "Orbitron", "Consolas", sans-serif; /* Use sci-fi font if avail, else fallback */
+}
+
+/* Nav Menu */
+QListWidget#navMenu {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+}
+
+QListWidget#navMenu::item {
+    padding: 15px 20px;
+    color: #888;
+    font-size: 14px;
+    letter-spacing: 1px;
+    border-left: 3px solid transparent; /* Hidden marker */
+}
+
+QListWidget#navMenu::item:hover {
+    background-color: rgba(0, 188, 212, 0.1);
+    color: #b2ebf2; /* Light cyan */
+}
+
+QListWidget#navMenu::item:selected {
+    background-color: rgba(0, 188, 212, 0.2);
+    color: #00bcd4;
+    border-left: 3px solid #00bcd4; /* Neon Marker */
+    font-weight: bold;
+}
+
+/* Content Area */
+QWidget#contentArea {
+    background-color: #1e1e1e;
+}
+
+/* Header / Status Bar */
+QWidget#header {
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+    min-height: 50px;
+}
+
+QLabel#resourceLabel {
+    color: #4caf50; /* Green Neon */
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #263238;
+    border: 1px solid #37474f;
+    color: #00bcd4;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+QPushButton:hover {
+    background-color: #37474f;
+    border-color: #00bcd4;
+}
+
+QPushButton:pressed {
+    background-color: #00bcd4;
+    color: #000;
+}
+
+/* Progress Bar */
+QProgressBar {
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #000;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background-color: #00bcd4;
+}
+
+/* Headings */
+QLabel h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}

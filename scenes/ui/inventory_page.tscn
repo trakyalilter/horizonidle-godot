@@ -1,0 +1,151 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/inventory_page.gd" id="1_script"]
+
+[node name="InventoryPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Molecular Storage"
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GridContainer" type="HFlowContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="RightPanel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.792157, 0.156863, 1)
+theme_override_font_sizes/font_size = 18
+text = "Item Details"
+horizontal_alignment = 1
+
+[node name="Details" type="VBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="NameLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.898039, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Select an Item"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
+theme_override_font_sizes/font_size = 12
+text = "..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PriceLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.792157, 0.156863, 1)
+text = "Unit Price: -"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
+text = "Sell To Union"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details/HBoxContainer"]
+layout_mode = 2
+text = "Qty:"
+
+[node name="QtySpinBox" type="SpinBox" parent="HBoxContainer/RightPanel/VBoxContainer/Details/HBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+max_value = 99999.0
+value = 1.0
+editable = false
+
+[node name="TotalLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.411765, 0.941176, 0.682353, 1)
+text = "Total: 0"
+horizontal_alignment = 2
+
+[node name="SellBtn" type="Button" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298039, 0.686275, 0.313726, 1)
+disabled = true
+text = "Sell Items"
+
+[node name="SellAllBtn" type="Button" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+layout_mode = 2
+disabled = true
+text = "Sell All Stack"
+
+[node name="CreditsLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.792157, 0.156863, 1)
+theme_override_font_sizes/font_size = 20
+text = "Credits: 0"
+horizontal_alignment = 1
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="value_changed" from="HBoxContainer/RightPanel/VBoxContainer/Details/HBoxContainer/QtySpinBox" to="." method="_on_qty_spin_box_value_changed"]
+[connection signal="pressed" from="HBoxContainer/RightPanel/VBoxContainer/Details/SellBtn" to="." method="_on_sell_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/RightPanel/VBoxContainer/Details/SellAllBtn" to="." method="_on_sell_all_btn_pressed"]

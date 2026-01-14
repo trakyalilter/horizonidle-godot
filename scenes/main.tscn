@@ -1,0 +1,131 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.02, 0.05, 1)
+
+[node name="ModalLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Sidebar" type="PanelContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Sidebar"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+
+
+[node name="GatheringBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Planetary Ops"
+alignment = 0
+
+[node name="ProcessingBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Engineering"
+alignment = 0
+
+[node name="InfrastructureBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Infrastructure"
+alignment = 0
+
+[node name="ShipyardBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Shipyard"
+alignment = 0
+
+[node name="ResearchBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Research"
+alignment = 0
+
+[node name="CombatBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Combat / Expeditions"
+alignment = 0
+
+[node name="MissionBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Mission Control"
+alignment = 0
+
+[node name="DesignerBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Ship Designer"
+alignment = 0
+
+[node name="InventoryBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Inventory / Sell"
+alignment = 0
+
+[node name="Control" type="Control" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="OptionsBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.811765, 0.435294, 0.435294, 1)
+text = "GAME OPTIONS"
+alignment = 0
+
+[node name="Content" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PageContainer" type="Control" parent="HBoxContainer/Content"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/GatheringBtn" to="." method="_on_gathering_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/ProcessingBtn" to="." method="_on_processing_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/InfrastructureBtn" to="." method="_on_infrastructure_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/ShipyardBtn" to="." method="_on_shipyard_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/ResearchBtn" to="." method="_on_research_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/CombatBtn" to="." method="_on_combat_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/MissionBtn" to="." method="_on_mission_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/DesignerBtn" to="." method="_on_designer_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/InventoryBtn" to="." method="_on_inventory_btn_pressed"]
+[connection signal="pressed" from="HBoxContainer/Sidebar/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]

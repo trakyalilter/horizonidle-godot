@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="hullGradF" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4a5a6a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7a8a9a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a5a6a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="engineGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0088ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="engineGlowF"><feGaussianBlur stdDeviation="3" /></filter>
+  </defs>
+  <g transform="translate(100, 100) rotate(-90)">
+    <rect x="-25" y="55" width="15" height="10" fill="url(#engineGradF)" filter="url(#engineGlowF)"/>
+    <rect x="10" y="55" width="15" height="10" fill="url(#engineGradF)" filter="url(#engineGlowF)"/>
+    
+    <path d="M-30,20 L-30,60 L-15,60 L-10,20 Z" fill="url(#hullGradF)" stroke="#2a3a4a" stroke-width="2"/>
+    <path d="M30,20 L30,60 L15,60 L10,20 Z" fill="url(#hullGradF)" stroke="#2a3a4a" stroke-width="2"/>
+
+    <path d="M0,-80 L-15,-20 L-15,60 L0,70 L15,60 L15,-20 Z" fill="url(#hullGradF)" stroke="#2a3a4a" stroke-width="2"/>
+    <rect x="-8" y="-30" width="16" height="20" fill="#2a3a4a" opacity="0.4"/>
+  </g>
+</svg>
