@@ -30,6 +30,8 @@ var auto_consume_threshold = 0.3
 var consumable_cooldown = 0.0
 var consumable_cooldown_max = 10.0
 
+signal enemy_defeated(enemy_id)
+
 # Buffs
 var active_buffs = {} # {buff_name: duration}
 
@@ -64,6 +66,27 @@ var zones = {
 		"difficulty": 5,
 		"enemies": ["alien_frigate", "xenon_corvette", "xenon_mothership"],
 		"research_req": "sector_alpha_decryption"
+	},
+	"sector_beta": {
+		"name": "Sector Beta - Mining Colony Ruins",
+		"desc": "Abandoned mining colony. Automated defense systems hostile. Rich in industrial metals.",
+		"difficulty": 6,
+		"enemies": ["mining_sentinel", "defense_turret", "colony_overseer"],
+		"research_req": "deep_space_nav"
+	},
+	"sector_gamma": {
+		"name": "Sector Gamma - Radioactive Nebula",
+		"desc": "Radioactive nebula. Mutated organisms detected. Extreme danger.",
+		"difficulty": 7,
+		"enemies": ["radiation_beast", "nebula_leviathan", "gamma_colossus"],
+		"research_req": "radiation_shielding"
+	},
+	"sector_delta": {
+		"name": "Sector Delta - Crystalline Fields",
+		"desc": "Crystalline asteroid field. Unknown energy signatures. Ultimate challenge.",
+		"difficulty": 8,
+		"enemies": ["crystal_golem", "energy_wraith", "sentinel_prime"],
+		"research_req": "exotic_matter_analysis"
 	}
 }
 
@@ -144,8 +167,75 @@ var enemy_db = {
 		"loot": [["Ti", 50, 100], ["Chip", 10, 20]],
 		"rare_loot": [["QuantumCore", 1.0, 1, 1], ["VoidArtifact", 1.0, 2, 5]],
 		"xp": 1000
+	},
+	# Sector Beta Enemies (Difficulty 6) - HP ~8k-15k
+	"mining_sentinel": {
+		"name": "Mining Sentinel MK-VII",
+		"stats": {"hp": 8000, "max_shield": 5000, "atk": 80, "def": 50},
+		"loot": [["Al", 3, 8], ["Bronze", 2, 5], ["Steel", 5, 10]],
+		"rare_loot": [["Co", 0.4, 1, 3], ["Ni", 0.4, 1, 3], ["Circuit", 0.3, 1, 2]],
+		"xp": 200
+	},
+	"defense_turret": {
+		"name": "Automated Defense Turret",
+		"stats": {"hp": 15000, "max_shield": 0, "atk": 120, "def": 80},
+		"loot": [["Steel", 10, 20], ["Circuit", 2, 5], ["Hydraulics", 1, 3]],
+		"rare_loot": [["Cr", 0.3, 1, 2], ["AdvCircuit", 0.2, 1, 1]],
+		"xp": 250
+	},
+	"colony_overseer": {
+		"name": "Colony Overseer AI",
+		"stats": {"hp": 12000, "max_shield": 8000, "atk": 100, "def": 60},
+		"loot": [["AdvCircuit", 2, 4], ["Co", 2, 5], ["Ni", 2, 5]],
+		"rare_loot": [["Pd", 0.15, 1, 1], ["AICore", 0.1, 1, 1]],
+		"xp": 300
+	},
+	# Sector Gamma Enemies (Difficulty 7) - HP ~20k-80k
+	"radiation_beast": {
+		"name": "Gamma Radiation Beast",
+		"stats": {"hp": 20000, "max_shield": 12000, "atk": 150, "def": 70},
+		"loot": [["U", 5, 10], ["Zn", 3, 6], ["Resin", 2, 4]],
+		"rare_loot": [["Pt", 0.15, 1, 2], ["ReactiveCore", 0.2, 1, 1]],
+		"xp": 500
+	},
+	"nebula_leviathan": {
+		"name": "Nebula Leviathan",
+		"stats": {"hp": 35000, "max_shield": 20000, "atk": 200, "def": 90},
+		"loot": [["U", 10, 20], ["Graphite", 15, 25], ["credits", 300, 600]],
+		"rare_loot": [["Pt", 0.25, 1, 3], ["Pd", 0.2, 1, 2], ["ExoticMatter", 0.1, 1, 1]],
+		"xp": 800
+	},
+	"gamma_colossus": {
+		"name": "GAMMA COLOSSUS",
+		"stats": {"hp": 80000, "max_shield": 40000, "atk": 300, "def": 150},
+		"loot": [["Pt", 5, 10], ["Pd", 3, 6], ["QuantumCore", 1, 2]],
+		"rare_loot": [["Ir", 0.3, 1, 2], ["ExoticIsotope", 0.2, 1, 1]],
+		"xp": 2000
+	},
+	# Sector Delta Enemies (Difficulty 8) - HP ~50k-150k
+	"crystal_golem": {
+		"name": "Crystalline Golem",
+		"stats": {"hp": 50000, "max_shield": 0, "atk": 180, "def": 200},
+		"loot": [["Si", 50, 100], ["Graphite", 20, 40], ["Diamond", 1, 3]],
+		"rare_loot": [["Ir", 0.2, 1, 2], ["SyntheticCrystal", 0.15, 1, 1]],
+		"xp": 1500
+	},
+	"energy_wraith": {
+		"name": "Energy Wraith",
+		"stats": {"hp": 30000, "max_shield": 50000, "atk": 250, "def": 50},
+		"loot": [["ExoticMatter", 2, 5], ["H", 20, 40], ["Resin", 5, 10]],
+		"rare_loot": [["AntimatterParticle", 0.1, 1, 1], ["VoidCrystal", 0.15, 1, 1]],
+		"xp": 1800
+	},
+	"sentinel_prime": {
+		"name": "SENTINEL PRIME",
+		"stats": {"hp": 150000, "max_shield": 80000, "atk": 400, "def": 180},
+		"loot": [["Ir", 10, 20], ["Diamond", 5, 10], ["QuantumCore", 2, 4]],
+		"rare_loot": [["Os", 0.25, 1, 3], ["AncientTech", 0.2, 1, 1]],
+		"xp": 5000
 	}
 }
+
 
 func _init():
 	super._init("Combat")
@@ -285,19 +375,17 @@ func combat_turn():
 		var qty = GameState.resources.get_element_amount(sm.active_ammo)
 		if qty > 0:
 			GameState.resources.remove_element(sm.active_ammo, 1)
+			# Tiered ammo bonuses
 			if sm.active_ammo == "SlugT1": ammo_bonus_k = 5
 			elif sm.active_ammo == "SlugT2": ammo_bonus_k = 15
+			elif sm.active_ammo == "SlugT3": ammo_bonus_k = 30
 			elif sm.active_ammo == "CellT1": ammo_bonus_e = 5
 			elif sm.active_ammo == "CellT2": ammo_bonus_e = 15
-			
-			# Buff Trigger? (from Consumables, here we are checking Ammo Slot)
-			# Python uses Consumables for buffs, but Godot has Ammo Slot separate?
-			# Python: "SlugT1" is a consumable that triggers buff.
-			# Godot: "SlugT1" is active_ammo.
-			# Let's keep Ammo Bonus as direct damage add.
+			elif sm.active_ammo == "CellT3": ammo_bonus_e = 30
 		else:
 			can_fire = false
 			log_msg("Out of Ammo: %s!" % sm.active_ammo)
+
 	
 	if not can_fire:
 		log_msg("WEAPONS OFFLINE (No Ammo)")
@@ -429,6 +517,7 @@ func win_fight():
 			log_msg("RARE DROP: %d %s!" % [qty, entry[0]])
 			
 	add_xp(current_enemy["xp"])
+	enemy_defeated.emit(current_enemy["id"])
 	spawn_enemy()
 
 func lose_fight():
@@ -452,44 +541,27 @@ func use_consumable():
 	GameState.resources.remove_element(equipped_consumable_id, 1)
 	consumable_cooldown = consumable_cooldown_max
 	
-	var val = 50
-	var effect = "heal_hull"
+	# CONSUMABLES (Healing Items Only)
+	# Note: Ammo items (SlugT1, CellT1, etc.) are handled in shipyard active_ammo slot
+	
 	if equipped_consumable_id == "Mesh":
-		effect = "heal_shield"
-		val = 50
+		# Shield Repair
+		var heal_amount = 50
+		player_shield = min(player_max_shield, player_shield + heal_amount)
+		combat_events.append({"type": "heal", "text": "+%d Shield" % heal_amount, "color": Color.GREEN, "side": "player"})
+		log_msg("Used Nanoweave Mesh (+%d Shield)" % heal_amount)
+		
 	elif equipped_consumable_id == "Seal":
-		effect = "heal_hull"
-		val = 50
+		# Hull Repair
+		var heal_amount = 50
+		player_hp = min(player_max_hp, player_hp + heal_amount)
+		combat_events.append({"type": "heal", "text": "+%d HP" % heal_amount, "color": Color.GREEN, "side": "player"})
+		log_msg("Used Hull Sealant (+%d HP)" % heal_amount)
 		
-	if effect == "heal_shield":
-		player_shield = min(player_max_shield, player_shield + val)
-		combat_events.append({"type": "heal", "text": "+%d Shield" % val, "color": Color.GREEN, "side": "player"})
-	elif effect == "heal_hull":
-		player_hp = min(player_max_hp, player_hp + val)
-		combat_events.append({"type": "heal", "text": "+%d HP" % val, "color": Color.GREEN, "side": "player"})
-		
-	# Buffs (Logic from Python)
-	# If we add buffs here, we need to handle them in combat_turn (already added).
-	# Note: In Python source, SlugT1/T2 etc in Consumable slot apply Buffs.
-	# In Godot, they might be ammo? Let's safeguard.
-	elif equipped_consumable_id == "SlugT1": # Kinetic Buff T1
-		active_buffs["dmg_bonus_k"] = 5
-		active_buffs["dmg_bonus_duration"] = 20
-		combat_events.append({"type": "buff", "text": "+5 KIN", "color": Color.RED, "side": "player"})
-	elif equipped_consumable_id == "SlugT2": # Kinetic Buff T2
-		active_buffs["dmg_bonus_k"] = 15
-		active_buffs["dmg_bonus_duration"] = 20
-		combat_events.append({"type": "buff", "text": "+15 KIN", "color": Color.RED, "side": "player"})
-	elif equipped_consumable_id == "CellT1": # Energy Buff T1
-		active_buffs["dmg_bonus_e"] = 5
-		active_buffs["dmg_bonus_duration"] = 20
-		combat_events.append({"type": "buff", "text": "+5 ENG", "color": Color.CYAN, "side": "player"})
-	elif equipped_consumable_id == "CellT2": # Energy Buff T2
-		active_buffs["dmg_bonus_e"] = 15
-		active_buffs["dmg_bonus_duration"] = 20
-		combat_events.append({"type": "buff", "text": "+15 ENG", "color": Color.CYAN, "side": "player"})
-		
-	log_msg("Used %s" % equipped_consumable_id)
+	else:
+		# Unknown consumable - just consume it silently
+		log_msg("Used %s (no effect)" % equipped_consumable_id)
+
 
 func log_msg(msg: String):
 	combat_log.append(msg)

@@ -43,57 +43,48 @@ theme_override_constants/separation = 5
 
 
 [node name="GatheringBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Planetary Ops"
+text = "  ◓  Planetary Ops"
 alignment = 0
 
 [node name="ProcessingBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Engineering"
+text = "  ⚙  Engineering"
 alignment = 0
 
 [node name="InfrastructureBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Infrastructure"
+text = "  ⌬  Infrastructure"
 alignment = 0
 
 [node name="ShipyardBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Shipyard"
+text = "  ⚓  Shipyard"
 alignment = 0
 
 [node name="ResearchBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Research"
+text = "  🔬  Research"
 alignment = 0
 
 [node name="CombatBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Combat / Expeditions"
+text = "  ⚔  Excursions"
 alignment = 0
 
 [node name="MissionBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Mission Control"
+text = "  ⌘  Mission Control"
 alignment = 0
 
 [node name="DesignerBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Ship Designer"
+text = "  ⌬  Ship Designer"
 alignment = 0
 
 [node name="InventoryBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Inventory / Sell"
+text = "  📦  Storage / Sell"
 alignment = 0
 
 [node name="Control" type="Control" parent="HBoxContainer/Sidebar/VBoxContainer"]
@@ -101,10 +92,9 @@ custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
 [node name="OptionsBtn" type="Button" parent="HBoxContainer/Sidebar/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.811765, 0.435294, 0.435294, 1)
-text = "GAME OPTIONS"
+text = "  ⚒  GAME OPTIONS"
 alignment = 0
 
 [node name="Content" type="Control" parent="HBoxContainer"]

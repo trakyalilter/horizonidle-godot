@@ -18,6 +18,10 @@ func setup(p_mid: String, p_data: Dictionary, p_manager, p_parent):
 	parent_ui = p_parent
 	
 	name_lbl.text = data["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	
+	UITheme.apply_card_style(self, "shipyard")
+	UITheme.apply_premium_button_style(btn, "shipyard")
 	
 	var s_txt = ""
 	for k in data["stats"]:
@@ -54,7 +58,7 @@ func update_state():
 		if not can_afford:
 			affordable = false
 			
-		cost_str += "[color=%s]%d %s[/color]\n" % [color, qty, res.capitalize()]
+		cost_str += "[color=%s]%d %s[/color]\n" % [color, qty, ElementDB.get_display_name(res)]
 	
 	cost_str += "[/center]"
 	cost_lbl.text = cost_str

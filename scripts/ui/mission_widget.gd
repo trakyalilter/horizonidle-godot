@@ -18,8 +18,13 @@ func setup(p_mid: String, p_data: Dictionary, p_manager, p_parent):
 	parent_page = p_parent
 	
 	name_lbl.text = data["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["mission"])
 	desc_lbl.text = data["description"]
 	progress_bar.max_value = data["target_qty"]
+	
+	UITheme.apply_card_style(self, "mission")
+	UITheme.apply_premium_button_style(claim_btn, "mission")
+	UITheme.apply_progress_bar_style(progress_bar, "mission")
 	
 	update_state()
 

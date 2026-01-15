@@ -36,11 +36,8 @@ func update_state():
 	var is_unlocked = manager.is_tech_unlocked(nid)
 	var can_unlock = manager.can_unlock(nid)
 	
-	var style = get_theme_stylebox("panel").duplicate()
-	style.border_width_left = 2
-	style.border_width_top = 2
-	style.border_width_right = 2
-	style.border_width_bottom = 2
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["research"])
+	var style = UITheme.apply_card_style(self, "research")
 	
 	if is_unlocked:
 		style.bg_color = COL_UNLOCKED

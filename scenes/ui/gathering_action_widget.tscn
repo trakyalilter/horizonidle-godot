@@ -50,10 +50,23 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Start"
 
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
+theme_override_font_sizes/font_size = 10
+text = "0.0s / 0.0s"
+horizontal_alignment = 1
+
 [node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
 theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+value = 50.0
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]

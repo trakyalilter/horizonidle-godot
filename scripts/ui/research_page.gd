@@ -244,6 +244,15 @@ func refresh_all():
 				child.update_state()
 	update_ui()
 
+func get_node_widget(tech_id: String) -> Control:
+	for tab_name in graphs:
+		var container = graphs[tab_name]["container"]
+		if not container: continue
+		for child in container.get_children():
+			if child.get("nid") == tech_id:
+				return child
+	return null
+
 func _process(delta):
 	# Poll for currency upates
 	update_ui()

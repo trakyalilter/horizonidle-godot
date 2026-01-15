@@ -5,6 +5,9 @@ extends PanelContainer
 
 func _ready():
 	visible = false
+	UITheme.apply_modal_style(self)
+	if has_node("MarginContainer/VBoxContainer/AckBtn"):
+		UITheme.apply_premium_button_style($MarginContainer/VBoxContainer/AckBtn, "inventory")
 
 func check_and_show():
 	if GameState.offline_report and GameState.offline_report != "":

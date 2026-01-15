@@ -283,8 +283,199 @@ var recipes: Dictionary = {
 		"level_req": 30,
 		"xp": 500,
 		"research_req": "quantum_dynamics"
+	},
+	# Early Game Element Processing
+	"smelt_bauxite": {
+		"name": "Bauxite Smelting",
+		"description": "Extract Aluminum from Bauxite ore using oxygen.",
+		"input": { "Bauxite": 3, "O": 2 },
+		"output": { "Al": 2 },
+		"duration": 5.0,
+		"level_req": 4,
+		"xp": 20,
+		"research_req": "basic_engineering"
+	},
+	"process_dolomite": {
+		"name": "Dolomite Calcination",
+		"description": "Extract Magnesium from Dolomite through heating.",
+		"input": { "Dolomite": 4, "C": 1 },
+		"output": { "Mg": 1, "C": 1 },  # C is returned as CO2 → C cycle
+		"duration": 6.0,
+		"level_req": 4,
+		"xp": 25,
+		"research_req": "combustion"
+	},
+	"smelt_cassiterite": {
+		"name": "Tin Smelting",
+		"description": "Reduce Cassiterite ore to pure Tin.",
+		"input": { "Cassiterite": 2, "C": 1 },
+		"output": { "Sn": 1 },
+		"duration": 4.0,
+		"level_req": 3,
+		"xp": 15
+	},
+	"smelt_zinc": {
+		"name": "Zinc Reduction",
+		"description": "Extract Zinc from ore via carbon reduction.",
+		"input": { "ZincOre": 3, "C": 1 },
+		"output": { "Zn": 2 },
+		"duration": 4.0,
+		"level_req": 4,
+		"xp": 18
+	},
+	"craft_bronze": {
+		"name": "Bronze Alloy",
+		"description": "Ancient but effective Cu-Tin alloy. Cheaper than Steel.",
+		"input": { "Cu": 3, "Sn": 1 },
+		"output": { "Bronze": 2 },
+		"duration": 3.0,
+		"level_req": 3,
+		"xp": 20
+	},
+	"craft_aluminum_alloy": {
+		"name": "Aluminum-Magnesium Alloy",
+		"description": "Lightweight aerospace alloy. High strength-to-weight ratio.",
+		"input": { "Al": 3, "Mg": 1 },
+		"output": { "AlMgAlloy": 2 },
+		"duration": 5.0,
+		"level_req": 5,
+		"xp": 30,
+		"research_req": "adv_materials"
+	},
+	"craft_al_wire": {
+		"name": "Aluminum Wiring",
+		"description": "Insulated aluminum wire for electrical systems.",
+		"input": { "Al": 2, "Resin": 1 },
+		"output": { "AlWire": 3 },
+		"duration": 3.0,
+		"level_req": 4,
+		"xp": 15
+	},
+	"galvanize_steel": {
+		"name": "Galvanized Steel",
+		"description": "Zinc-coated steel. Corrosion resistant.",
+		"input": { "Steel": 2, "Zn": 1 },
+		"output": { "GalvanizedSteel": 2 },
+		"duration": 4.0,
+		"level_req": 5,
+		"xp": 25,
+		"research_req": "alloy_synthesis"
+	},
+	# Mid-Game Advanced Materials
+	"craft_stainless_steel": {
+		"name": "Stainless Steel Alloy",
+		"description": "Fe-Cr-Ni alloy. Superior corrosion resistance and strength.",
+		"input": { "Fe": 5, "Cr": 2, "Ni": 1 },
+		"output": { "StainlessSteel": 4 },
+		"duration": 8.0,
+		"level_req": 12,
+		"xp": 60,
+		"research_req": "metallurgy_advanced"
+	},
+	"craft_cobalt_battery": {
+		"name": "Lithium-Cobalt Battery",
+		"description": "Advanced battery tech. High energy density.",
+		"input": { "Li": 2, "Co": 3, "Al": 2, "Circuit": 1 },
+		"output": { "CoBattery": 1 },
+		"duration": 10.0,
+		"level_req": 15,
+		"xp": 100,
+		"research_req": "advanced_batteries"
+	},
+	"craft_mg_ion_battery": {
+		"name": "Magnesium-Ion Battery",
+		"description": "Lightweight alternative to Li-ion. Fast charging.",
+		"input": { "Mg": 4, "Mn": 2, "AlWire": 2 },
+		"output": { "MgBattery": 1 },
+		"duration": 8.0,
+		"level_req": 14,
+		"xp": 80,
+		"research_req": "advanced_batteries"
+	},
+	"electrolysis_nickel_catalyst": {
+		"name": "Nickel-Catalyzed Electrolysis",
+		"description": "Ni catalyst speeds H2 production. More efficient.",
+		"input": { "Water": 1, "Ni": 0.1 },
+		"output": { "H": 3, "O": 2 },
+		"duration": 2.0,
+		"level_req": 12,
+		"xp": 30,
+		"research_req": "catalytic_electrodes"
+	},
+	"craft_superalloy": {
+		"name": "Cobalt Superalloy",
+		"description": "Co-Ni-Cr heat-resistant alloy for engines and reactors.",
+		"input": { "Co": 2, "Ni": 2, "Cr": 1, "Ti": 1 },
+		"output": { "Superalloy": 3 },
+		"duration": 12.0,
+		"level_req": 18,
+		"xp": 150,
+		"research_req": "superalloy_engineering"
+	},
+	# Late-Game Rare Metal Processing
+	"craft_platinum_catalyst": {
+		"name": "Platinum Catalyst Matrix",
+		"description": "Pt-ceramic catalyst. Increases ALL processing speed by 25%.",
+		"input": { "Pt": 10, "Si": 50, "AdvCircuit": 5 },
+		"output": { "PtCatalyst": 1 },
+		"duration": 20.0,
+		"level_req": 25,
+		"xp": 300,
+		"research_req": "industrial_catalysis"
+	},
+	"craft_palladium_cell": {
+		"name": "Palladium Fuel Cell",
+		"description": "Pd-H2 fuel cell. High efficiency energy generation.",
+		"input": { "Pd": 5, "H": 20, "Circuit": 3 },
+		"output": { "PdFuelCell": 1 },
+		"duration": 15.0,
+		"level_req": 22,
+		"xp": 200,
+		"research_req": "fuel_cell_tech"
+	},
+	"craft_iridium_plate": {
+		"name": "Iridium Armor Plating",
+		"description": "Nearly indestructible Ir plating. Ultimate defense.",
+		"input": { "Ir": 8, "Ti": 20, "Graphite": 10 },
+		"output": { "IrPlate": 5 },
+		"duration": 25.0,
+		"level_req": 28,
+		"xp": 400,
+		"research_req": "iridium_metallurgy"
+	},
+	"craft_osmium_core": {
+		"name": "Osmium Reactor Core",
+		"description": "Densest material. Extreme HP and mass.",
+		"input": { "Os": 5, "VoidCrystal": 2, "QuantumCore": 1 },
+		"output": { "OsCore": 1 },
+		"duration": 30.0,
+		"level_req": 30,
+		"xp": 800,
+		"research_req": "exotic_metallurgy"
+	},
+	"refine_platinum_ore": {
+		"name": "Platinum Extraction",
+		"description": "Extract pure Pt from asteroid samples.",
+		"input": { "PtOre": 10 },
+		"output": { "Pt": 2 },
+		"output_table": [["Pd", 0.3, 1, 2]],  # 30% chance for Pd byproduct
+		"duration": 8.0,
+		"level_req": 20,
+		"xp": 100,
+		"research_req": "precious_metal_refining"
+	},
+	"craft_iridium_tungsten_alloy": {
+		"name": "Iridium-Tungsten Alloy",
+		"description": "Ir-W armor-piercing penetrator cores.",
+		"input": { "Ir": 3, "W": 5 },
+		"output": { "IrWAlloy": 4 },
+		"duration": 12.0,
+		"level_req": 26,
+		"xp": 250,
+		"research_req": "iridium_metallurgy"
 	}
 }
+
 
 func _init():
 	super._init("Engineering")

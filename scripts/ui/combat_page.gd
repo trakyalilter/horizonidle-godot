@@ -1,7 +1,7 @@
 extends Control
 
 @onready var zone_list = $Dashboard/TopRow/SectorPanel/VBox/ZoneList
-@onready var enemy_container = $Dashboard/TopRow/TargetingPanel/VBox/Scroll/EnemyGrid
+@onready var enemy_container = $Dashboard/TopRow/TargetingPanel/VBox/Scroll/EnemyList
 @onready var log_list = $Dashboard/BottomPanel/VBox/LogList
 
 # Arena Refs
@@ -34,6 +34,22 @@ func _ready():
 	manager = GameState.combat_manager
 	call_deferred("refresh_zones")
 	
+	# Premium Styling
+	UITheme.apply_card_style($Dashboard/TopRow/SectorPanel, "shipyard") # Map is high-tech
+	UITheme.apply_card_style($Dashboard/TopRow/TargetingPanel, "combat")
+	UITheme.apply_card_style($Dashboard/TopRow/LiveFeedPanel, "combat")
+	UITheme.apply_card_style($Dashboard/BottomPanel, "engineering") # System log is tech-heavy
+	
+	UITheme.apply_premium_button_style(btn_retreat, "combat")
+	UITheme.apply_premium_button_style(cons_btn, "engineering")
+	
+	UITheme.apply_progress_bar_style(p_hp_bar, "combat")
+	UITheme.apply_progress_bar_style(p_shield_bar, "engineering")
+	UITheme.apply_progress_bar_style(e_hp_bar, "combat")
+	UITheme.apply_progress_bar_style(e_shield_bar, "engineering")
+	
+	$Dashboard/BottomPanel/VBox/Label.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4)) # Terminal Green
+	
 	cons_opt.clear()
 	cons_opt.add_item("Select Item...", 0)
 	cons_opt.add_item("Nanoweave (Shield)", 1)
@@ -65,6 +81,19 @@ func refresh_enemies(zone_id):
 		enemy_container.add_child(card)
 		var edata = manager.enemy_db[eid]
 		card.setup(eid, edata, self)
+
+func get_enemy_card(enemy_id: String) -> Control:
+	for child in enemy_container.get_children():
+		if child.get("eid") == enemy_id:
+			return child
+	return null
+
+func focus_zone(zone_id: String):
+	for i in range(zone_list.item_count):
+		if zone_list.get_item_metadata(i) == zone_id:
+			zone_list.select(i)
+			_on_zone_list_item_selected(i)
+			return
 
 func start_fight(enemy_id, zone_id):
 	# Zone ID is needed for start_expedition? 

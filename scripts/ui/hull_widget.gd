@@ -17,7 +17,11 @@ func setup(p_hid: String, p_data: Dictionary, p_manager, p_parent):
 	parent_ui = p_parent
 	
 	name_lbl.text = data["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
 	slot_lbl.text = "Slots: %d" % data["slots"].size()
+	
+	UITheme.apply_card_style(self, "shipyard")
+	UITheme.apply_premium_button_style(btn, "shipyard")
 	
 	var cost_str = ""
 	for res in data["cost"]:

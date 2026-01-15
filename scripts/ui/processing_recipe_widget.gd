@@ -11,6 +11,7 @@ var parent_ui: Node
 @onready var out_lbl = $MarginContainer/VBoxContainer/OutputLabel
 @onready var btn = $MarginContainer/VBoxContainer/Button
 @onready var prog_bar = $MarginContainer/VBoxContainer/ProgressBar
+@onready var time_lbl = $MarginContainer/VBoxContainer/TimeLabel
 
 func setup(p_rid: String, p_data: Dictionary, p_manager, p_parent):
 	rid = p_rid
@@ -19,7 +20,12 @@ func setup(p_rid: String, p_data: Dictionary, p_manager, p_parent):
 	parent_ui = p_parent
 	
 	name_lbl.text = recipe["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["engineering"])
 	lvl_lbl.text = "Lvl %d" % recipe.get("level_req", 1)
+	
+	UITheme.apply_card_style(self, "engineering")
+	UITheme.apply_premium_button_style(btn, "engineering")
+	UITheme.apply_progress_bar_style(prog_bar, "engineering")
 	
 	# Input text is handled dynamically in update_state for coloring
 	in_lbl.text = ""
@@ -27,8 +33,8 @@ func setup(p_rid: String, p_data: Dictionary, p_manager, p_parent):
 	var out_str = ""
 	if "output" in recipe:
 		for item in recipe["output"]:
-			out_str += "%d %s\n" % [recipe["output"][item], item]
-	# Ignore output table text for simplicity as per Python UI, or add custom logic
+			var display_name = ElementDB.get_display_name(item)
+			out_str += "%d %s\n" % [recipe["output"][item], display_name]
 	out_lbl.text = out_str.strip_edges()
 
 func _on_button_pressed():
@@ -59,7 +65,7 @@ func update_state():
 		else:
 			missing_any = true
 			
-		in_str += "[color=%s]%d %s[/color]\n" % [color_hex, req_qty, item]
+		in_str += "[color=%s]%d %s[/color]\n" % [color_hex, req_qty, ElementDB.get_display_name(item)]
 	
 	in_str += "[/center]"
 	in_lbl.text = in_str
@@ -84,8 +90,10 @@ func update_state():
 		var effective_duration = recipe["duration"] / speed_mult
 		var prog = (manager.action_progress / effective_duration) * 100.0
 		prog_bar.value = prog
+		time_lbl.text = "%.1fs / %.1fs" % [manager.action_progress, effective_duration]
 	else:
 		prog_bar.value = 0
+		time_lbl.text = "0.0s / %.1fs" % (recipe["duration"] / manager.get_recipe_speed_multiplier(rid))
 		modulate = Color(1, 1, 1)
 		
 		if not has_research:

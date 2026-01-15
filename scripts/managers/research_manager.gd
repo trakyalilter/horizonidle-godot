@@ -7,6 +7,8 @@ var action_progress = 0.0
 
 var unlocked_techs = []
 
+signal tech_unlocked(tech_id)
+
 var tech_tree = {
 	"basic_engineering": {
 		"name": "Basic Engineering",
@@ -17,15 +19,15 @@ var tech_tree = {
 	},
 	"fluid_dynamics": {
 		"name": "Fluid Dynamics",
-		"description": "Unlocks Electrolysis (Water -> Hydrogen/Oxygen).",
-		"cost": 100,
+		"description": "Unlocks Water Collection and Electrolysis.",
+		"cost": 50,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"combustion": {
 		"name": "Organic Combustion",
 		"description": "Unlocks Charcoal Kiln (Wood -> Carbon).",
-		"cost": 150,
+		"cost": 50,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
@@ -306,8 +308,100 @@ var tech_tree = {
 		"cost_items": {"QuantumCore": 1, "VoidArtifact": 5},
 		"type": "construction",
 		"parent": "capital_ship_engineering"
+	},
+	# New Zone Unlocks
+	"deep_space_nav": {
+		"name": "Deep Space Navigation",
+		"description": "Advanced star charts. Unlocks Sector Beta (Mining Colony).",
+		"cost": 12000,
+		"cost_items": {"NavData": 30, "Ti": 150},
+		"type": "discovery",
+		"parent": "warp_drive"
+	},
+	"radiation_shielding": {
+		"name": "Radiation Shielding Theory",
+		"description": "Protect against gamma radiation. Unlocks Sector Gamma.",
+		"cost": 20000,
+		"cost_items": {"Co": 50, "Al": 100, "Circuit": 30},
+		"type": "technology",
+		"parent": "deep_space_nav"
+	},
+	"exotic_matter_analysis": {
+		"name": "Exotic Matter Analysis",
+		"description": "Study crystalline energy signatures. Unlocks Sector Delta.",
+		"cost": 35000,
+		"cost_items": {"Pt": 20, "ExoticMatter": 10, "QuantumCore": 3},
+		"type": "discovery",
+		"parent": "radiation_shielding"
+	},
+	# Mid-Game Technology
+	"metallurgy_advanced": {
+		"name": "Advanced Metallurgy",
+		"description": "Stainless Steel production. Fe-Cr-Ni alloys.",
+		"cost": 5000,
+		"cost_items": {"Cr": 20, "Ni": 20},
+		"type": "technology",
+		"parent": "alloy_synthesis"
+	},
+	"advanced_batteries": {
+		"name": "Advanced Battery Technology",
+		"description": "Cobalt-Lithium and Magnesium-Ion batteries. High capacity.",
+		"cost": 8000,
+		"cost_items": {"Co": 30, "Li": 50, "Circuit": 15},
+		"type": "technology",
+		"parent": "energy_storage"
+	},
+	"superalloy_engineering": {
+		"name": "Superalloy Engineering",
+		"description": "Heat-resistant Co-Ni-Cr superalloys for extreme conditions.",
+		"cost": 15000,
+		"cost_items": {"Co": 100, "Ni": 100, "Cr": 50, "Ti": 100},
+		"type": "technology",
+		"parent": "metallurgy_advanced"
+	},
+	# Late-Game Rare Metal Technologies
+	"precious_metal_refining": {
+		"name": "Precious Metal Refining",
+		"description": "Extract Platinum and Palladium from rare ores.",
+		"cost": 18000,
+		"cost_items": {"Ti": 200, "Circuit": 50},
+		"type": "technology",
+		"parent": "deep_space_nav"
+	},
+	"industrial_catalysis": {
+		"name": "Industrial Catalysis",
+		"description": "Platinum catalyst matrices. +25% all production speed.",
+		"cost": 30000,
+		"cost_items": {"Pt": 50, "Si": 200, "AdvCircuit": 20},
+		"type": "technology",
+		"parent": "precious_metal_refining"
+	},
+	"fuel_cell_tech": {
+		"name": "Fuel Cell Technology",
+		"description": "Palladium-Hydrogen fuel cells. Clean energy generation.",
+		"cost": 22000,
+		"cost_items": {"Pd": 30, "H": 500, "Circuit": 30},
+		"type": "technology",
+		"parent": "precious_metal_refining"
+	},
+	"iridium_metallurgy": {
+		"name": "Iridium Metallurgy",
+		"description": "Process ultra-hard Iridium. Ultimate armor and penetrators.",
+		"cost": 40000,
+		"cost_items": {"Ir": 50, "Ti": 300},
+		"type": "technology",
+		"parent": "superalloy_engineering"
+	},
+	"exotic_metallurgy": {
+		"name": "Exotic Metallurgy",
+		"description": "Osmium cores and void-infused materials. Extreme HP.",
+		"cost": 60000,
+		"cost_items": {"Os": 20, "VoidCrystal": 5, "QuantumCore": 5},
+		"type": "technology",
+		"parent": "iridium_metallurgy"
 	}
 }
+
 
 func _init():
 	super._init("Astrophysics")
@@ -344,6 +438,7 @@ func unlock_tech(tech_id: String) -> bool:
 				GameState.resources.remove_element(item, node["cost_items"][item])
 				
 		unlocked_techs.append(tech_id)
+		tech_unlocked.emit(tech_id)
 		print("Unlocked tech: " + node["name"])
 		return true
 	return false

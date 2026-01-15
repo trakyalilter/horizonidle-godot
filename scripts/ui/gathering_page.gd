@@ -3,7 +3,6 @@ extends Control
 @onready var level_label = $VBoxContainer/Header/LevelLabel
 @onready var xp_label = $VBoxContainer/Header/XPLabel
 @onready var xp_bar = $VBoxContainer/XPBar
-@onready var progress_bar = $VBoxContainer/ProgressBar
 @onready var grid = $VBoxContainer/ScrollContainer/GridContainer
 
 var manager: RefCounted
@@ -19,8 +18,6 @@ func refresh_actions():
 		child.queue_free()
 	widgets.clear()
 	
-	# Sort keys or use sorted array if order matters (it usually does for gameplay)
-	# Dict iteration order is preserved in Godot 4 but sorting by level is better
 	var sorted_keys = manager.actions.keys()
 	sorted_keys.sort_custom(func(a, b): return manager.actions[a]["level_req"] < manager.actions[b]["level_req"])
 	
@@ -30,6 +27,12 @@ func refresh_actions():
 		grid.add_child(w)
 		w.setup(aid, data, manager, self)
 		widgets.append(w)
+
+func get_widget_by_aid(target_aid: String) -> Control:
+	for w in widgets:
+		if w.aid == target_aid:
+			return w
+	return null
 
 func _process(delta):
 	update_ui()
@@ -45,15 +48,6 @@ func update_ui():
 	
 	xp_bar.value = manager.get_progress_to_next_level()
 	
-	if manager.is_active:
-		var speed_mult = manager.get_action_speed_multiplier(manager.current_action_id)
-		var effective_duration = manager.action_duration / speed_mult
-		var prog = (manager.action_progress / effective_duration) * 100.0
-		progress_bar.value = prog
-		progress_bar.visible = true
-	else:
-		progress_bar.visible = false
-
 	for w in widgets:
 		w.update_state()
 		
@@ -89,8 +83,5 @@ func spawn_floating_text(text, color, target_widget):
 	
 	# Random offset
 	local_pos += Vector2(randf_range(-20, 20), randf_range(-20, 20))
-	
-	# If target is not visible (scrolled out), maybe dont spawn? 
-	# Or spawn and let it float. For simplicity, just spawn.
 	
 	ft.setup(text, color, local_pos)

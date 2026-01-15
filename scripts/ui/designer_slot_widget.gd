@@ -17,7 +17,11 @@ func setup(idx: int, s_type: String, p_ui, p_manager):
 	manager = p_manager
 	
 	type_lbl.text = "SLOT %d: %s" % [idx + 1, slot_type.to_upper()]
+	type_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	UITheme.apply_card_style(self, "shipyard")
 	refresh_state()
+	# We'll hide the option button in setup to favor Drag & Drop
+	option_btn.visible = false 
 
 func refresh_state():
 	option_btn.clear()
@@ -61,6 +65,16 @@ func refresh_state():
 				option_btn.set_item_metadata(option_btn.item_count - 1, mid)
 				idx_counter += 1
 
+func _can_drop_data(at_position, data):
+	if typeof(data) == TYPE_DICTIONARY and data.get("type") == "module":
+		return data.get("slot_type") == slot_type
+	return false
+
+func _drop_data(at_position, data):
+	var mid = data.get("mid")
+	if manager.equip_module(slot_idx, mid):
+		parent_ui.trigger_refresh()
+
 func _on_option_button_item_selected(index):
 	var data = option_btn.get_item_metadata(index)
 	
@@ -71,5 +85,11 @@ func _on_option_button_item_selected(index):
 		if manager.equip_module(slot_idx, data):
 			parent_ui.trigger_refresh()
 	
-	# Reset dropdown to "Change..."
 	option_btn.select(0)
+
+# Optional: Handing unequip via right click
+func _gui_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			manager.unequip_slot(slot_idx)
+			parent_ui.trigger_refresh()

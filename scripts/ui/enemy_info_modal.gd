@@ -12,6 +12,8 @@ var enemy_data = {}
 func _ready():
 	visible = false
 	btn_close.pressed.connect(close)
+	UITheme.apply_modal_style(panel)
+	UITheme.apply_premium_button_style(btn_close, "combat")
 
 func setup(data):
 	enemy_data = data

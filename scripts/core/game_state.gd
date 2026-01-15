@@ -3,6 +3,8 @@ extends Node
 # Core Systems
 var resources : Node
 
+signal game_resetted
+
 # Managers
 var gathering_manager : RefCounted
 var processing_manager : RefCounted
@@ -18,6 +20,7 @@ var mission_manager : RefCounted
 # var shipyard_manager
 
 var active_manager : RefCounted = null
+var was_resetted: bool = false
 
 var offline_report: String = ""
 var elements_db: Array = []
@@ -164,6 +167,9 @@ func hard_reset():
 	combat_manager.reset()
 	mission_manager.reset()
 	# ... others
+	
+	was_resetted = true
+	game_resetted.emit()
 	
 	if FileAccess.file_exists("user://savegame.json"):
 		DirAccess.remove_absolute("user://savegame.json")

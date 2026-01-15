@@ -8,10 +8,13 @@ var widgets = []
 
 func _ready():
 	manager = GameState.mission_manager
-	# We rely on GameState to have initialized it.
+	if manager:
+		manager.mission_updated.connect(refresh_list)
 	call_deferred("refresh_list")
 
 func refresh_list():
+	if not manager: return
+	manager.sync_progress()
 	if not grid: return
 	for child in grid.get_children():
 		child.queue_free()

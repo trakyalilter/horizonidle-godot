@@ -29,70 +29,166 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Ship Designer"
 
-[node name="InfoPanel" type="PanelContainer" parent="VBoxContainer"]
+[node name="MainLayout" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/InfoPanel"]
+[node name="LeftPanel" type="VBoxContainer" parent="VBoxContainer/MainLayout"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Control" type="Control" parent="VBoxContainer/InfoPanel/HBoxContainer"]
-custom_minimum_size = Vector2(10, 0)
+[node name="InfoPanel" type="PanelContainer" parent="VBoxContainer/MainLayout/LeftPanel"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/InfoPanel/HBoxContainer"]
+[node name="Margin" type="MarginContainer" parent="VBoxContainer/MainLayout/LeftPanel/InfoPanel"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="ShipNameLabel" type="Label" parent="VBoxContainer/InfoPanel/HBoxContainer/VBoxContainer"]
+[node name="VBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin"]
+layout_mode = 2
+
+[node name="ShipNameLabel" type="Label" parent="VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.737255, 0.831373, 1)
 theme_override_font_sizes/font_size = 18
-text = "Active Class: Corvette"
+text = "Active Class"
 
-[node name="StatsLabel" type="Label" parent="VBoxContainer/InfoPanel/HBoxContainer/VBoxContainer"]
+[node name="StatsLabel" type="Label" parent="VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
-text = "HP: 100 | ATK: 10 | DEF: 0"
+theme_override_font_sizes/font_size = 12
+text = "Stats..."
+autowrap_mode = 2
 
-[node name="Control2" type="Control" parent="VBoxContainer/InfoPanel/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 5)
+[node name="CenterPanel" type="VBoxContainer" parent="VBoxContainer/MainLayout"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/MainLayout/CenterPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
+text = "HULL SLOTS & CONFIGURATION"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="GridContainer" type="GridContainer" parent="VBoxContainer/ScrollContainer"]
+[node name="SlotTabs" type="TabContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer"]
 layout_mode = 2
-theme_override_constants/h_separation = 20
-theme_override_constants/v_separation = 20
-columns = 4
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="AmmoPanel" type="PanelContainer" parent="VBoxContainer"]
+[node name="Weapons" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
 layout_mode = 2
+horizontal_scroll_mode = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/AmmoPanel"]
+[node name="WeaponBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Weapons"]
 layout_mode = 2
-theme_override_constants/separation = 20
-alignment = 0
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="VBoxContainer/AmmoPanel/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+[node name="Shields" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0.737255, 0.831373, 1)
-theme_override_font_sizes/font_size = 14
-text = "  AMMO BAY (Auto-Load):"
-vertical_alignment = 1
+horizontal_scroll_mode = 0
 
-[node name="AmmoOption" type="OptionButton" parent="VBoxContainer/AmmoPanel/HBoxContainer"]
-custom_minimum_size = Vector2(250, 0)
+[node name="ShieldBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Shields"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer/AmmoPanel/HBoxContainer"]
+[node name="Engines" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.533333, 0.533333, 0.533333, 1)
-text = "Ready"
+horizontal_scroll_mode = 0
 
-[connection signal="item_selected" from="VBoxContainer/AmmoPanel/HBoxContainer/AmmoOption" to="." method="_on_ammo_option_item_selected"]
+[node name="EngineBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Engines"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Ammunition" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="AmmoSlotBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Ammunition"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Systems" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="SystemBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Systems"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="RightPanel" type="VBoxContainer" parent="VBoxContainer/MainLayout"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="VBoxContainer/MainLayout/RightPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+text = "STORAGE (DRAG MODULES)"
+horizontal_alignment = 1
+
+[node name="ModuleTabs" type="TabContainer" parent="VBoxContainer/MainLayout/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Weapons" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="WeaponGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Weapons"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Shields" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="ShieldGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Shields"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Engines" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="EngineGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Engines"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Ammunition" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="AmmoGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Ammunition"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Batteries" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="BatteryGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Batteries"]
+layout_mode = 2
+size_flags_horizontal = 3

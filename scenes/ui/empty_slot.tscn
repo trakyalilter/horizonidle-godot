@@ -15,7 +15,7 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
 [node name="EmptySlot" type="PanelContainer"]
-custom_minimum_size = Vector2(100, 120)
+custom_minimum_size = Vector2(100, 100)
 offset_right = 100.0
 offset_bottom = 120.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_empty")

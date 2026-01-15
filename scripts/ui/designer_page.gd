@@ -1,33 +1,39 @@
 extends Control
 
-@onready var ship_name_lbl = $VBoxContainer/InfoPanel/HBoxContainer/VBoxContainer/ShipNameLabel
-@onready var stats_lbl = $VBoxContainer/InfoPanel/HBoxContainer/VBoxContainer/StatsLabel
-@onready var grid_container = $VBoxContainer/ScrollContainer/GridContainer
-@onready var ammo_opt = $VBoxContainer/AmmoPanel/HBoxContainer/AmmoOption
-@onready var ammo_status_lbl = $VBoxContainer/AmmoPanel/HBoxContainer/StatusLabel
+@onready var ship_name_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/ShipNameLabel
+@onready var stats_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/StatsLabel
+@onready var w_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Weapons/WeaponBox
+@onready var s_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Shields/ShieldBox
+@onready var e_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Engines/EngineBox
+@onready var b_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Batteries/BatteryGrid # Reused battery grid for systems/batteries
+@onready var ammo_slot_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Ammunition/AmmoSlotBox
+
+# Storage Grids
+@onready var weapon_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Weapons/WeaponGrid
+@onready var shield_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Shields/ShieldGrid
+@onready var engine_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Engines/EngineGrid
+@onready var battery_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Batteries/BatteryGrid
+@onready var ammo_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Ammunition/AmmoGrid
 
 var manager: RefCounted
 var slot_widget_scene = preload("res://scenes/ui/designer_slot_widget.tscn")
-var current_hull_id = ""
+var ammo_slot_scene = preload("res://scenes/ui/designer_ammo_slot_widget.tscn")
+var draggable_icon_scene = preload("res://scenes/ui/module_card.tscn") 
 
 func _ready():
 	manager = GameState.shipyard_manager
-	
-	# Init Ammo
-	ammo_opt.clear()
-	ammo_opt.add_item("No Ammo (Weapons Offline)", 0)
-	ammo_opt.set_item_metadata(0, "")
-	ammo_opt.add_item("Ferrite Rounds (Kinetic)", 1)
-	ammo_opt.set_item_metadata(1, "SlugT1")
-	ammo_opt.add_item("Tungsten Sabot (Kinetic+)", 2)
-	ammo_opt.set_item_metadata(2, "SlugT2")
-	ammo_opt.add_item("Focus Crystal (Energy)", 3)
-	ammo_opt.set_item_metadata(3, "CellT1")
-	ammo_opt.add_item("Plasma Cell (Energy+)", 4)
-	ammo_opt.set_item_metadata(4, "CellT2")
-	
 	visibility_changed.connect(_on_visibility_changed)
-	call_deferred("trigger_refresh")
+	
+	# Premium Styling
+	UITheme.apply_card_style($VBoxContainer/MainLayout/LeftPanel/InfoPanel, "shipyard")
+	UITheme.apply_card_style($VBoxContainer/MainLayout/RightPanel/ModuleTabs, "shipyard")
+	UITheme.apply_tab_style($VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs, "shipyard")
+	UITheme.apply_tab_style($VBoxContainer/MainLayout/RightPanel/ModuleTabs, "shipyard")
+	
+	$VBoxContainer/Label.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	$VBoxContainer/MainLayout/CenterPanel/Label.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
+	
+	trigger_refresh()
 
 func _on_visibility_changed():
 	if visible:
@@ -36,65 +42,91 @@ func _on_visibility_changed():
 func trigger_refresh():
 	update_header()
 	rebuild_slots()
-	update_ammo_ui()
+	rebuild_ammo_slots()
+	rebuild_storage()
+	rebuild_ammo_storage()
 
 func update_header():
 	if manager.active_hull and manager.active_hull in manager.hulls:
 		var h = manager.hulls[manager.active_hull]
-		ship_name_lbl.text = "Active Class: " + h["name"]
+		ship_name_lbl.text = h["name"]
 		var e_max = GameState.resources.max_energy
 		var e_used = manager.energy_used
-		stats_lbl.text = "HP: %d | SHIELD: %d | ENG: %d/%d | ATK: %d | DEF: %d" % [manager.max_hp, manager.max_shield, e_used, e_max, manager.attack, manager.defense]
-		
-		if e_used > e_max:
-			stats_lbl.modulate = Color(1, 0.3, 0.3) # Red Warning
-		else:
-			stats_lbl.modulate = Color(1, 1, 1)
+		stats_lbl.text = "HP: %d | SHIELD: %d\nENERGY: %d/%d\nATK: %d | DEF: %d" % [manager.max_hp, manager.max_shield, e_used, e_max, manager.attack, manager.defense]
+		stats_lbl.modulate = Color(1, 0.3, 0.3) if e_used > e_max else Color(0.8, 0.8, 0.8)
 	else:
-		ship_name_lbl.text = "Structure: None (Escape Pod Mode)"
-		stats_lbl.text = "HP: 10 | ATK: 0 | DEF: 0"
+		ship_name_lbl.text = "No Structure"
+		stats_lbl.text = "Escape Pod Active"
 
 func rebuild_slots():
-	# Clear existing
-	if not grid_container: return
-	for child in grid_container.get_children():
-		child.queue_free()
-		
+	for box in [w_box, s_box, e_box, b_box]:
+		if box:
+			for child in box.get_children(): child.queue_free()
+			
 	if not manager.active_hull in manager.hulls: return
 	
 	var h_data = manager.hulls[manager.active_hull]
 	var slots = h_data["slots"]
-	
 	for i in range(slots.size()):
 		var s_type = slots[i]
 		var w = slot_widget_scene.instantiate()
-		grid_container.add_child(w)
-		w.setup(i, s_type, self, manager)
+		var target = w_box
+		match s_type:
+			"weapon": target = w_box
+			"shield": target = s_box
+			"engine": target = e_box
+			"battery": target = b_box
+		
+		if target:
+			target.add_child(w)
+			w.setup(i, s_type, self, manager)
 
-func _process(delta):
-	update_ammo_ui()
+func rebuild_ammo_slots():
+	for child in ammo_slot_box.get_children(): child.queue_free()
+	var slot = ammo_slot_scene.instantiate()
+	ammo_slot_box.add_child(slot)
+	slot.setup(self, manager)
 
-func update_ammo_ui():
-	# Update Selected
-	var current_ammo = manager.active_ammo
-	for i in range(ammo_opt.item_count):
-		if ammo_opt.get_item_metadata(i) == current_ammo:
-			ammo_opt.selected = i
-			break
+func rebuild_storage():
+	for grid in [weapon_grid, shield_grid, engine_grid, battery_grid]:
+		for child in grid.get_children(): child.queue_free()
+	
+	var inv = manager.module_inventory
+	for mid in inv:
+		var count = inv[mid]
+		if count > 0 and mid in manager.modules:
+			var data = manager.modules[mid]
+			var type = data.get("slot_type", "weapon")
+			var target = weapon_grid
+			match type:
+				"weapon": target = weapon_grid
+				"shield": target = shield_grid
+				"engine": target = engine_grid
+				"battery": target = battery_grid
 			
-	# Update Status
-	if current_ammo:
-		var qty = GameState.resources.get_element_amount(current_ammo)
-		ammo_status_lbl.text = "Available: %d" % qty
-		if qty <= 0:
-			ammo_status_lbl.modulate = Color.RED
-		else:
-			ammo_status_lbl.modulate = Color.CYAN
-	else:
-		ammo_status_lbl.text = "No Ammo Selected"
-		ammo_status_lbl.modulate = Color.GRAY
+			if target:
+				var item = draggable_icon_scene.instantiate()
+				target.add_child(item)
+				item.setup(mid, data, count)
 
-func _on_ammo_option_item_selected(index):
-	var ammo_id = ammo_opt.get_item_metadata(index)
-	manager.active_ammo = ammo_id
-	update_ammo_ui()
+func rebuild_ammo_storage():
+	for child in ammo_grid.get_children(): child.queue_free()
+	
+	var ammo_list = [
+		{"name": "Ferrite Rounds", "id": "SlugT1"},
+		{"name": "Tungsten Sabot", "id": "SlugT2"},
+		{"name": "Focus Crystal", "id": "CellT1"},
+		{"name": "Plasma Cell", "id": "CellT2"}
+	]
+	
+	for ammo in ammo_list:
+		var qty = GameState.resources.get_element_amount(ammo["id"])
+		if qty > 0:
+			var card = draggable_icon_scene.instantiate()
+			ammo_grid.add_child(card)
+			var fake_data = {
+				"name": ammo["name"],
+				"slot_type": "ammo",
+				"stats": {}
+			}
+			card.setup(ammo["id"], fake_data, qty)

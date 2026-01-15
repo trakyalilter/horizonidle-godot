@@ -19,7 +19,11 @@ func setup(p_bid: String, p_data: Dictionary, p_manager, p_parent):
 	parent_ui = p_parent
 	
 	name_lbl.text = data["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["infrastructure"])
 	desc_lbl.text = data["description"]
+	
+	UITheme.apply_card_style(self, "infrastructure")
+	UITheme.apply_premium_button_style(buy_btn, "infrastructure")
 	
 	var gen = data.get("energy_gen", 0.0)
 	var cons = data.get("energy_cons", 0.0)
@@ -34,7 +38,8 @@ func setup(p_bid: String, p_data: Dictionary, p_manager, p_parent):
 	
 	var cost_str = ""
 	for res in data["cost"]:
-		cost_str += "%d %s\n" % [data["cost"][res], res.capitalize()]
+		var display_name = ElementDB.get_display_name(res)
+		cost_str += "%d %s\n" % [data["cost"][res], display_name]
 	cost_lbl.text = cost_str.strip_edges()
 
 func _process(delta):

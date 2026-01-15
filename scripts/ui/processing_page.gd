@@ -12,6 +12,12 @@ var widgets = []
 
 func _ready():
 	manager = GameState.processing_manager
+	
+	# Premium Styling
+	UITheme.apply_tab_style($VBoxContainer/TabContainer, "engineering")
+	UITheme.apply_card_style($VBoxContainer/TabContainer, "engineering")
+	UITheme.apply_progress_bar_style(xp_bar, "engineering")
+	
 	call_deferred("refresh_recipes")
 
 func refresh_recipes():
@@ -42,6 +48,18 @@ func refresh_recipes():
 		target_grid.add_child(w)
 		w.setup(rid, data, manager, self)
 		widgets.append(w)
+
+func get_widget_by_aid(rid_in: String) -> Control:
+	for w in widgets:
+		if w.get("rid") == rid_in:
+			return w
+	return null
+
+func focus_tab(rid_in: String):
+	if "slug" in rid_in or "cell" in rid_in or "rounds" in rid_in or "ammo" in rid_in:
+		$VBoxContainer/TabContainer.current_tab = 1 # Munitions
+	else:
+		$VBoxContainer/TabContainer.current_tab = 0 # Refining
 
 func _process(delta):
 	update_ui()

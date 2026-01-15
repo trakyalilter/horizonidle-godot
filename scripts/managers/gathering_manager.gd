@@ -8,7 +8,7 @@ var is_active: bool = false
 var current_action: Dictionary = {}
 var current_action_id: String = ""
 var action_progress: float = 0.0
-var action_duration: float = 10.0
+var action_duration: float = 4.0
 
 var events: Array = [] # Buffer for UI
 
@@ -58,6 +58,45 @@ var actions: Dictionary = {
 		"xp": 30,
 		"level_req": 5,
 		"research_req": "basic_engineering"
+	},
+	"mine_bauxite": {
+		"name": "Strip Mine Bauxite",
+		"loot_table": [
+			["Bauxite", 1.0, 2, 4],
+			["Fe", 0.3, 1, 2]  # Iron as byproduct
+		],
+		"xp": 25,
+		"level_req": 4,
+		"research_req": null
+	},
+	"mine_dolomite": {
+		"name": "Quarry Dolomite",
+		"loot_table": [
+			["Dolomite", 1.0, 1, 3],
+			["Dirt", 0.5, 1, 2]
+		],
+		"xp": 22,
+		"level_req": 4,
+		"research_req": null
+	},
+	"mine_cassiterite": {
+		"name": "Mine Cassiterite (Tin Ore)",
+		"loot_table": [
+			["Cassiterite", 1.0, 1, 2]
+		],
+		"xp": 18,
+		"level_req": 3,
+		"research_req": null
+	},
+	"mine_zinc_ore": {
+		"name": "Extract Zinc Ore",
+		"loot_table": [
+			["ZincOre", 1.0, 1, 3],
+			["Si", 0.4, 1, 1]
+		],
+		"xp": 20,
+		"level_req": 4,
+		"research_req": null
 	}
 }
 

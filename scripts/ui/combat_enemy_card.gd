@@ -14,7 +14,12 @@ func setup(p_eid, p_data, p_parent):
 	parent_ui = p_parent
 	
 	name_lbl.text = data["name"]
+	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["combat"])
 	stats_lbl.text = "HP: %d | ATK: %d | DEF: %d" % [data["stats"]["hp"], data["stats"]["atk"], data["stats"]["def"]]
+	
+	UITheme.apply_card_style(self, "combat")
+	if has_node("MarginContainer/VBoxContainer/FightBtn"):
+		UITheme.apply_premium_button_style($MarginContainer/VBoxContainer/FightBtn, "combat")
 	
 	var loot_txt = "Drops: "
 	for entry in data["loot"]:

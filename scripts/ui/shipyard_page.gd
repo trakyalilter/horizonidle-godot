@@ -4,7 +4,10 @@ extends Control
 @onready var atk_lbl = $VBoxContainer/StatsPanel/HBoxContainer/AtkLabel
 @onready var def_lbl = $VBoxContainer/StatsPanel/HBoxContainer/DefLabel
 @onready var hull_grid = $VBoxContainer/TabContainer/Hulls/HullGrid
-@onready var module_grid = $VBoxContainer/TabContainer/Modules/ModuleGrid
+@onready var weapon_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponGrid
+@onready var shield_grid = $VBoxContainer/TabContainer/Modules/Shields/ShieldGrid
+@onready var engine_grid = $VBoxContainer/TabContainer/Modules/Engines/EngineGrid
+@onready var battery_grid = $VBoxContainer/TabContainer/Modules/Batteries/BatteryGrid
 
 var manager: RefCounted
 var hull_widget_scene = preload("res://scenes/ui/hull_widget.tscn")
@@ -13,13 +16,19 @@ var widgets = []
 
 func _ready():
 	manager = GameState.shipyard_manager
+	
+	# Premium Styling
+	UITheme.apply_tab_style($VBoxContainer/TabContainer, "shipyard")
+	UITheme.apply_card_style($VBoxContainer/TabContainer, "shipyard")
+	
 	call_deferred("refresh_list")
 
 func refresh_list():
-	for child in hull_grid.get_children():
-		child.queue_free()
-	for child in module_grid.get_children():
-		child.queue_free()
+	for child in hull_grid.get_children(): child.queue_free()
+	for child in weapon_grid.get_children(): child.queue_free()
+	for child in shield_grid.get_children(): child.queue_free()
+	for child in engine_grid.get_children(): child.queue_free()
+	for child in battery_grid.get_children(): child.queue_free()
 	widgets.clear()
 	
 	# Hulls
@@ -32,15 +41,48 @@ func refresh_list():
 		w.setup(hid, manager.hulls[hid], manager, self)
 		widgets.append(w)
 		
-	# Modules
+	# Modules Categorization
 	var sorted_mods = manager.modules.keys()
 	sorted_mods.sort()
 	
 	for mid in sorted_mods:
+		var data = manager.modules[mid]
+		var type = data.get("slot_type", "weapon")
+		var target_grid = weapon_grid
+		
+		match type:
+			"weapon": target_grid = weapon_grid
+			"shield": target_grid = shield_grid
+			"engine": target_grid = engine_grid
+			"battery": target_grid = battery_grid
+			_: target_grid = weapon_grid
+		
 		var w = module_widget_scene.instantiate()
-		module_grid.add_child(w)
-		w.setup(mid, manager.modules[mid], manager, self)
+		target_grid.add_child(w)
+		w.setup(mid, data, manager, self)
 		widgets.append(w)
+
+func get_module_widget(module_id: String) -> Control:
+	for w in widgets:
+		if w.get("mid") == module_id:
+			return w
+	return null
+
+func focus_module_tab(module_id: String):
+	if not module_id in manager.modules: return
+	var data = manager.modules[module_id]
+	var type = data.get("slot_type", "weapon")
+	
+	# Main Tab to Modules
+	$VBoxContainer/TabContainer.current_tab = 1
+	
+	# Sub Tab
+	var sub_tabs = $VBoxContainer/TabContainer/Modules
+	match type:
+		"weapon": sub_tabs.current_tab = 0
+		"shield": sub_tabs.current_tab = 1
+		"engine": sub_tabs.current_tab = 2
+		"battery": sub_tabs.current_tab = 3
 
 func _process(delta):
 	update_ui()
