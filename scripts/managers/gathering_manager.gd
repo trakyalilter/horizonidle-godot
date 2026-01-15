@@ -8,7 +8,7 @@ var is_active: bool = false
 var current_action: Dictionary = {}
 var current_action_id: String = ""
 var action_progress: float = 0.0
-var action_duration: float = 3.0
+var action_duration: float = 10.0
 
 var events: Array = [] # Buffer for UI
 
@@ -34,8 +34,7 @@ var actions: Dictionary = {
 	"gather_wood": {
 		"name": "Deforest Zone",
 		"loot_table": [
-			["Wood", 0.8, 1, 2],
-			["C", 0.1, 1, 1]
+			["Wood", 1.0, 1, 2]
 		],
 		"xp": 20,
 		"level_req": 3,
@@ -52,9 +51,9 @@ var actions: Dictionary = {
 		"research_req": null
 	},
 	"extract_salts": {
-		"name": "Extract Planetary Salts",
+		"name": "Extract Lithium Salt",
 		"loot_table": [
-			["LithiumSalt", 1.0, 1, 3]
+			["Spodumene", 1.0, 1, 3]
 		],
 		"xp": 30,
 		"level_req": 5,
@@ -68,19 +67,32 @@ func _init():
 func get_action_speed_multiplier(action_id: String) -> float:
 	var multiplier = 1.0
 	
-	var upgrades = {
-		"gather_dirt": "diamond_drills",
-		"collect_water": "high_flow_pumps",
-		"gather_wood": "laser_cutters",
-		"harvest_nebula": "magnetic_funnels"
+	# Structure: action_id: [{tech_id: "xxx", bonus: 0.25}, ...]
+	var upgrades_db = {
+		"gather_dirt": [
+			{"id": "diamond_drills", "bonus": 0.25},
+			{"id": "ultrasonic_drills", "bonus": 0.50},
+			{"id": "plasma_bore", "bonus": 0.75}
+		],
+		"collect_water": [
+			{"id": "high_flow_pumps", "bonus": 0.25},
+			{"id": "superfluid_intake", "bonus": 0.50},
+			{"id": "hydro_vortex", "bonus": 0.75}
+		],
+		"gather_wood": [
+			{"id": "laser_cutters", "bonus": 0.25},
+			{"id": "mono_filament", "bonus": 0.50},
+			{"id": "molecular_disassembler", "bonus": 0.75}
+		],
+		"harvest_nebula": [
+			{"id": "magnetic_funnels", "bonus": 0.25}
+		]
 	}
 	
-	if action_id in upgrades:
-		var tech_id = upgrades[action_id]
-		# Access global GameState
-		# if GameState.research_manager and GameState.research_manager.is_tech_unlocked(tech_id):
-		#      multiplier = 1.25
-		pass # TODO: Implement ResearchManager check
+	if action_id in upgrades_db:
+		for upgrade in upgrades_db[action_id]:
+			if GameState.research_manager and GameState.research_manager.is_tech_unlocked(upgrade["id"]):
+				multiplier += upgrade["bonus"]
 	
 	return multiplier
 
@@ -95,7 +107,11 @@ func start_action(action_id: String):
 			print("Level too low.")
 			return
 		
-		# TODO: Check Research
+		# Research
+		var res_req = action.get("research_req")
+		if res_req and not GameState.research_manager.is_tech_unlocked(res_req):
+			print("Research required: ", res_req)
+			return
 		
 		current_action = action
 		current_action_id = action_id

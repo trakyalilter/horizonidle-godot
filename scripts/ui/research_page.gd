@@ -12,51 +12,73 @@ var node_scene = preload("res://scenes/ui/research_node_widget.tscn")
 var graphs = {
 	"Operations": {
 		"nodes": [
-			"fluid_dynamics", "combustion", "energy_shields",
-			"diamond_drills", "high_flow_pumps", "laser_cutters", "magnetic_funnels"
+			"energy_shields",
+			"diamond_drills", "ultrasonic_drills", "plasma_bore",
+			"high_flow_pumps", "superfluid_intake", "hydro_vortex",
+			"laser_cutters", "mono_filament", "molecular_disassembler",
+			"magnetic_funnels"
 		],
 		"pos": {
-			"fluid_dynamics": Vector2(40, 40),
-			"combustion": Vector2(40, 150),
-			"energy_shields": Vector2(40, 260),
-			"diamond_drills": Vector2(40, 370),
+			"high_flow_pumps": Vector2(40, 40),
+			"superfluid_intake": Vector2(240, 40),
+			"hydro_vortex": Vector2(440, 40),
 			
-			"high_flow_pumps": Vector2(240, 40),
-			"laser_cutters": Vector2(240, 150),
-			"magnetic_funnels": Vector2(240, 260)
+			"laser_cutters": Vector2(40, 150),
+			"mono_filament": Vector2(240, 150),
+			"molecular_disassembler": Vector2(440, 150),
+			
+			"energy_shields": Vector2(40, 260),
+			"magnetic_funnels": Vector2(240, 260),
+			
+			"diamond_drills": Vector2(40, 370),
+			"ultrasonic_drills": Vector2(240, 370),
+			"plasma_bore": Vector2(440, 370)
 		},
 		"container": null # Assigned in _ready
 	},
 	"Engineering": {
 		"nodes": [
 			"basic_engineering", "fluid_dynamics", "combustion", "alloy_synthesis", "adv_materials",
-			"fast_centrifuges", "catalytic_electrodes", "pyrolysis_control", "blast_furnace", "hydraulic_press",
+			"fast_centrifuges", "maglev_bearings", "quantum_separators",
+			"catalytic_electrodes", "ion_exchange", "resonance_splitters",
+			"pyrolysis_control", "blast_furnace", "hydraulic_press",
 			"automated_logistics", "ballistics_optimization", "energy_metrics",
 			"automated_smelting", "industrial_electrolysis", "molecular_compression", "mass_production_tactics"
 		],
 		"pos": {
-			"basic_engineering": Vector2(40, 280),
+			"basic_engineering": Vector2(40, 350),
 			
-			"fluid_dynamics": Vector2(240, 120),
+			# Upper Branch: Fluid Dynamics
+			"fluid_dynamics": Vector2(240, 100),
 			"catalytic_electrodes": Vector2(440, 40),
-			"energy_metrics": Vector2(440, 160),
-			"industrial_electrolysis": Vector2(640, 40),
+			"ion_exchange": Vector2(640, 40),
+			"resonance_splitters": Vector2(840, 40),
+			"energy_metrics": Vector2(440, 140),
+			"industrial_electrolysis": Vector2(640, 140),
 			
-			"combustion": Vector2(240, 280),
-			"pyrolysis_control": Vector2(440, 320),
+			# Mid-Upper: Combustion
+			"combustion": Vector2(240, 250),
+			"pyrolysis_control": Vector2(440, 250),
 			
-			"fast_centrifuges": Vector2(240, 440),
-			"automated_logistics": Vector2(240, 550),
-			"mass_production_tactics": Vector2(440, 550),
+			# Mid: Alloy Synthesis (Major Hub)
+			"alloy_synthesis": Vector2(440, 350),
+			"blast_furnace": Vector2(640, 350),
+			"automated_smelting": Vector2(840, 350),
+			"ballistics_optimization": Vector2(640, 430),
 			
-			"alloy_synthesis": Vector2(440, 440),
-			"blast_furnace": Vector2(640, 440),
-			"automated_smelting": Vector2(840, 440),
-			"ballistics_optimization": Vector2(640, 330),
+			# Mid-Lower: Advanced Materials (Child of Alloy)
+			"adv_materials": Vector2(640, 520),
+			"hydraulic_press": Vector2(840, 520),
+			"molecular_compression": Vector2(1040, 520),
 			
-			"adv_materials": Vector2(640, 550),
-			"hydraulic_press": Vector2(840, 550),
-			"molecular_compression": Vector2(1040, 550)
+			# Lower: Centrifuges
+			"fast_centrifuges": Vector2(240, 620), # Moved down significantly
+			"maglev_bearings": Vector2(440, 620), 
+			"quantum_separators": Vector2(640, 620),
+			
+			# Bottom: Logistics
+			"automated_logistics": Vector2(240, 720),
+			"mass_production_tactics": Vector2(440, 720)
 		},
 		"container": null
 	},
@@ -95,9 +117,15 @@ func build_graphs():
 		var g_data = graphs[tab_name]
 		var container = g_data["container"]
 		
-		# Clear existing (if any)
+		# Clear existing
 		for child in container.get_children():
 			child.queue_free()
+			
+		# Dynamic Layout Calculation
+		var layout_pos = calculate_layout(g_data["nodes"])
+		
+		# Track content size
+		var max_pos = Vector2.ZERO
 		
 		# Add Nodes
 		for nid in g_data["nodes"]:
@@ -107,21 +135,94 @@ func build_graphs():
 			var node_widget = node_scene.instantiate()
 			container.add_child(node_widget)
 			
-			var pos = g_data["pos"].get(nid, Vector2(0,0))
+			var pos = layout_pos.get(nid, Vector2(0,0))
 			node_widget.position = pos
+			node_widget.scale = Vector2(0.75, 0.75)
 			node_widget.setup(nid, data, manager, self)
 			
-		# Connect draw for lines
-		# We attach a script to the 'GraphArea' dynamically or just use a helper
-		# Simplest is to queue_redraw on the container
-		if not container.is_connected("draw", _on_graph_draw.bind(container, tab_name)):
-			container.draw.connect(_on_graph_draw.bind(container, tab_name))
+			# Approx size of scaled node (w=180, h=80 roughly)
+			max_pos.x = max(max_pos.x, pos.x + 200.0)
+			max_pos.y = max(max_pos.y, pos.y + 100.0)
+			
+		# Update container size for scrolling
+		container.custom_minimum_size = max_pos + Vector2(50, 50) # Padding
+			
+		if not container.is_connected("draw", _on_graph_draw.bind(container, tab_name, layout_pos)):
+			container.draw.connect(_on_graph_draw.bind(container, tab_name, layout_pos))
 			
 		container.queue_redraw()
 
-func _on_graph_draw(container, tab_name):
+# --- Dynamic Tree Layout Algorithm ---
+func calculate_layout(nodes_list: Array) -> Dictionary:
+	var final_pos = {}
+	var local_tree = {} # { parent_id: [child_id, ...] }
+	var roots = []
+	
+	# 1. Build Local Tree
+	var nodes_set = {}
+	for n in nodes_list: nodes_set[n] = true
+	
+	for nid in nodes_list:
+		if nid not in manager.tech_tree: continue
+		var p_id = manager.tech_tree[nid].get("parent")
+		
+		# If parent not in this tab, treat as root for this view
+		if not p_id or p_id not in nodes_set:
+			roots.append(nid)
+		else:
+			if not p_id in local_tree: local_tree[p_id] = []
+			local_tree[p_id].append(nid)
+			
+	# 2. Layout Recursively
+	var current_y = 40.0
+	var level_x = 200.0 # Increased X spacing
+	var node_height = 100.0 # Increased slot size for safety
+	
+	# Helper to calculate subtree sizes and assign Y
+	var _layout_recursive = func(f_self, node_id: String, depth: int, start_y: float) -> float:
+		var children = local_tree.get(node_id, [])
+		
+		# Base case: Leaf
+		if children.is_empty():
+			final_pos[node_id] = Vector2(40 + depth * level_x, start_y)
+			return node_height
+		
+		# Recursive Layout Children
+		var children_total_h = 0.0
+		var c_y = start_y
+		
+		for i in range(children.size()):
+			var child = children[i]
+			var h = f_self.call(f_self, child, depth + 1, c_y)
+			children_total_h += h
+			c_y += h
+			
+			# Add gap between siblings
+			if i < children.size() - 1:
+				var gap = 20.0
+				children_total_h += gap
+				c_y += gap
+			
+		# Center parent relative to children span
+		# Span center = start_y + (children_total_h / 2.0)
+		# Node center should align with Span center
+		# Node top (pos.y) = Span center - (node_height / 2.0) # Assuming node visual is centered in slot
+		var mid_y = start_y + (children_total_h / 2.0) - (node_height / 2.0)
+		
+		var used_h = max(node_height, children_total_h)
+		
+		final_pos[node_id] = Vector2(40 + depth * level_x, mid_y)
+		return used_h
+
+	# 3. Execute Layout
+	for root in roots:
+		var h = _layout_recursive.call(_layout_recursive, root, 0, current_y)
+		current_y += h + 20.0 # Spacing between trees
+		
+	return final_pos
+
+func _on_graph_draw(container, tab_name, positions):
 	var g_data = graphs[tab_name]
-	var positions = g_data["pos"]
 	
 	for nid in g_data["nodes"]:
 		if nid not in manager.tech_tree: continue
@@ -129,18 +230,10 @@ func _on_graph_draw(container, tab_name):
 		var parent = node_data.get("parent")
 		
 		if parent and parent in positions and nid in positions:
-			if parent not in g_data["nodes"]:
-				# If parent is not in this tab, maybe we shouldn't draw line?
-				# Or we should draw to "offscreen"?
-				# Python logic: Shared 'alloy_synthesis' node existed in multiple tabs for continuity
-				# In Godot, I'm manually placing them. If 'alloy_synthesis' is in Ships tab, it's a seed node.
-				pass
-			else:
-				var p1 = positions[parent] + Vector2(140, 30) # Right-Center of parent (Node is 140x60)
-				var p2 = positions[nid] + Vector2(0, 30) # Left-Center of child
-				
-				# Bezier or straight line
-				container.draw_line(p1, p2, Color(0.5, 0.5, 0.5), 2.0)
+			var p1 = positions[parent] + Vector2(105, 22.5) # Right-Center (140*0.75, 30*0.75)
+			var p2 = positions[nid] + Vector2(0, 22.5) # Left-Center
+			
+			container.draw_line(p1, p2, Color(0.5, 0.5, 0.5), 2.0)
 
 func refresh_all():
 	# Re-check states of all nodes

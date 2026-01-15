@@ -26,7 +26,12 @@ func _ready():
 	ammo_opt.add_item("Plasma Cell (Energy+)", 4)
 	ammo_opt.set_item_metadata(4, "CellT2")
 	
+	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("trigger_refresh")
+
+func _on_visibility_changed():
+	if visible:
+		trigger_refresh()
 
 func trigger_refresh():
 	update_header()

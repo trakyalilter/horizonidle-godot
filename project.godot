@@ -15,20 +15,19 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
-[gui]
+[autoload]
 
-theme/custom="res://sci_fi_theme.tres"
+GameState="*res://scripts/core/game_state.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
-[autoload]
+[gui]
 
-GameState="*res://scripts/core/game_state.gd"
+theme/custom="res://sci_fi_theme.tres"
 
 [rendering]
 

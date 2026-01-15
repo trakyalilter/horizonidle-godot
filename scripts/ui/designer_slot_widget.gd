@@ -29,7 +29,13 @@ func refresh_state():
 	# Current Item Display
 	if equipped_id:
 		var m_data = manager.modules.get(equipped_id)
-		name_lbl.text = m_data["name"]
+		var en_load = m_data["stats"].get("energy_load", 0)
+		
+		if en_load > 0:
+			name_lbl.text = "%s (-%d En)" % [m_data["name"], en_load]
+		else:
+			name_lbl.text = m_data["name"]
+			
 		name_lbl.modulate = Color(0, 0.73, 0.83) # Cyan
 		icon_lbl.text = "▣"
 		icon_lbl.modulate = Color(0, 0.73, 0.83)
@@ -57,6 +63,7 @@ func refresh_state():
 
 func _on_option_button_item_selected(index):
 	var data = option_btn.get_item_metadata(index)
+	
 	if data == "unequip":
 		manager.unequip_slot(slot_idx)
 		parent_ui.trigger_refresh()

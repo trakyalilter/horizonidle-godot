@@ -10,7 +10,7 @@ var unlocked_techs = []
 var tech_tree = {
 	"basic_engineering": {
 		"name": "Basic Engineering",
-		"description": "Unlocks Soil Centrifuge (Dirt -> Iron/Silica).",
+		"description": "Unlocks Mineral Washing (Dirt + Water -> Iron/Silica).",
 		"cost": 50,
 		"type": "technology",
 		"parent": null
@@ -31,7 +31,7 @@ var tech_tree = {
 	},
 	"alloy_synthesis": {
 		"name": "Alloy Synthesis",
-		"description": "Unlocks Steel Foundry (Iron + Carbon -> Steel).",
+		"description": "Unlocks Steel Foundry (Iron + Carbon + Oxygen -> Steel).",
 		"cost": 300,
 		"type": "technology",
 		"parent": "combustion"
@@ -68,7 +68,7 @@ var tech_tree = {
 		"name": "Industrial Automation",
 		"description": "Unlocks Assembly Lines. (Placeholder)",
 		"cost": 500,
-		"cost_items": {"Circuit": 5},
+		"cost_items": {"AdvCircuit": 5},
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
@@ -117,6 +117,49 @@ var tech_tree = {
 		"type": "technology",
 		"parent": "energy_shields"
 	},
+	# Gathering Tier 2 (+50%) & Tier 3 (+75%)
+	"ultrasonic_drills": {
+		"name": "Ultrasonic Drills",
+		"description": "Increases 'Excavate Soil' speed by 50%.",
+		"cost": 1000,
+		"type": "technology",
+		"parent": "diamond_drills"
+	},
+	"plasma_bore": {
+		"name": "Plasma Bore",
+		"description": "Increases 'Excavate Soil' speed by 75%.",
+		"cost": 5000,
+		"type": "technology",
+		"parent": "ultrasonic_drills"
+	},
+	"superfluid_intake": {
+		"name": "Superfluid Intake",
+		"description": "Increases 'Pump Water' speed by 50%.",
+		"cost": 1500,
+		"type": "technology",
+		"parent": "high_flow_pumps"
+	},
+	"hydro_vortex": {
+		"name": "Hydro-Vortex Arrays",
+		"description": "Increases 'Pump Water' speed by 75%.",
+		"cost": 7500,
+		"type": "technology",
+		"parent": "superfluid_intake"
+	},
+	"mono_filament": {
+		"name": "Mono-Filament Wire",
+		"description": "Increases 'Deforest Zone' speed by 50%.",
+		"cost": 2000,
+		"type": "technology",
+		"parent": "laser_cutters"
+	},
+	"molecular_disassembler": {
+		"name": "Molecular Disassembler",
+		"description": "Increases 'Deforest Zone' speed by 75%.",
+		"cost": 10000,
+		"type": "technology",
+		"parent": "mono_filament"
+	},
 	# --- PROCESSING UPGRADES ---
 	"fast_centrifuges": {
 		"name": "High-RPM Centrifuges",
@@ -152,6 +195,35 @@ var tech_tree = {
 		"cost": 1500,
 		"type": "technology",
 		"parent": "adv_materials"
+	},
+	# Processing Tier 2 (+50%) & Tier 3 (+75%)
+	"maglev_bearings": {
+		"name": "Mag-Lev Bearings",
+		"description": "Increases 'Mineral Washing' speed by 50%.",
+		"cost": 1000,
+		"type": "technology",
+		"parent": "fast_centrifuges"
+	},
+	"quantum_separators": {
+		"name": "Quantum Separators",
+		"description": "Increases 'Mineral Washing' speed by 75%.",
+		"cost": 5000,
+		"type": "technology",
+		"parent": "maglev_bearings"
+	},
+	"ion_exchange": {
+		"name": "Ion-Exchange Membranes",
+		"description": "Increases 'Water Electrolysis' speed by 50%.",
+		"cost": 1500,
+		"type": "technology",
+		"parent": "catalytic_electrodes"
+	},
+	"resonance_splitters": {
+		"name": "Resonance Splitters",
+		"description": "Increases 'Water Electrolysis' speed by 75%.",
+		"cost": 7500,
+		"type": "technology",
+		"parent": "ion_exchange"
 	},
 	# --- MILITARY UPGRADES ---
 	"ballistics_optimization": {

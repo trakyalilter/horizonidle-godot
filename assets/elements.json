@@ -6,7 +6,7 @@
     "mass": 18.015,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 0,
+    "base_value": 1,
     "description": "Essential for life and a source of Hydrogen/Oxygen."
   },
   {
@@ -16,7 +16,7 @@
     "mass": 100.0,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 0,
+    "base_value": 1,
     "description": "Common soil containing trace minerals."
   },
   {
@@ -31,13 +31,13 @@
   },
   {
     "atomic_number": -4,
-    "symbol": "LithiumSalt",
-    "name": "Lithium Salt",
+    "symbol": "Spodumene",
+    "name": "Spodumene",
     "mass": 10.0,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 3,
-    "description": "Unrefined lithium deposits found in planetary orbits."
+    "base_value": 2,
+    "description": "Lithium-rich pyroxene mineral found in pegmatites."
   },
   {
     "atomic_number": 1,
@@ -130,6 +130,16 @@
     "description": "Used in electronics and glass making."
   },
   {
+    "atomic_number": 32,
+    "symbol": "Ge",
+    "name": "Germanium",
+    "mass": 72.63,
+    "category": "Metalloid",
+    "tier": 2,
+    "base_value": 15,
+    "description": " Semiconductor material used in advanced electronics."
+  },
+  {
     "atomic_number": 26,
     "symbol": "Fe",
     "name": "Iron",
@@ -138,6 +148,26 @@
     "tier": 1,
     "base_value": 6,
     "description": "Strong metal widely used in construction."
+  },
+  {
+    "atomic_number": -305,
+    "symbol": "Semiconductor",
+    "name": "Semiconductor",
+    "mass": 0.5,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 40,
+    "description": "Germanium-doped Silicon wafer for high-speed logic."
+  },
+  {
+    "atomic_number": -306,
+    "symbol": "AdvCircuit",
+    "name": "Advanced Circuitry",
+    "mass": 0.2,
+    "category": "Component",
+    "tier": 3,
+    "base_value": 80,
+    "description": "High-performance integrated circuits."
   },
   {
     "atomic_number": -10,
@@ -178,6 +208,16 @@
     "tier": 2,
     "base_value": 8,
     "description": "Excellent conductor for electronics and energy weapons."
+  },
+  {
+    "atomic_number": 79,
+    "symbol": "Au",
+    "name": "Gold",
+    "mass": 196.97,
+    "category": "Transition Metal",
+    "tier": 3,
+    "base_value": 30,
+    "description": "Highly conductive precious metal used in advanced circuitry."
   },
   {
     "atomic_number": 22,

@@ -69,7 +69,7 @@ func update_state():
 	var lvl_req = recipe.get("level_req", 1)
 	var has_level = manager.get_level() >= lvl_req
 	
-	# TODO: Research Check
+	# Research Check
 	var has_research = true
 	if "research_req" in recipe:
 		if GameState.research_manager:

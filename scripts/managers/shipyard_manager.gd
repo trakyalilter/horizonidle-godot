@@ -158,7 +158,9 @@ func construct_hull(hull_id: String) -> bool:
 	if not hull_id in hulls: return false
 	
 	var hull_data = hulls[hull_id]
-	# TODO: Check Research
+	if hull_data.get("research_req"):
+		if not GameState.research_manager.is_tech_unlocked(hull_data["research_req"]):
+			return false
 	
 	# Check Costs
 	for res in hull_data["cost"]:
@@ -198,7 +200,9 @@ func craft_module(module_id: String) -> bool:
 	if not module_id in modules: return false
 	
 	var mod_data = modules[module_id]
-	# TODO: Research Check
+	if mod_data.get("research_req"):
+		if not GameState.research_manager.is_tech_unlocked(mod_data["research_req"]):
+			return false
 	
 	# Check Costs
 	for res in mod_data["cost"]:
@@ -221,17 +225,27 @@ func craft_module(module_id: String) -> bool:
 
 func equip_module(slot_idx: int, module_id: String) -> bool:
 	# Used by Designer UI
-	if not active_hull in hulls: return false
+	if not active_hull in hulls: 
+		print("Equip Fail: Active hull not found or invalid.")
+		return false
 	var hull_data = hulls[active_hull]
 	
-	if slot_idx >= hull_data["slots"].size(): return false
+	if slot_idx >= hull_data["slots"].size(): 
+		print("Equip Fail: Slot index out of bounds.")
+		return false
 	var req_type = hull_data["slots"][slot_idx]
 	
-	if not module_id in modules: return false
+	if not module_id in modules: 
+		print("Equip Fail: Module ID not found.")
+		return false
 	var mod_data = modules[module_id]
-	if mod_data["slot_type"] != req_type: return false
+	if mod_data["slot_type"] != req_type: 
+		print("Equip Fail: Slot Type Mismatch. Req: ", req_type, " Got: ", mod_data["slot_type"])
+		return false
 	
-	if module_inventory.get(module_id, 0) <= 0: return false
+	if module_inventory.get(module_id, 0) <= 0: 
+		print("Equip Fail: No inventory.")
+		return false
 	
 	# Unequip existing
 	var existing = loadout.get(slot_idx)
@@ -296,7 +310,7 @@ func recalc_stats():
 	
 	# Update Global Resources
 	if GameState.resources:
-		GameState.resources.max_energy = 1000.0 + e_cap
+		GameState.resources.max_energy = e_cap
 	
 	if current_hp > max_hp: current_hp = max_hp
 

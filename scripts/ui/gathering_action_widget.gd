@@ -24,8 +24,7 @@ func setup(p_aid: String, p_data: Dictionary, p_manager, p_parent):
 	var loot_text = ""
 	for entry in data["loot_table"]:
 		# [Element, Chance, Min, Max]
-		var chance_str = "%d%%" % int(entry[1] * 100)
-		loot_text += "%s: %d-%d (%s)\n" % [entry[0], entry[2], entry[3], chance_str]
+		loot_text += "%s: %d-%d\n" % [entry[0], entry[2], entry[3]]
 	loot_lbl.text = loot_text.strip_edges()
 
 func _on_button_pressed():
@@ -50,16 +49,22 @@ func update_state():
 		unlocked = false
 		status_msg = "Level Locked"
 	
-	# TODO: Research Check
+	# Research Check
+	if "research_req" in data and data["research_req"]:
+		if GameState.research_manager and not GameState.research_manager.is_tech_unlocked(data["research_req"]):
+			unlocked = false
+			status_msg = "Research Locked"
 	
 	if unlocked:
 		status_lbl.text = ""
 		btn.disabled = false
 		if is_this_active:
 			btn.text = "Stop"
+			btn.modulate = Color(1.0, 0.4, 0.4) # Red-ish
 			modulate = Color(1.2, 1, 1) # Highlight
 		else:
 			btn.text = "Start"
+			btn.modulate = Color(1, 1, 1)
 			modulate = Color(1, 1, 1)
 	else:
 		btn.text = "Locked"

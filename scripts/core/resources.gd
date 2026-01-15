@@ -7,7 +7,7 @@ signal element_removed(symbol, amount)
 var elements: Dictionary = {}
 var currencies: Dictionary = {}
 var energy: float = 0.0
-var max_energy: float = 1000.0
+var max_energy: float = 0.0
 
 func _ready():
 	pass

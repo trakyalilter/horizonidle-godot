@@ -19,13 +19,13 @@ var recipes: Dictionary = {
 		"research_req": "fluid_dynamics"
 	},
 	"centrifuge_dirt": {
-		"name": "Soil Centrifuge",
-		"description": "Spin Dirt to extract Silica and Iron.",
-		"input": {"Dirt": 5},
-		"output": { "Si": 3, "Fe": 1 }, 
+		"name": "Mineral Washing",
+		"description": "Wash Dirt with Water to extract Iron more efficiently.",
+		"input": {"Dirt": 5, "Water": 5},
+		"output": { "Fe": 3, "Si": 1 }, 
 		"duration": 3.0,
 		"level_req": 1, 
-		"xp": 5,
+		"xp": 8,
 		"research_req": "basic_engineering"
 	},
 	"charcoal_burning": {
@@ -38,13 +38,13 @@ var recipes: Dictionary = {
 		"xp": 10
 	},
 	"smelt_steel": {
-		"name": "Steel Foundry",
-		"description": "Combine Iron and Carbon to produce Steel Ingots.",
-		"input": { "Fe": 2, "C": 2 },
-		"output": { "Steel": 1 },
-		"duration": 5.0,
+		"name": "Oxygen-Enriched Smelting",
+		"description": "Use Oxygen to blast smelt Steel efficiently.",
+		"input": { "Fe": 2, "C": 1, "O": 2 },
+		"output": { "Steel": 2 },
+		"duration": 4.0,
 		"level_req": 4,
-		"xp": 20,
+		"xp": 30,
 		"research_req": "alloy_synthesis"
 	},
 	"press_graphite": {
@@ -196,27 +196,78 @@ var recipes: Dictionary = {
 	# Lithium Chain
 	"refine_lithium": {
 		"name": "Refine Lithium",
-		"description": "Purify Lithium Salts into reactive metal.",
-		"input": { "LithiumSalt": 2 },
+		"description": "Extract Lithium from Spodumene crystals.",
+		"input": { "Spodumene": 2 },
 		"output": { "Li": 1 },
 		"duration": 5.0,
 		"level_req": 5,
 		"xp": 20,
 		"research_req": "basic_engineering"
 	},
+	# Germanium / Advanced Electronics
+	"extract_germanium": {
+		"name": "Fly Ash Separation",
+		"description": "Extract trace Germanium from Carbon ash.",
+		"input": { "C": 10 },
+		"output": { "Ge": 1 },
+		"duration": 8.0,
+		"level_req": 5,
+		"xp": 25,
+		"research_req": "combustion"
+	},
+	"craft_semiconductor": {
+		"name": "Semiconductor Wafer",
+		"description": "Dope Silicon with Germanium for conductivity.",
+		"input": { "Si": 2, "Ge": 1 },
+		"output": { "Semiconductor": 1 },
+		"duration": 10.0,
+		"level_req": 6,
+		"xp": 35,
+		"research_req": "adv_materials"
+	},
+	"refine_gold": {
+		"name": "Gold Panning",
+		"description": "Sift large amounts of dirt for Gold flakes.",
+		"input": { "Dirt": 20, "Water": 20 },
+		"output": { "Au": 1 },
+		"duration": 12.0,
+		"level_req": 6,
+		"xp": 30,
+		"research_req": "basic_engineering"
+	},
+	"gold_leaching": {
+		"name": "Chemical Leaching",
+		"description": "Dissolve gold from soil using chemical solvents.",
+		"input": { "Dirt": 50, "Water": 10, "H": 5 },
+		"output": { "Au": 5 },
+		"duration": 20.0,
+		"level_req": 15,
+		"xp": 100,
+		"research_req": "industrial_electrolysis"
+	},
+	"craft_adv_circuit": {
+		"name": "Advanced Circuitry",
+		"description": "High-performance integrated circuit.",
+		"input": { "Semiconductor": 1, "Au": 1 },
+		"output": { "AdvCircuit": 1 },
+		"duration": 15.0,
+		"level_req": 8,
+		"xp": 50,
+		"research_req": "automation"
+	},
 	"craft_battery_t1": {
 		"name": "Lithium-Ion Battery",
 		"description": "Basic energy storage for ships.",
-		"input": { "Li": 5, "Steel": 2 },
+		"input": { "Li": 5, "Fe": 2 },
 		"output": { "BatteryT1": 1 },
 		"duration": 10.0,
-		"level_req": 5,
+		"level_req": 10,
 		"xp": 50
 	},
 	"craft_battery_t2": {
 		"name": "Graphene Matrix Battery",
 		"description": "Advanced high-density battery.",
-		"input": { "BatteryT1": 1, "Graphite": 5, "Circuit": 5 },
+		"input": { "BatteryT1": 1, "Graphite": 5, "AdvCircuit": 5 },
 		"output": { "BatteryT2": 1 },
 		"duration": 20.0,
 		"level_req": 15,
@@ -240,18 +291,27 @@ func _init():
 
 func get_recipe_speed_multiplier(recipe_id: String) -> float:
 	var multiplier = 1.0
-	var upgrades = {
-		"centrifuge_dirt": "fast_centrifuges",
-		"electrolysis": "catalytic_electrodes",
-		"charcoal_burning": "pyrolysis_control",
-		"smelt_steel": "blast_furnace",
-		"press_graphite": "hydraulic_press"
+	
+	var upgrades_db = {
+		"centrifuge_dirt": [
+			{"id": "fast_centrifuges", "bonus": 0.25},
+			{"id": "maglev_bearings", "bonus": 0.50},
+			{"id": "quantum_separators", "bonus": 0.75}
+		],
+		"electrolysis": [
+			{"id": "catalytic_electrodes", "bonus": 0.25},
+			{"id": "ion_exchange", "bonus": 0.50},
+			{"id": "resonance_splitters", "bonus": 0.75}
+		],
+		"charcoal_burning": [{"id": "pyrolysis_control", "bonus": 0.25}],
+		"smelt_steel": [{"id": "blast_furnace", "bonus": 0.25}],
+		"press_graphite": [{"id": "hydraulic_press", "bonus": 0.25}]
 	}
 	
-	if recipe_id in upgrades:
-		var tech_id = upgrades[recipe_id]
-		# TODO: Check Research
-		pass
+	if recipe_id in upgrades_db:
+		for upgrade in upgrades_db[recipe_id]:
+			if GameState.research_manager and GameState.research_manager.is_tech_unlocked(upgrade["id"]):
+				multiplier += upgrade["bonus"]
 		
 	# TODO: Check Infrastructure (count fabricator > 0)
 	
@@ -267,7 +327,10 @@ func start_action(action_id: String):
 			return
 		
 		# Research
-		# if recipe.get("research_req") ...
+		var res_req = recipe.get("research_req")
+		if res_req and not GameState.research_manager.is_tech_unlocked(res_req):
+			print("Research required: ", res_req)
+			return
 		
 		# Ingredients
 		if not has_ingredients(recipe["input"]):
