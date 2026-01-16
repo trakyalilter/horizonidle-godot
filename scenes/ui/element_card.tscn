@@ -16,8 +16,11 @@ corner_radius_bottom_left = 2
 
 [node name="ElementCard" type="PanelContainer"]
 custom_minimum_size = Vector2(100, 100)
-offset_right = 80.0
+layout_direction = 1
+offset_right = 100.0
 offset_bottom = 100.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
 mouse_default_cursor_shape = 2
 script = ExtResource("1_script")
 
@@ -34,18 +37,23 @@ layout_mode = 2
 [node name="SymbolLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 14
 text = "Fe"
 horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
 theme_override_font_sizes/font_size = 10
 text = "Iron"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+autowrap_mode = 3
+text_overrun_behavior = 3
 
 [node name="AmountLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -53,3 +61,4 @@ theme_override_colors/font_color = Color(0.298039, 0.686275, 0.313726, 1)
 theme_override_font_sizes/font_size = 12
 text = "100"
 horizontal_alignment = 1
+vertical_alignment = 1

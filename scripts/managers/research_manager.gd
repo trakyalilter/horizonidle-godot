@@ -12,63 +12,63 @@ signal tech_unlocked(tech_id)
 var tech_tree = {
 	"basic_engineering": {
 		"name": "Basic Engineering",
-		"description": "Unlocks Mineral Washing (Dirt + Water -> Iron/Silica).",
+		"description": "Unlocks:\n• Mineral Washing\n• Scrap Recycling\n• Lithium Refining",
 		"cost": 50,
 		"type": "technology",
 		"parent": null
 	},
 	"fluid_dynamics": {
 		"name": "Fluid Dynamics",
-		"description": "Unlocks Water Collection and Electrolysis.",
+		"description": "Unlocks:\n• Water Pumping\n• Electrolysis",
 		"cost": 50,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"combustion": {
 		"name": "Organic Combustion",
-		"description": "Unlocks Charcoal Kiln (Wood -> Carbon).",
+		"description": "Unlocks:\n• Charcoal Kiln\n• Fly Ash Separation",
 		"cost": 50,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"alloy_synthesis": {
 		"name": "Alloy Synthesis",
-		"description": "Unlocks Steel Foundry (Iron + Carbon + Oxygen -> Steel).",
+		"description": "Unlocks:\n• Steel Foundry\n• Bronze Alloy",
 		"cost": 300,
 		"type": "technology",
 		"parent": "combustion"
 	},
 	"shipwright_1": {
 		"name": "Shipwright I",
-		"description": "Unlocks Industrial Frigate Class (Tier 2).",
+		"description": "Unlocks:\n• Industrial Frigate (T2)\n• Titanium Plating",
 		"cost": 500,
 		"type": "construction",
 		"parent": "alloy_synthesis"
 	},
 	"adv_materials": {
 		"name": "Advanced Materials",
-		"description": "Unlocks Graphite Press (Carbon -> Graphite).",
+		"description": "Unlocks:\n• Graphite Press\n• Semiconductor Wafer\n• Graphene Battery",
 		"cost": 800,
 		"type": "technology",
 		"parent": "alloy_synthesis"
 	},
 	"shipwright_2": {
 		"name": "Shipwright II",
-		"description": "Unlocks Escort Destroyer Class (Tier 3).",
+		"description": "Unlocks:\n• Escort Destroyer (T3)",
 		"cost": 2000,
 		"type": "construction",
 		"parent": "shipwright_1"
 	},
 	"energy_shields": {
 		"name": "Energy Fields",
-		"description": "Unlocks Deflector Shields.",
+		"description": "Unlocks:\n• Deflector Shield",
 		"cost": 400,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"automation": {
 		"name": "Industrial Automation",
-		"description": "Unlocks Assembly Lines. (Placeholder)",
+		"description": "Unlocks:\n• Advanced Circuitry",
 		"cost": 500,
 		"cost_items": {"AdvCircuit": 5},
 		"type": "technology",
@@ -76,15 +76,23 @@ var tech_tree = {
 	},
 	"sector_alpha_decryption": {
 		"name": "Sector Scanning (Alpha)",
-		"description": "Decrypt Nav-Data to reveal Sector Alpha (Rich in Titanium).",
+		"description": "Unlocks:\n• Sector Alpha (Titanium)",
 		"cost": 500,
 		"cost_items": {"NavData": 10},
 		"type": "discovery",
 		"parent": "shipwright_1"
 	},
+	"xeno_archaeology": {
+		"name": "Xeno-Archaeology",
+		"description": "Unlocks:\n• Analyze Void Artifact",
+		"cost": 2000,
+		"cost_items": {"VoidArtifact": 1, "NavData": 5},
+		"type": "discovery",
+		"parent": "sector_alpha_decryption"
+	},
 	"warp_drive": {
 		"name": "Warp Drive Theory",
-		"description": "Experimental propulsion. Unlocks Galaxy Map.",
+		"description": "Unlocks:\n• Galaxy Map",
 		"cost": 5000,
 		"cost_items": {"NavData": 20, "Ti": 100},
 		"type": "technology",
@@ -93,28 +101,28 @@ var tech_tree = {
 	# --- GATHERING UPGRADES ---
 	"diamond_drills": {
 		"name": "Diamond Tipped Drills",
-		"description": "Reinforced drills increase 'Excavate Soil' speed by 25%.",
+		"description": "Bonus:\n• +25% Excavate Soil speed",
 		"cost": 200,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"high_flow_pumps": {
 		"name": "High-Flow Pumps",
-		"description": "Increases 'Pump Water' output speed by 25%.",
+		"description": "Bonus:\n• +25% Pump Water speed",
 		"cost": 250,
 		"type": "technology",
 		"parent": "fluid_dynamics"
 	},
 	"laser_cutters": {
 		"name": "Laser Cutters",
-		"description": "Precision lasers increase 'Deforest Zone' speed by 25%.",
+		"description": "Bonus:\n• +25% Deforest Zone speed",
 		"cost": 300,
 		"type": "technology",
 		"parent": "combustion"
 	},
 	"magnetic_funnels": {
 		"name": "Magnetic Funnels",
-		"description": "Increases 'Harvest Nebula' collection speed by 25%.",
+		"description": "Bonus:\n• +25% Harvest Nebula speed",
 		"cost": 2000,
 		"type": "technology",
 		"parent": "energy_shields"
@@ -122,42 +130,42 @@ var tech_tree = {
 	# Gathering Tier 2 (+50%) & Tier 3 (+75%)
 	"ultrasonic_drills": {
 		"name": "Ultrasonic Drills",
-		"description": "Increases 'Excavate Soil' speed by 50%.",
+		"description": "Bonus:\n• +50% Excavate Soil speed",
 		"cost": 1000,
 		"type": "technology",
 		"parent": "diamond_drills"
 	},
 	"plasma_bore": {
 		"name": "Plasma Bore",
-		"description": "Increases 'Excavate Soil' speed by 75%.",
+		"description": "Bonus:\n• +75% Excavate Soil speed",
 		"cost": 5000,
 		"type": "technology",
 		"parent": "ultrasonic_drills"
 	},
 	"superfluid_intake": {
 		"name": "Superfluid Intake",
-		"description": "Increases 'Pump Water' speed by 50%.",
+		"description": "Bonus:\n• +50% Pump Water speed",
 		"cost": 1500,
 		"type": "technology",
 		"parent": "high_flow_pumps"
 	},
 	"hydro_vortex": {
 		"name": "Hydro-Vortex Arrays",
-		"description": "Increases 'Pump Water' speed by 75%.",
+		"description": "Bonus:\n• +75% Pump Water speed",
 		"cost": 7500,
 		"type": "technology",
 		"parent": "superfluid_intake"
 	},
 	"mono_filament": {
 		"name": "Mono-Filament Wire",
-		"description": "Increases 'Deforest Zone' speed by 50%.",
+		"description": "Bonus:\n• +50% Deforest Zone speed",
 		"cost": 2000,
 		"type": "technology",
 		"parent": "laser_cutters"
 	},
 	"molecular_disassembler": {
 		"name": "Molecular Disassembler",
-		"description": "Increases 'Deforest Zone' speed by 75%.",
+		"description": "Bonus:\n• +75% Deforest Zone speed",
 		"cost": 10000,
 		"type": "technology",
 		"parent": "mono_filament"
@@ -165,35 +173,35 @@ var tech_tree = {
 	# --- PROCESSING UPGRADES ---
 	"fast_centrifuges": {
 		"name": "High-RPM Centrifuges",
-		"description": "Increases 'Soil Centrifuge' processing speed by 25%.",
+		"description": "Bonus:\n• +25% Mineral Washing speed",
 		"cost": 200,
 		"type": "technology",
 		"parent": "basic_engineering"
 	},
 	"catalytic_electrodes": {
 		"name": "Catalytic Electrodes",
-		"description": "Increases 'Water Electrolysis' speed by 25%.",
+		"description": "Bonus:\n• +25% Electrolysis speed",
 		"cost": 300,
 		"type": "technology",
 		"parent": "fluid_dynamics"
 	},
 	"pyrolysis_control": {
 		"name": "Pyrolysis Control",
-		"description": "Increases 'Charcoal Kiln' speed by 25%.",
+		"description": "Bonus:\n• +25% Charcoal Kiln speed",
 		"cost": 400,
 		"type": "technology",
 		"parent": "combustion"
 	},
 	"blast_furnace": {
 		"name": "Blast Furnace",
-		"description": "Increases 'Steel Foundry' speed by 25%.",
+		"description": "Bonus:\n• +25% Steel Foundry speed",
 		"cost": 800,
 		"type": "technology",
 		"parent": "alloy_synthesis"
 	},
 	"hydraulic_press": {
 		"name": "Hydraulic Press",
-		"description": "Increases 'Graphite Press' speed by 25%.",
+		"description": "Bonus:\n• +25% Graphite Press speed",
 		"cost": 1500,
 		"type": "technology",
 		"parent": "adv_materials"
@@ -201,28 +209,28 @@ var tech_tree = {
 	# Processing Tier 2 (+50%) & Tier 3 (+75%)
 	"maglev_bearings": {
 		"name": "Mag-Lev Bearings",
-		"description": "Increases 'Mineral Washing' speed by 50%.",
+		"description": "Bonus:\n• +50% Mineral Washing speed",
 		"cost": 1000,
 		"type": "technology",
 		"parent": "fast_centrifuges"
 	},
 	"quantum_separators": {
 		"name": "Quantum Separators",
-		"description": "Increases 'Mineral Washing' speed by 75%.",
+		"description": "Bonus:\n• +75% Mineral Washing speed",
 		"cost": 5000,
 		"type": "technology",
 		"parent": "maglev_bearings"
 	},
 	"ion_exchange": {
 		"name": "Ion-Exchange Membranes",
-		"description": "Increases 'Water Electrolysis' speed by 50%.",
+		"description": "Bonus:\n• +50% Electrolysis speed",
 		"cost": 1500,
 		"type": "technology",
 		"parent": "catalytic_electrodes"
 	},
 	"resonance_splitters": {
 		"name": "Resonance Splitters",
-		"description": "Increases 'Water Electrolysis' speed by 75%.",
+		"description": "Bonus:\n• +75% Electrolysis speed",
 		"cost": 7500,
 		"type": "technology",
 		"parent": "ion_exchange"
@@ -230,22 +238,30 @@ var tech_tree = {
 	# --- MILITARY UPGRADES ---
 	"ballistics_optimization": {
 		"name": "Ballistics Optimization", 
-		"description": "Unlocks Depleted Uranium Rounds (Ammo T3).",
+		"description": "Unlocks:\n• Depleted Uranium Rounds (T3)\n• Heavy Railgun",
 		"cost": 1500,
 		"type": "technology",
 		"parent": "alloy_synthesis"
 	},
 	"energy_metrics": {
 		"name": "Energy Metrics",
-		"description": "Unlocks Vaporizer Cells (Ammo T3) & Laser Sights.",
+		"description": "Unlocks:\n• Vaporizer Cells (T3)\n• Plasma Lance Mk.III",
 		"cost": 1500,
 		"type": "technology",
 		"parent": "fluid_dynamics"
 	},
+	"cryogenic_systems": {
+		"name": "Cryogenic Systems",
+		"description": "Unlocks:\n• Helium Coolant Cell\n• Cryo-Cooled Laser Mk.III",
+		"cost": 8000,
+		"cost_items": {"He": 50, "Ti": 30},
+		"type": "technology",
+		"parent": "energy_metrics"
+	},
 	# --- LOGISTICS UPGRADES ---
 	"automated_logistics": {
 		"name": "Automated Logistics",
-		"description": "Unlocks Drone Bay (Passive Gathering).",
+		"description": "Unlocks:\n• Drone Bay",
 		"cost": 3000,
 		"cost_items": {"Circuit": 20},
 		"type": "construction",
@@ -253,7 +269,7 @@ var tech_tree = {
 	},
 	"molecular_printing": {
 		"name": "Molecular Printing",
-		"description": "Unlocks Fabricator (Crafting Speed +20%).",
+		"description": "Unlocks:\n• Fabricator (+20% crafting)",
 		"cost": 5000,
 		"cost_items": {"Circuit": 50, "Fiber": 20},
 		"type": "construction",
@@ -262,7 +278,7 @@ var tech_tree = {
 	# --- END-GAME AUTOMATION (NEW) ---
 	"automated_smelting": {
 		"name": "Automated Smelting",
-		"description": "Unlocks Auto-Smelter (Iron/Carbon -> Steel).",
+		"description": "Unlocks:\n• Auto-Smelter",
 		"cost": 2500,
 		"cost_items": {"Ti": 20},
 		"type": "technology",
@@ -270,7 +286,7 @@ var tech_tree = {
 	},
 	"industrial_electrolysis": {
 		"name": "Industrial Electrolysis",
-		"description": "Unlocks Hydro-Plant (Water -> H/O).",
+		"description": "Unlocks:\n• Hydro-Plant",
 		"cost": 2500,
 		"cost_items": {"Si": 50},
 		"type": "technology",
@@ -278,7 +294,7 @@ var tech_tree = {
 	},
 	"molecular_compression": {
 		"name": "Molecular Compression",
-		"description": "Unlocks Auto-Press (Carbon -> Graphite).",
+		"description": "Unlocks:\n• Auto-Press",
 		"cost": 3000,
 		"cost_items": {"Fe": 100},
 		"type": "technology",
@@ -286,7 +302,7 @@ var tech_tree = {
 	},
 	"mass_production_tactics": {
 		"name": "Mass Production Tactics",
-		"description": "Unlocks Munitions Factories.",
+		"description": "Unlocks:\n• Munitions Factory",
 		"cost": 5000,
 		"cost_items": {"Circuit": 20, "Steel": 20},
 		"type": "technology",
@@ -295,7 +311,7 @@ var tech_tree = {
 	# --- END-GAME SHIPS (NEW) ---
 	"capital_ship_engineering": {
 		"name": "Capital Ship Doctrine",
-		"description": "Unlocks Battlecruiser Class (Tier 4).",
+		"description": "Unlocks:\n• Battlecruiser (T4)\n• Coil Cannon\n• Antimatter Engine",
 		"cost": 10000,
 		"cost_items": {"VoidArtifact": 1, "Ti": 200},
 		"type": "construction",
@@ -303,7 +319,7 @@ var tech_tree = {
 	},
 	"quantum_dynamics": {
 		"name": "Quantum Dynamics",
-		"description": "Unlocks Dreadnought Class (Tier 5).",
+		"description": "Unlocks:\n• Dreadnought (T5)",
 		"cost": 25000,
 		"cost_items": {"QuantumCore": 1, "VoidArtifact": 5},
 		"type": "construction",
@@ -312,7 +328,7 @@ var tech_tree = {
 	# New Zone Unlocks
 	"deep_space_nav": {
 		"name": "Deep Space Navigation",
-		"description": "Advanced star charts. Unlocks Sector Beta (Mining Colony).",
+		"description": "Unlocks:\n• Sector Beta (Mining Colony)",
 		"cost": 12000,
 		"cost_items": {"NavData": 30, "Ti": 150},
 		"type": "discovery",
@@ -320,7 +336,7 @@ var tech_tree = {
 	},
 	"radiation_shielding": {
 		"name": "Radiation Shielding Theory",
-		"description": "Protect against gamma radiation. Unlocks Sector Gamma.",
+		"description": "Unlocks:\n• Sector Gamma (Radioactive)",
 		"cost": 20000,
 		"cost_items": {"Co": 50, "Al": 100, "Circuit": 30},
 		"type": "technology",
@@ -328,7 +344,7 @@ var tech_tree = {
 	},
 	"exotic_matter_analysis": {
 		"name": "Exotic Matter Analysis",
-		"description": "Study crystalline energy signatures. Unlocks Sector Delta.",
+		"description": "Unlocks:\n• Sector Delta (Crystalline)",
 		"cost": 35000,
 		"cost_items": {"Pt": 20, "ExoticMatter": 10, "QuantumCore": 3},
 		"type": "discovery",
@@ -337,7 +353,7 @@ var tech_tree = {
 	# Mid-Game Technology
 	"metallurgy_advanced": {
 		"name": "Advanced Metallurgy",
-		"description": "Stainless Steel production. Fe-Cr-Ni alloys.",
+		"description": "Unlocks:\n• Stainless Steel Alloy",
 		"cost": 5000,
 		"cost_items": {"Cr": 20, "Ni": 20},
 		"type": "technology",
@@ -345,15 +361,15 @@ var tech_tree = {
 	},
 	"advanced_batteries": {
 		"name": "Advanced Battery Technology",
-		"description": "Cobalt-Lithium and Magnesium-Ion batteries. High capacity.",
+		"description": "Unlocks:\n• Li-Co Battery\n• Mg-Ion Battery",
 		"cost": 8000,
 		"cost_items": {"Co": 30, "Li": 50, "Circuit": 15},
 		"type": "technology",
-		"parent": "energy_storage"
+		"parent": "adv_materials"
 	},
 	"superalloy_engineering": {
 		"name": "Superalloy Engineering",
-		"description": "Heat-resistant Co-Ni-Cr superalloys for extreme conditions.",
+		"description": "Unlocks:\n• Cobalt Superalloy",
 		"cost": 15000,
 		"cost_items": {"Co": 100, "Ni": 100, "Cr": 50, "Ti": 100},
 		"type": "technology",
@@ -362,7 +378,7 @@ var tech_tree = {
 	# Late-Game Rare Metal Technologies
 	"precious_metal_refining": {
 		"name": "Precious Metal Refining",
-		"description": "Extract Platinum and Palladium from rare ores.",
+		"description": "Unlocks:\n• Platinum Refining\n• Palladium Refining",
 		"cost": 18000,
 		"cost_items": {"Ti": 200, "Circuit": 50},
 		"type": "technology",
@@ -370,7 +386,7 @@ var tech_tree = {
 	},
 	"industrial_catalysis": {
 		"name": "Industrial Catalysis",
-		"description": "Platinum catalyst matrices. +25% all production speed.",
+		"description": "Bonus:\n• +25% All Production Speed",
 		"cost": 30000,
 		"cost_items": {"Pt": 50, "Si": 200, "AdvCircuit": 20},
 		"type": "technology",
@@ -378,7 +394,7 @@ var tech_tree = {
 	},
 	"fuel_cell_tech": {
 		"name": "Fuel Cell Technology",
-		"description": "Palladium-Hydrogen fuel cells. Clean energy generation.",
+		"description": "Unlocks:\n• Hydrogen Fuel Cell",
 		"cost": 22000,
 		"cost_items": {"Pd": 30, "H": 500, "Circuit": 30},
 		"type": "technology",
@@ -386,7 +402,7 @@ var tech_tree = {
 	},
 	"iridium_metallurgy": {
 		"name": "Iridium Metallurgy",
-		"description": "Process ultra-hard Iridium. Ultimate armor and penetrators.",
+		"description": "Unlocks:\n• Iridium Armor\n• Iridium Rounds",
 		"cost": 40000,
 		"cost_items": {"Ir": 50, "Ti": 300},
 		"type": "technology",
@@ -394,7 +410,7 @@ var tech_tree = {
 	},
 	"exotic_metallurgy": {
 		"name": "Exotic Metallurgy",
-		"description": "Osmium cores and void-infused materials. Extreme HP.",
+		"description": "Unlocks:\n• Osmium Armor\n• Void-Infused Hull",
 		"cost": 60000,
 		"cost_items": {"Os": 20, "VoidCrystal": 5, "QuantumCore": 5},
 		"type": "technology",

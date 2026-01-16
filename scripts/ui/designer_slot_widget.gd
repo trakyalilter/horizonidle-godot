@@ -16,14 +16,23 @@ func setup(idx: int, s_type: String, p_ui, p_manager):
 	parent_ui = p_ui
 	manager = p_manager
 	
-	type_lbl.text = "SLOT %d: %s" % [idx + 1, slot_type.to_upper()]
-	type_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	if is_node_ready():
+		refresh_state()
+
+func _ready():
 	UITheme.apply_card_style(self, "shipyard")
-	refresh_state()
 	# We'll hide the option button in setup to favor Drag & Drop
 	option_btn.visible = false 
+	refresh_state()
 
 func refresh_state():
+	if not is_node_ready(): return
+	if not manager: manager = GameState.shipyard_manager
+	if not manager: return
+	
+	type_lbl.text = "SLOT %d: %s" % [slot_idx + 1, slot_type.to_upper()]
+	type_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	
 	option_btn.clear()
 	option_btn.add_item("Change...", 0)
 	option_btn.set_item_metadata(0, null)
@@ -64,6 +73,28 @@ func refresh_state():
 				option_btn.add_item("%s (x%d)" % [m_data["name"], count], idx_counter)
 				option_btn.set_item_metadata(option_btn.item_count - 1, mid)
 				idx_counter += 1
+
+func _get_drag_data(_at_position):
+	var equipped_id = manager.loadout.get(slot_idx)
+	if not equipped_id: return null
+	
+	var data = manager.modules.get(equipped_id)
+	
+	var drag_data = {
+		"type": "unequip_module",
+		"slot_idx": slot_idx,
+		"mid": equipped_id,
+		"slot_type": slot_type
+	}
+	
+	# Visual Preview: Use a real slot instance
+	var preview = load("res://scenes/ui/designer_slot_widget.tscn").instantiate()
+	preview.setup(slot_idx, slot_type, parent_ui, manager)
+	preview.modulate = Color(1, 0.5, 0.5, 0.8) # Reddish tint for unequip
+	preview.custom_minimum_size = Vector2(100, 100) # Slightly smaller than original
+	
+	set_drag_preview(preview)
+	return drag_data
 
 func _can_drop_data(at_position, data):
 	if typeof(data) == TYPE_DICTIONARY and data.get("type") == "module":

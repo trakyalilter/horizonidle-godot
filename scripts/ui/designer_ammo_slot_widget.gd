@@ -12,11 +12,19 @@ func setup(p_ui, p_manager):
 	parent_ui = p_ui
 	manager = p_manager
 	
+	if is_node_ready():
+		refresh_state()
+
+func _ready():
 	type_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
 	UITheme.apply_card_style(self, "shipyard")
 	refresh_state()
 
 func refresh_state():
+	if not is_node_ready(): return
+	if not manager: manager = GameState.shipyard_manager
+	if not manager: return
+	
 	var active_ammo = manager.active_ammo
 	
 	if active_ammo != "":
@@ -43,6 +51,24 @@ func refresh_state():
 		status_lbl.modulate = Color(0.33, 0.33, 0.33)
 		icon_lbl.text = "☖"
 		icon_lbl.modulate = Color(0.33, 0.33, 0.33)
+
+func _get_drag_data(_at_position):
+	var active_ammo = manager.active_ammo
+	if active_ammo == "": return null
+	
+	var drag_data = {
+		"type": "unequip_ammo",
+		"ammo_id": active_ammo
+	}
+	
+	# Visual Preview: Use a real ammo slot instance
+	var preview = load("res://scenes/ui/designer_ammo_slot_widget.tscn").instantiate()
+	preview.setup(parent_ui, manager)
+	preview.modulate = Color(1, 0.5, 0.5, 0.8) # Reddish tint for unequip
+	preview.custom_minimum_size = Vector2(250, 80)
+	
+	set_drag_preview(preview)
+	return drag_data
 
 func _can_drop_data(at_position, data):
 	return typeof(data) == TYPE_DICTIONARY and data.get("type") == "ammo"

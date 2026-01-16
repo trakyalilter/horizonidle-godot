@@ -4,6 +4,7 @@ extends Node
 var resources : Node
 
 signal game_resetted
+signal game_loaded
 
 # Managers
 var gathering_manager : RefCounted
@@ -135,6 +136,8 @@ func load_game():
 			process_offline_progress(delta)
 	else:
 		print("JSON Parse Error: ", json.get_error_message())
+	
+	game_loaded.emit()
 
 func process_offline_progress(delta: float):
 	print("Processing offline progress for ", delta, " seconds.")

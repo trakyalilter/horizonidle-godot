@@ -28,6 +28,10 @@ func setup(p_nid: String, p_data: Dictionary, p_manager, p_parent):
 	cost_lbl.text = "%d Cr" % data.get("cost", 0)
 	desc_lbl.text = data["description"]
 	
+	desc_tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$TooltipPanel/MarginContainer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	scale = Vector2(1,1) # Reset logic
 	
 	update_state()
@@ -65,8 +69,40 @@ func _on_gui_input(event):
 
 func _on_mouse_entered():
 	desc_tip.visible = true
+	_update_tooltip_position()
 	# move to front
 	z_index = 10
+
+func _update_tooltip_position():
+	# Force the container to recalculate its size based on the new text
+	desc_tip.reset_size()
+	
+	# Default offset
+	desc_tip.position = Vector2(120, 0)
+	
+	# Use combined_minimum_size for the most accurate calculation before a frame pass
+	var t_size = desc_tip.get_combined_minimum_size()
+	var global_scale = get_global_transform().get_scale()
+	var scaled_size = t_size * global_scale
+	
+	var global_pos = get_global_position() + desc_tip.position * global_scale
+	var screen_size = get_viewport_rect().size
+	
+	# Adjust X: if it goes off right, flip to left side of node
+	if global_pos.x + scaled_size.x > screen_size.x:
+		desc_tip.position.x = - (t_size.x + 20)
+		
+	# Re-calculate global_pos.y after X potential shift (though Y check is independent)
+	# Check Y: if it goes off bottom, shift it up
+	if global_pos.y + scaled_size.y > screen_size.y:
+		var overflow = (global_pos.y + scaled_size.y) - screen_size.y
+		# Convert global overflow back to local coordinates
+		desc_tip.position.y -= overflow / global_scale.y
+		
+	# FINAL SAFETY: Ensure it doesn't go off top of screen
+	var final_global_y = get_global_position().y + desc_tip.position.y * global_scale.y
+	if final_global_y < 0:
+		desc_tip.position.y = -get_global_position().y / global_scale.y
 
 func _on_mouse_exited():
 	desc_tip.visible = false

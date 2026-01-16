@@ -250,16 +250,6 @@
     "description": "Encrypted coordinates to unknown sectors."
   },
   {
-    "atomic_number": -35,
-    "symbol": "Glass",
-    "name": "Tempered Glass",
-    "mass": 2.0,
-    "category": "Refined Material",
-    "tier": 1,
-    "base_value": 5,
-    "description": "Transparent silicate used in optics and screens."
-  },
-  {
     "atomic_number": -36,
     "symbol": "Hydraulics",
     "name": "Hydraulic Servo",
@@ -322,6 +312,16 @@
     "tier": 2,
     "base_value": 15,
     "description": "Synthetic resin base for sealants and plastics."
+  },
+  {
+    "atomic_number": -62,
+    "symbol": "CoolantCell",
+    "name": "Helium Coolant Cell",
+    "mass": 0.5,
+    "category": "Component",
+    "tier": 3,
+    "base_value": 50,
+    "description": "Pressurized helium cooling unit for high-power weapons."
   },
   {
     "atomic_number": -80,
@@ -521,12 +521,12 @@
   {
     "atomic_number": -301,
     "symbol": "BatteryT1",
-    "name": "Lithium-Ion Battery",
+    "name": "Basic Battery",
     "mass": 5.0,
     "category": "Component",
     "tier": 1,
     "base_value": 50,
-    "description": "Standard energy storage unit."
+    "description": "Standard energy storage unit for early ships."
   },
   {
     "atomic_number": -302,

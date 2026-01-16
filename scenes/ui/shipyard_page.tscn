@@ -99,7 +99,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-columns = 2
+columns = 5
 
 [node name="Modules" type="TabContainer" parent="VBoxContainer/TabContainer"]
 visible = false
@@ -112,12 +112,39 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="WeaponGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Weapons"]
+[node name="WeaponCategorizer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Modules/Weapons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="KineticHeader" type="Label" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
+theme_override_font_sizes/font_size = 16
+text = "KINETIC WEAPONS"
+
+[node name="KineticGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-columns = 3
+columns = 5
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
+layout_mode = 2
+
+[node name="EnergyHeader" type="Label" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.898039, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "ENERGY WEAPONS"
+
+[node name="EnergyGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 5
 
 [node name="Shields" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
 visible = false
@@ -129,7 +156,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-columns = 3
+columns = 5
 
 [node name="Engines" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
 visible = false
@@ -141,7 +168,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-columns = 3
+columns = 5
 
 [node name="Batteries" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
 visible = false
@@ -153,4 +180,4 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
-columns = 3
+columns = 5

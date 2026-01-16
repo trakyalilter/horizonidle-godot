@@ -33,6 +33,7 @@ var enemy_info_scene = preload("res://scenes/ui/enemy_info_modal.tscn")
 func _ready():
 	manager = GameState.combat_manager
 	call_deferred("refresh_zones")
+	GameState.game_loaded.connect(refresh_zones)
 	
 	# Premium Styling
 	UITheme.apply_card_style($Dashboard/TopRow/SectorPanel, "shipyard") # Map is high-tech
@@ -68,7 +69,13 @@ func _on_zone_list_item_selected(index):
 	var zid = zone_list.get_item_metadata(index)
 	refresh_enemies(zid)
 
+var last_refreshed_zone = ""
+
 func refresh_enemies(zone_id):
+	if last_refreshed_zone == zone_id and enemy_container.get_child_count() > 0:
+		return
+	last_refreshed_zone = zone_id
+	
 	if not enemy_container: return
 	for child in enemy_container.get_children():
 		child.queue_free()
@@ -91,8 +98,9 @@ func get_enemy_card(enemy_id: String) -> Control:
 func focus_zone(zone_id: String):
 	for i in range(zone_list.item_count):
 		if zone_list.get_item_metadata(i) == zone_id:
-			zone_list.select(i)
-			_on_zone_list_item_selected(i)
+			if not zone_list.is_selected(i):
+				zone_list.select(i)
+				_on_zone_list_item_selected(i)
 			return
 
 func start_fight(enemy_id, zone_id):
@@ -180,23 +188,24 @@ func show_enemy_info(data):
 
 func spawn_floating_text(ev):
 	var txt = floating_text_scene.instantiate()
-	self.add_child(txt)
+	# Parent to Visualizer to keep it contained in the middle area
+	var visualizer = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer
+	visualizer.add_child(txt)
 	
-	var pos = Vector2.ZERO
+	var local_pos = Vector2.ZERO
 	if ev["side"] == "player":
-		# Spawn on Player side (Left)
-		pos = p_hp_bar.global_position + Vector2(p_hp_bar.size.x / 2, 0)
+		local_pos = p_hp_bar.position + Vector2(p_hp_bar.size.x / 2, 0)
 	else:
-		# Spawn on Enemy side (Right or center of enemy panel)
 		if manager.current_enemy:
-			pos = e_hp_bar.global_position + Vector2(e_hp_bar.size.x / 2, 0)
+			local_pos = e_hp_bar.position + Vector2(e_hp_bar.size.x / 2, 0)
 		else:
-			pos = e_hp_bar.global_position # Fallback
+			local_pos = e_hp_bar.position
 			
 	# Randomize slightly
-	pos += Vector2(randf_range(-20, 20), randf_range(-20, 20))
+	local_pos += Vector2(randf_range(-20, 20), randf_range(-20, 20))
 	
-	txt.setup(ev["text"], ev["color"], pos)
+	txt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	txt.setup(ev["text"], ev["color"], local_pos)
 
 func _on_retreat_btn_pressed():
 	manager.retreat()

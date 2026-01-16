@@ -1,6 +1,7 @@
 [gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/designer_page.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/designer_storage_panel.gd" id="2_script"]
 
 [node name="DesignerPage" type="Control"]
 layout_mode = 3
@@ -65,130 +66,270 @@ theme_override_font_sizes/font_size = 12
 text = "Stats..."
 autowrap_mode = 2
 
-[node name="CenterPanel" type="VBoxContainer" parent="VBoxContainer/MainLayout"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="DesignerTabs" type="TabContainer" parent="VBoxContainer/MainLayout"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="VBoxContainer/MainLayout/CenterPanel"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
-text = "HULL SLOTS & CONFIGURATION"
-horizontal_alignment = 1
+		[node name="Weapons" type="HBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs"]
+		layout_mode = 2
+		theme_override_constants/separation = 15
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel"]
-layout_mode = 2
-size_flags_vertical = 3
+		[node name="Slots" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 10
 
-[node name="SlotTabs" type="TabContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Slots"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+		text = "WEAPON SLOTS"
+		horizontal_alignment = 1
 
-[node name="Weapons" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Slots"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
 
-[node name="WeaponBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Weapons"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="WeaponBox" type="HFlowContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Slots/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/h_separation = 10
+		theme_override_constants/v_separation = 10
 
-[node name="Shields" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="VSeparator" type="VSeparator" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons"]
+		layout_mode = 2
 
-[node name="ShieldBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Shields"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="Storage" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons"]
+		custom_minimum_size = Vector2(350, 0)
+		layout_mode = 2
+		size_flags_vertical = 3
+		theme_override_constants/separation = 10
 
-[node name="Engines" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Storage"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+		text = "AVAILABLE WEAPONS"
+		horizontal_alignment = 1
 
-[node name="EngineBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Engines"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Storage"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
 
-[node name="Ammunition" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="WeaponGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Weapons/Storage/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
+		script = ExtResource("2_script")
 
-[node name="AmmoSlotBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Ammunition"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="Shields" type="HBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs"]
+		visible = false
+		layout_mode = 2
+		theme_override_constants/separation = 15
 
-[node name="Systems" type="ScrollContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Slots" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 10
 
-[node name="SystemBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Systems"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Slots"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+		text = "SHIELD SLOTS"
+		horizontal_alignment = 1
 
-[node name="RightPanel" type="VBoxContainer" parent="VBoxContainer/MainLayout"]
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-theme_override_constants/separation = 10
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Slots"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
 
-[node name="Label" type="Label" parent="VBoxContainer/MainLayout/RightPanel"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-text = "STORAGE (DRAG MODULES)"
-horizontal_alignment = 1
+		[node name="ShieldBox" type="HFlowContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Slots/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/h_separation = 10
+		theme_override_constants/v_separation = 10
 
-[node name="ModuleTabs" type="TabContainer" parent="VBoxContainer/MainLayout/RightPanel"]
-layout_mode = 2
-size_flags_vertical = 3
+		[node name="VSeparator" type="VSeparator" parent="VBoxContainer/MainLayout/DesignerTabs/Shields"]
+		layout_mode = 2
 
-[node name="Weapons" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Storage" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields"]
+		custom_minimum_size = Vector2(350, 0)
+		layout_mode = 2
+		size_flags_vertical = 3
+		theme_override_constants/separation = 10
 
-[node name="WeaponGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Weapons"]
-layout_mode = 2
-size_flags_horizontal = 3
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Storage"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+		text = "AVAILABLE SHIELDS"
+		horizontal_alignment = 1
 
-[node name="Shields" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Storage"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
 
-[node name="ShieldGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Shields"]
-layout_mode = 2
-size_flags_horizontal = 3
+		[node name="ShieldGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Shields/Storage/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
+		script = ExtResource("2_script")
 
-[node name="Engines" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Engines" type="HBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs"]
+		visible = false
+		layout_mode = 2
+		theme_override_constants/separation = 15
 
-[node name="EngineGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Engines"]
-layout_mode = 2
-size_flags_horizontal = 3
+		[node name="Slots" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 10
 
-[node name="Ammunition" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Slots"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+		text = "ENGINE SLOTS"
+		horizontal_alignment = 1
 
-[node name="AmmoGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Ammunition"]
-layout_mode = 2
-size_flags_horizontal = 3
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Slots"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
 
-[node name="Batteries" type="ScrollContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
+		[node name="EngineBox" type="HFlowContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Slots/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/h_separation = 10
+		theme_override_constants/v_separation = 10
 
-[node name="BatteryGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/RightPanel/ModuleTabs/Batteries"]
-layout_mode = 2
-size_flags_horizontal = 3
+		[node name="VSeparator" type="VSeparator" parent="VBoxContainer/MainLayout/DesignerTabs/Engines"]
+		layout_mode = 2
+
+		[node name="Storage" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines"]
+		custom_minimum_size = Vector2(350, 0)
+		layout_mode = 2
+		size_flags_vertical = 3
+		theme_override_constants/separation = 10
+
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Storage"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+		text = "AVAILABLE ENGINES"
+		horizontal_alignment = 1
+
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Storage"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
+
+		[node name="EngineGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Engines/Storage/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
+		script = ExtResource("2_script")
+
+		[node name="Ammunition" type="HBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs"]
+		visible = false
+		layout_mode = 2
+		theme_override_constants/separation = 15
+
+		[node name="Slots" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 10
+
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Slots"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+		text = "LOADED AMMUNITION"
+		horizontal_alignment = 1
+
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Slots"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
+
+		[node name="AmmoSlotBox" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Slots/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 5
+
+		[node name="VSeparator" type="VSeparator" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition"]
+		layout_mode = 2
+
+		[node name="Storage" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition"]
+		custom_minimum_size = Vector2(350, 0)
+		layout_mode = 2
+		size_flags_vertical = 3
+		theme_override_constants/separation = 10
+
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Storage"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+		text = "ORDNANCE STORAGE"
+		horizontal_alignment = 1
+
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Storage"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
+
+		[node name="AmmoGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Ammunition/Storage/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
+		script = ExtResource("2_script")
+
+		[node name="Batteries" type="HBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs"]
+		visible = false
+		layout_mode = 2
+		theme_override_constants/separation = 15
+
+		[node name="Slots" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/separation = 10
+
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Slots"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+		text = "BATTERY SLOTS"
+		horizontal_alignment = 1
+
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Slots"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
+
+		[node name="BatteryBox" type="HFlowContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Slots/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		theme_override_constants/h_separation = 10
+		theme_override_constants/v_separation = 10
+
+		[node name="VSeparator" type="VSeparator" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries"]
+		layout_mode = 2
+
+		[node name="Storage" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries"]
+		custom_minimum_size = Vector2(350, 0)
+		layout_mode = 2
+		size_flags_vertical = 3
+		theme_override_constants/separation = 10
+
+		[node name="Label" type="Label" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Storage"]
+		layout_mode = 2
+		theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+		text = "AVAILABLE BATTERIES"
+		horizontal_alignment = 1
+
+		[node name="Scroll" type="ScrollContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Storage"]
+		layout_mode = 2
+		size_flags_vertical = 3
+		horizontal_scroll_mode = 0
+
+		[node name="BatteryGrid" type="VBoxContainer" parent="VBoxContainer/MainLayout/DesignerTabs/Batteries/Storage/Scroll"]
+		layout_mode = 2
+		size_flags_horizontal = 3
+		size_flags_vertical = 3
+		script = ExtResource("2_script")

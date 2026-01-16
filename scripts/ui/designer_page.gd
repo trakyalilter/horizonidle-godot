@@ -2,18 +2,18 @@ extends Control
 
 @onready var ship_name_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/ShipNameLabel
 @onready var stats_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/StatsLabel
-@onready var w_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Weapons/WeaponBox
-@onready var s_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Shields/ShieldBox
-@onready var e_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Engines/EngineBox
-@onready var b_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Batteries/BatteryGrid # Reused battery grid for systems/batteries
-@onready var ammo_slot_box = $VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs/Ammunition/AmmoSlotBox
+@onready var w_box = $VBoxContainer/MainLayout/DesignerTabs/Weapons/Slots/Scroll/WeaponBox
+@onready var s_box = $VBoxContainer/MainLayout/DesignerTabs/Shields/Slots/Scroll/ShieldBox
+@onready var e_box = $VBoxContainer/MainLayout/DesignerTabs/Engines/Slots/Scroll/EngineBox
+@onready var b_box = $VBoxContainer/MainLayout/DesignerTabs/Batteries/Slots/Scroll/BatteryBox
+@onready var ammo_slot_box = $VBoxContainer/MainLayout/DesignerTabs/Ammunition/Slots/Scroll/AmmoSlotBox
 
 # Storage Grids
-@onready var weapon_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Weapons/WeaponGrid
-@onready var shield_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Shields/ShieldGrid
-@onready var engine_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Engines/EngineGrid
-@onready var battery_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Batteries/BatteryGrid
-@onready var ammo_grid = $VBoxContainer/MainLayout/RightPanel/ModuleTabs/Ammunition/AmmoGrid
+@onready var weapon_grid = $VBoxContainer/MainLayout/DesignerTabs/Weapons/Storage/Scroll/WeaponGrid
+@onready var shield_grid = $VBoxContainer/MainLayout/DesignerTabs/Shields/Storage/Scroll/ShieldGrid
+@onready var engine_grid = $VBoxContainer/MainLayout/DesignerTabs/Engines/Storage/Scroll/EngineGrid
+@onready var battery_grid = $VBoxContainer/MainLayout/DesignerTabs/Batteries/Storage/Scroll/BatteryGrid
+@onready var ammo_grid = $VBoxContainer/MainLayout/DesignerTabs/Ammunition/Storage/Scroll/AmmoGrid
 
 var manager: RefCounted
 var slot_widget_scene = preload("res://scenes/ui/designer_slot_widget.tscn")
@@ -23,15 +23,13 @@ var draggable_icon_scene = preload("res://scenes/ui/module_card.tscn")
 func _ready():
 	manager = GameState.shipyard_manager
 	visibility_changed.connect(_on_visibility_changed)
+	GameState.game_loaded.connect(trigger_refresh)
 	
 	# Premium Styling
 	UITheme.apply_card_style($VBoxContainer/MainLayout/LeftPanel/InfoPanel, "shipyard")
-	UITheme.apply_card_style($VBoxContainer/MainLayout/RightPanel/ModuleTabs, "shipyard")
-	UITheme.apply_tab_style($VBoxContainer/MainLayout/CenterPanel/ScrollContainer/SlotTabs, "shipyard")
-	UITheme.apply_tab_style($VBoxContainer/MainLayout/RightPanel/ModuleTabs, "shipyard")
+	UITheme.apply_tab_style($VBoxContainer/MainLayout/DesignerTabs, "shipyard")
 	
 	$VBoxContainer/Label.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
-	$VBoxContainer/MainLayout/CenterPanel/Label.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
 	
 	trigger_refresh()
 
@@ -130,3 +128,24 @@ func rebuild_ammo_storage():
 				"stats": {}
 			}
 			card.setup(ammo["id"], fake_data, qty)
+
+func focus_module_tab(module_id: String):
+	if not module_id in manager.modules: return
+	var data = manager.modules[module_id]
+	var type = data.get("slot_type", "weapon")
+	
+	var tabs = $VBoxContainer/MainLayout/DesignerTabs
+	match type:
+		"weapon": tabs.current_tab = 0
+		"shield": tabs.current_tab = 1
+		"engine": tabs.current_tab = 2
+		"ammo": tabs.current_tab = 3
+		"battery": tabs.current_tab = 4
+
+func get_module_widget(module_id: String) -> Control:
+	# Search through all storage grids for the item
+	for grid in [weapon_grid, shield_grid, engine_grid, battery_grid, ammo_grid]:
+		for child in grid.get_children():
+			if child.get("mid") == module_id:
+				return child
+	return null

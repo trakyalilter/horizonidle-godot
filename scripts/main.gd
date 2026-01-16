@@ -97,11 +97,10 @@ func _init_pages():
 func switch_to(page_name):
 	if current_page_name == page_name: return
 	
-	if current_page_name in pages:
-		pages[current_page_name].visible = false
-	
+	for p_name in pages:
+		pages[p_name].visible = (p_name == page_name)
+		
 	if page_name in pages:
-		pages[page_name].visible = true
 		current_page_name = page_name
 		_update_sidebar_styling()
 

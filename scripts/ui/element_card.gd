@@ -13,9 +13,19 @@ func setup(p_data, p_amount):
 	element_data = p_data
 	amount = p_amount
 	
-	symbol_lbl.text = element_data["symbol"]
-	symbol_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["inventory"])
-	name_lbl.text = ElementDB.get_display_name(element_data["symbol"])
+	var display_name = ElementDB.get_display_name(element_data["symbol"])
+	
+	# If symbol is long (like BatteryT1), show name as primary text
+	if element_data["symbol"].length() > 3:
+		symbol_lbl.text = display_name
+		symbol_lbl.add_theme_font_size_override("font_size", 12)
+		name_lbl.text = element_data["symbol"] # Show ID as secondary
+	else:
+		symbol_lbl.text = element_data["symbol"]
+		symbol_lbl.add_theme_font_size_override("font_size", 20)
+		name_lbl.text = display_name
+		
+	symbol_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS.get("inventory", Color.WHITE))
 	amt_lbl.text = str(amount)
 	
 	UITheme.apply_card_style(self, "inventory")

@@ -40,25 +40,25 @@ var zones = {
 		"name": "Lunar Orbit",
 		"desc": "Low threat sector populated by rogue mining drones.",
 		"difficulty": 1,
-		"enemies": ["lunar_drone", "dust_mite"]
+		"enemies": ["lunar_drone", "dust_mite", "scrap_collector", "survey_probe"]
 	},
 	"asteroid_belt": {
 		"name": "Asteroid Belt",
 		"desc": "Dense field with pirate skiffs and kinetic hazards.",
 		"difficulty": 2,
-		"enemies": ["pirate_skiff", "rock_golem"]
+		"enemies": ["pirate_skiff", "rock_golem", "claim_jumper", "ore_hauler"]
 	},
 	"mars_debris": {
 		"name": "Mars Debris Field",
 		"desc": "Wreckage of the old Martian shipyards. Scavengers abound.",
 		"difficulty": 3,
-		"enemies": ["scavenger_mech", "martian_sentry"]
+		"enemies": ["scavenger_mech", "martian_sentry", "derelict_frigate", "salvage_swarm"]
 	},
 	"titan_halo": {
 		"name": "Titan's Halo",
 		"desc": "Frozen rings around the gas giant. Extreme cold and pirate lords.",
 		"difficulty": 4,
-		"enemies": ["cryo_drone", "pirate_gunship"]
+		"enemies": ["cryo_drone", "pirate_gunship", "frozen_hulk", "smuggler_cutter"]
 	},
 	"sector_alpha": {
 		"name": "Sector Alpha",
@@ -104,6 +104,66 @@ var enemy_db = {
 		"loot": [["C", 1, 2]],
 		"rare_loot": [["Scrap", 0.2, 1, 1]],
 		"xp": 5
+	},
+	# New Lunar Orbit Enemies
+	"scrap_collector": {
+		"name": "Scrap Collector",
+		"stats": {"hp": 35, "max_shield": 0, "atk": 4, "def": 8},
+		"loot": [["Scrap", 3, 6]],  # Best Scrap farm (for recycling)
+		"rare_loot": [["Fe", 0.4, 2, 4]],  # Bonus Iron
+		"xp": 7
+	},
+	"survey_probe": {
+		"name": "Derelict Survey Probe",
+		"stats": {"hp": 70, "max_shield": 30, "atk": 8, "def": 30},
+		"loot": [["Si", 3, 5]],  # Best early Silicon farm
+		"rare_loot": [["NavData", 0.08, 1, 1], ["Chip", 0.05, 1, 1]],
+		"xp": 15
+	},
+	# New Asteroid Belt Enemies
+	"claim_jumper": {
+		"name": "Claim Jumper",
+		"stats": {"hp": 120, "max_shield": 40, "atk": 14, "def": 8},
+		"loot": [["credits", 50, 100]],  # Best credits farm in D2
+		"rare_loot": [["Cu", 0.5, 2, 4], ["NavData", 0.1, 1, 1]],  # Cu as rare keeps Lunar Drone relevant
+		"xp": 22
+	},
+	"ore_hauler": {
+		"name": "Ore Hauler Wreck",
+		"stats": {"hp": 250, "max_shield": 0, "atk": 6, "def": 50},
+		"loot": [["Fe", 8, 15], ["C", 5, 10]],  # Best Fe+C bulk farm
+		"rare_loot": [["W", 0.15, 1, 2]],  # Tungsten introduction
+		"xp": 28
+	},
+	# New Mars Debris Enemies
+	"derelict_frigate": {
+		"name": "Derelict Frigate",
+		"stats": {"hp": 550, "max_shield": 180, "atk": 20, "def": 35},
+		"loot": [["Steel", 2, 5], ["Scrap", 8, 15]],  # Steel source
+		"rare_loot": [["Circuit", 0.25, 1, 2], ["Chip", 0.15, 1, 1]],
+		"xp": 55
+	},
+	"salvage_swarm": {
+		"name": "Salvage Swarm",
+		"stats": {"hp": 90, "max_shield": 0, "atk": 40, "def": 0},
+		"loot": [["Scrap", 10, 20]],  # Glass cannon, massive Scrap
+		"rare_loot": [["Resin", 0.3, 1, 2], ["Cu", 0.2, 1, 2]],
+		"xp": 35
+	},
+	# New Titan's Halo Enemies
+	"frozen_hulk": {
+		"name": "Frozen Hulk",
+		"stats": {"hp": 650, "max_shield": 250, "atk": 18, "def": 70},
+		"loot": [["C", 10, 20]],  # Best Carbon farm
+		"rare_loot": [["Graphite", 0.35, 1, 3], ["W", 0.15, 1, 2]],
+		"xp": 75
+	},
+	"smuggler_cutter": {
+		"name": "Smuggler Cutter",
+		"stats": {"hp": 450, "max_shield": 180, "atk": 32, "def": 25},
+		"loot": [["credits", 100, 200]],  # Best credits in D4
+		"rare_loot": [["Li", 0.25, 1, 3], ["Ti", 0.2, 1, 2]],  # Rare Li/Ti
+		"xp": 95
 	},
 	"pirate_skiff": {
 		"name": "Pirate Skiff",

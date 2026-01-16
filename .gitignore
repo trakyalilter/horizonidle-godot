@@ -21,7 +21,6 @@ __pycache__/
 
 # User Data / Saves
 # It is good practice to ignore local save files
-savegame.json
 user://
 
 # Mono/C# (If used later, harmless to add)

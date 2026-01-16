@@ -4,7 +4,8 @@ extends Control
 @onready var atk_lbl = $VBoxContainer/StatsPanel/HBoxContainer/AtkLabel
 @onready var def_lbl = $VBoxContainer/StatsPanel/HBoxContainer/DefLabel
 @onready var hull_grid = $VBoxContainer/TabContainer/Hulls/HullGrid
-@onready var weapon_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponGrid
+@onready var kinetic_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer/KineticGrid
+@onready var energy_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer/EnergyGrid
 @onready var shield_grid = $VBoxContainer/TabContainer/Modules/Shields/ShieldGrid
 @onready var engine_grid = $VBoxContainer/TabContainer/Modules/Engines/EngineGrid
 @onready var battery_grid = $VBoxContainer/TabContainer/Modules/Batteries/BatteryGrid
@@ -25,7 +26,8 @@ func _ready():
 
 func refresh_list():
 	for child in hull_grid.get_children(): child.queue_free()
-	for child in weapon_grid.get_children(): child.queue_free()
+	for child in kinetic_grid.get_children(): child.queue_free()
+	for child in energy_grid.get_children(): child.queue_free()
 	for child in shield_grid.get_children(): child.queue_free()
 	for child in engine_grid.get_children(): child.queue_free()
 	for child in battery_grid.get_children(): child.queue_free()
@@ -48,14 +50,21 @@ func refresh_list():
 	for mid in sorted_mods:
 		var data = manager.modules[mid]
 		var type = data.get("slot_type", "weapon")
-		var target_grid = weapon_grid
+		var target_grid = null
 		
 		match type:
-			"weapon": target_grid = weapon_grid
+			"weapon":
+				var stats = data.get("stats", {})
+				if stats.get("atk_kinetic", 0) > stats.get("atk_energy", 0):
+					target_grid = kinetic_grid
+				else:
+					target_grid = energy_grid
 			"shield": target_grid = shield_grid
 			"engine": target_grid = engine_grid
 			"battery": target_grid = battery_grid
-			_: target_grid = weapon_grid
+			_: target_grid = energy_grid # Default
+		
+		if target_grid == null: continue
 		
 		var w = module_widget_scene.instantiate()
 		target_grid.add_child(w)

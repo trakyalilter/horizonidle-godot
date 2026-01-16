@@ -73,6 +73,35 @@ var recipes: Dictionary = {
 		"xp": 100,
 		"research_req": "xeno_archaeology"
 	},
+	"recycle_scrap": {
+		"name": "Scrap Recycling",
+		"description": "Disassemble salvage into components. Rolls 10 items.",
+		"input": { "Scrap": 5 },
+		"roll_count": 10,  # Roll 10 times from the table
+		"output_table": [
+			# COMMON (70% combined) - Basic materials
+			["Fe", 0.30, 1, 3],       # Iron - most common
+			["C", 0.20, 1, 2],        # Carbon
+			["Si", 0.15, 1, 2],       # Silicon
+			["Dirt", 0.05, 1, 2],     # Junk filler
+			# UNCOMMON (22% combined) - Useful materials
+			["Cu", 0.10, 1, 2],       # Copper - valuable for circuits
+			["Steel", 0.06, 1, 1],    # Pre-refined steel
+			["Fiber", 0.04, 1, 1],    # Carbon Fiber
+			["Resin", 0.02, 1, 1],    # Polymer Resin
+			# RARE (7% combined) - Components
+			["Circuit", 0.04, 1, 1],  # Basic Circuit
+			["Chip", 0.01, 1, 1],     # Microprocessor
+			# VERY RARE (1% combined) - Jackpot
+			["W", 0.005, 1, 1],       # Tungsten
+			["Ti", 0.002, 1, 1],      # Titanium
+			["NavData", 0.001, 1, 1]  # Encrypted Data
+		],
+		"duration": 20.0,
+		"level_req": 2,
+		"xp": 15,
+		"research_req": "basic_engineering"
+	},
 	"craft_carbon_fiber": {
 		"name": "Carbon Fiber",
 		"description": "Reinforce Carbon strands.",
@@ -114,7 +143,7 @@ var recipes: Dictionary = {
 		"description": "Mass produce iron slugs.",
 		"input": { "Fe": 2 },
 		"output": { "SlugT1": 10 },
-		"duration": 5.0,
+		"duration": 10.0,
 		"level_req": 1,
 		"xp": 10
 	},
@@ -123,7 +152,7 @@ var recipes: Dictionary = {
 		"description": "Cut silicate for lenses.",
 		"input": { "Si": 2 },
 		"output": { "CellT1": 10 },
-		"duration": 5.0,
+		"duration":10.0,
 		"level_req": 1,
 		"xp": 10
 	},
@@ -144,6 +173,16 @@ var recipes: Dictionary = {
 		"duration": 10.0,
 		"level_req": 4,
 		"xp": 20
+	},
+	"craft_coolant_cell": {
+		"name": "Helium Coolant Cell",
+		"description": "Pressurized helium for weapon cooling.",
+		"input": { "He": 10, "Steel": 2, "Resin": 1 },
+		"output": { "CoolantCell": 1 },
+		"duration": 15.0,
+		"level_req": 12,
+		"xp": 60,
+		"research_req": "cryogenic_systems"
 	},
 	"craft_slug_t3": {
 		"name": "Depleted Uranium Round",
@@ -166,15 +205,6 @@ var recipes: Dictionary = {
 		"research_req": "energy_metrics"
 	},
 	# Components
-	"craft_glass": {
-		"name": "Tempered Glass",
-		"description": "Smelt Silica sand into reinforced glass.",
-		"input": { "Si": 2 },
-		"output": { "Glass": 1 },
-		"duration": 5.0,
-		"level_req": 2,
-		"xp": 10
-	},
 	"craft_circuit": {
 		"name": "Basic Circuitry",
 		"description": "Solder Silicon and Copper.",
@@ -228,7 +258,7 @@ var recipes: Dictionary = {
 	"refine_gold": {
 		"name": "Gold Panning",
 		"description": "Sift large amounts of dirt for Gold flakes.",
-		"input": { "Dirt": 20, "Water": 20 },
+		"input": { "Dirt": 100, "Water": 100 },
 		"output": { "Au": 1 },
 		"duration": 12.0,
 		"level_req": 6,
@@ -238,7 +268,7 @@ var recipes: Dictionary = {
 	"gold_leaching": {
 		"name": "Chemical Leaching",
 		"description": "Dissolve gold from soil using chemical solvents.",
-		"input": { "Dirt": 50, "Water": 10, "H": 5 },
+		"input": { "Dirt": 70, "Water": 30, "H": 10 },
 		"output": { "Au": 5 },
 		"duration": 20.0,
 		"level_req": 15,
@@ -256,7 +286,7 @@ var recipes: Dictionary = {
 		"research_req": "automation"
 	},
 	"craft_battery_t1": {
-		"name": "Lithium-Ion Battery",
+		"name": "Assemble Basic Battery",
 		"description": "Basic energy storage for ships.",
 		"input": { "Li": 5, "Fe": 2 },
 		"output": { "BatteryT1": 1 },
@@ -575,19 +605,30 @@ func complete_process():
 			events.append(["loot", "+%d %s" % [qty, item], current_recipe_id])
 			
 	if "output_table" in current_recipe:
-		for entry in current_recipe["output_table"]:
-			var item = entry[0]
-			var chance = entry[1]
-			var min_q = entry[2]
-			var max_q = entry[3]
+		var roll_count = current_recipe.get("roll_count", 1)  # Default 1 roll
+		var results = {}  # Accumulate results: {item: total_qty}
+		
+		for i in range(roll_count):
+			for entry in current_recipe["output_table"]:
+				var item = entry[0]
+				var chance = entry[1]
+				var min_q = entry[2]
+				var max_q = entry[3]
+				
+				if randf() < chance:
+					var qty = randi_range(min_q, max_q)
+					results[item] = results.get(item, 0) + qty
+		
+		# Grant accumulated loot
+		for item in results:
+			var qty = results[item]
+			GameState.resources.add_element(item, qty)
 			
-			if randf() < chance:
-				var qty = randi_range(min_q, max_q)
-				GameState.resources.add_element(item, qty)
-				if item == "AncientComponent":
-					events.append(["xp", "JACKPOT! +%d %s" % [qty, item], current_recipe_id])
-				else:
-					events.append(["loot", "+%d %s" % [qty, item], current_recipe_id])
+			# Special jackpot message for rare items
+			if item in ["AncientComponent", "W", "Ti", "NavData", "Chip", "Circuit"]:
+				events.append(["xp", "JACKPOT! +%d %s" % [qty, ElementDB.get_display_name(item)], current_recipe_id])
+			else:
+				events.append(["loot", "+%d %s" % [qty, ElementDB.get_display_name(item)], current_recipe_id])
 					
 	# 4. XP
 	add_xp(current_recipe.get("xp", 0))

@@ -85,12 +85,13 @@ text = "Other"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="GridContainer" type="HFlowContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
+columns = 7
 
 [node name="RightPanel" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2

@@ -35,28 +35,28 @@ var hulls: Dictionary = {
 	"frigate_hull": {
 		"name": "Industrial Frigate (T2)",
 		"stats": {"hp": 500},
-		"cost": {"credits": 1000, "Steel": 40, "Chip": 5},
+		"cost": {"credits": 3000, "Steel": 100,"Circuit": 20, "Chip": 10},
 		"slots": ["weapon", "weapon", "shield", "shield", "engine", "battery", "battery"],
 		"research_req": "shipwright_1"
 	},
 	"destroyer_hull": {
 		"name": "Escort Destroyer (T3)",
 		"stats": {"hp": 1500, "atk": 10},
-		"cost": {"credits": 5000, "Steel": 150, "Ti": 50},
+		"cost": {"credits": 10000, "Steel": 150, "Ti": 50, "Circuit": 50, "Chip": 30},
 		"slots": ["weapon", "weapon", "weapon", "shield", "shield", "engine", "engine", "battery", "battery", "battery"],
 		"research_req": "shipwright_2"
 	},
 	"battlecruiser_hull": {
 		"name": "Battlecruiser (T4)",
 		"stats": {"hp": 4000, "atk": 25, "energy_capacity": 500},
-		"cost": {"credits": 15000, "Steel": 500, "Ti": 200, "VoidArtifact": 1},
+		"cost": {"credits": 30000, "Steel": 500, "Ti": 200, "Circuit": 100, "Chip": 50, "VoidArtifact": 1},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery"],
 		"research_req": "capital_ship_engineering"
 	},
 	"dreadnought_hull": {
 		"name": "Dreadnought (T5)",
 		"stats": {"hp": 10000, "atk": 50, "energy_capacity": 1000},
-		"cost": {"credits": 50000, "Steel": 5000, "Ti": 500, "QuantumCore": 1, "VoidArtifact": 5},
+		"cost": {"credits": 60000, "Steel": 5000, "Ti": 500, "Circuit": 200, "Chip": 100, "QuantumCore": 1, "VoidArtifact": 5},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery", "battery", "battery"],
 		"research_req": "quantum_dynamics"
 	}
@@ -75,7 +75,7 @@ var modules: Dictionary = {
 		"name": "Focused Laser Mk.II", 
 		"slot_type": "weapon", 
 		"stats": {"atk_energy": 25, "energy_load": 15}, 
-		"cost": {"credits": 500, "Si": 20, "Ti": 10, "Chip": 5},
+		"cost": {"credits": 500, "Si": 20, "Ti": 10, "Circuit": 10, "Chip": 10},
 		"desc": "High intensity beam. Melts shields."
 	},
 	"railgun_mk1": {
@@ -93,9 +93,17 @@ var modules: Dictionary = {
 		"desc": "Advanced analytics. Improves all weapon tracking.",
 		"research_req": "basic_engineering"
 	},
+	"cryo_laser_mk3": {
+		"name": "Cryo-Cooled Laser Mk.III",
+		"slot_type": "weapon",
+		"stats": {"atk_energy": 60, "energy_load": 25},
+		"cost": {"credits": 2500, "Ti": 30, "CoolantCell": 5, "AdvCircuit": 3},
+		"desc": "Helium-cooled beam. Extreme shield damage.",
+		"research_req": "cryogenic_systems"
+	},
 	# Batteries
 	"battery_t1": {
-		"name": "Li-Ion Battery",
+		"name": "Basic Battery Module",
 		"slot_type": "battery",
 		"stats": {"energy_capacity": 50},
 		"cost": {"BatteryT1": 10},
@@ -488,6 +496,7 @@ func get_save_data_manager() -> Dictionary:
 	data["loadout"] = loadout
 	data["inventory"] = module_inventory
 	data["hp"] = current_hp
+	data["active_ammo"] = active_ammo
 	return data
 
 func load_save_data_manager(data: Dictionary):
@@ -507,6 +516,7 @@ func load_save_data_manager(data: Dictionary):
 			loadout[i] = val
 			
 	module_inventory = data.get("inventory", {})
+	active_ammo = data.get("active_ammo", "")
 	recalc_stats()
 	current_hp = data.get("hp", max_hp)
 	
@@ -514,6 +524,7 @@ func reset():
 	active_hull = "corvette_hull"
 	module_inventory = {}
 	loadout = {}
+	active_ammo = ""
 	if active_hull in hulls:
 		for i in range(hulls[active_hull]["slots"].size()):
 			loadout[i] = null

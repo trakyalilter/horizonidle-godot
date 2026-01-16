@@ -138,7 +138,7 @@ func get_display_name(symbol: String) -> String:
 ## Get display name with symbol in parentheses
 func get_full_display(symbol: String) -> String:
 	var name = get_display_name(symbol)
-	if name != symbol and symbol.length() <= 3:  # Only add symbol if it's short
+	if name != symbol and symbol.length() <= 4:  # Extended to 4 for things like Ni, Au, etc.
 		return "%s (%s)" % [name, symbol]
 	return name
 
