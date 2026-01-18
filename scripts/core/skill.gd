@@ -18,11 +18,15 @@ func _init(p_name: String = "Skill"):
 func _generate_xp_table() -> Dictionary:
 	var table = {}
 	var total_xp: float = 0.0
-	# RuneScape XP Formula
+	# RuneScape XP Formula - Adjusted for steeper early game
+	# Original diff / 4.0 was too fast for 1-hour loops.
+	# Standardizing to require more actions for early milestones.
 	for lvl in range(1, 121):
 		table[lvl] = int(total_xp)
 		if lvl < 120:
-			var diff = int(floor(lvl + 300.0 * pow(2.0, float(lvl) / 7.0)))
+			# Steeper early game by adding a flat difficulty constant for first 20 levels
+			var boost = 200.0 if lvl < 20 else 0.0
+			var diff = int(floor(lvl + boost + 300.0 * pow(2.0, float(lvl) / 7.0)))
 			total_xp += diff / 4.0
 	return table
 

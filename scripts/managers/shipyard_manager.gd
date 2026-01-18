@@ -19,7 +19,7 @@ var energy_used = 0.0
 
 # Active Ship State
 var active_hull: String = "corvette_hull"
-var active_ammo: String = ""
+var ammo_loadout: Dictionary = {} # {slot_idx: ammo_id}
 var loadout: Dictionary = {} # {slot_index: module_id}
 
 # Inventory
@@ -27,36 +27,36 @@ var module_inventory: Dictionary = {}
 
 var hulls: Dictionary = {
 	"corvette_hull": {
-		"name": "Mining Corvette (T1)",
-		"stats": {"hp": 100},
+		"name": "Mining Corvette",
+		"stats": {"hp": 100, "atk": 5},
 		"cost": {"credits": 50, "Fe": 10},
 		"slots": ["weapon", "shield", "engine", "battery"] 
 	},
 	"frigate_hull": {
-		"name": "Industrial Frigate (T2)",
-		"stats": {"hp": 500},
-		"cost": {"credits": 3000, "Steel": 100,"Circuit": 20, "Chip": 10},
+		"name": "Industrial Frigate",
+		"stats": {"hp": 800, "atk": 15},
+		"cost": {"credits": 50000, "Steel": 2000, "Circuit": 100, "Chip": 10},
 		"slots": ["weapon", "weapon", "shield", "shield", "engine", "battery", "battery"],
 		"research_req": "shipwright_1"
 	},
 	"destroyer_hull": {
-		"name": "Escort Destroyer (T3)",
-		"stats": {"hp": 1500, "atk": 10},
-		"cost": {"credits": 10000, "Steel": 150, "Ti": 50, "Circuit": 50, "Chip": 30},
+		"name": "Escort Destroyer",
+		"stats": {"hp": 2500, "atk": 40, "energy_capacity": 600},
+		"cost": {"credits": 500000, "Steel": 25000, "Ti": 250, "Circuit": 500, "Chip": 100, "Superalloy": 10, "AdvCircuit": 10},
 		"slots": ["weapon", "weapon", "weapon", "shield", "shield", "engine", "engine", "battery", "battery", "battery"],
 		"research_req": "shipwright_2"
 	},
 	"battlecruiser_hull": {
-		"name": "Battlecruiser (T4)",
-		"stats": {"hp": 4000, "atk": 25, "energy_capacity": 500},
-		"cost": {"credits": 30000, "Steel": 500, "Ti": 200, "Circuit": 100, "Chip": 50, "VoidArtifact": 1},
+		"name": "Battlecruiser",
+		"stats": {"hp": 7500, "atk": 100, "energy_capacity": 1500},
+		"cost": {"credits": 2000000, "Steel": 100000, "Ti": 1500, "Circuit": 1000, "Chip": 250, "Superalloy": 50, "AdvCircuit": 50, "VoidArtifact": 10},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery"],
 		"research_req": "capital_ship_engineering"
 	},
 	"dreadnought_hull": {
-		"name": "Dreadnought (T5)",
-		"stats": {"hp": 10000, "atk": 50, "energy_capacity": 1000},
-		"cost": {"credits": 60000, "Steel": 5000, "Ti": 500, "Circuit": 200, "Chip": 100, "QuantumCore": 1, "VoidArtifact": 5},
+		"name": "Dreadnought",
+		"stats": {"hp": 20000, "atk": 250, "energy_capacity": 4000},
+		"cost": {"credits": 10000000, "Steel": 500000, "Ti": 5000, "Circuit": 2500, "Chip": 500, "Superalloy": 200, "AdvCircuit": 200, "QuantumCore": 20, "VoidArtifact": 50},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery", "battery", "battery"],
 		"research_req": "quantum_dynamics"
 	}
@@ -75,15 +75,17 @@ var modules: Dictionary = {
 		"name": "Focused Laser Mk.II", 
 		"slot_type": "weapon", 
 		"stats": {"atk_energy": 25, "energy_load": 15}, 
-		"cost": {"credits": 500, "Si": 20, "Ti": 10, "Circuit": 10, "Chip": 10},
-		"desc": "High intensity beam. Melts shields."
+		"cost": {"credits": 5000, "Si": 20, "Ti": 10, "Circuit": 10, "Chip": 10},
+		"desc": "High intensity beam. Melts shields.",
+		"research_req": "laser_optics"
 	},
 	"railgun_mk1": {
 		"name": "Mass Driver", 
 		"slot_type": "weapon", 
-		"stats": {"atk_kinetic": 15, "energy_load": 5}, 
-		"cost": {"credits": 200, "Fe": 50},
-		"desc": "Magnetic projectile. Crushes armor."
+		"stats": {"atk_kinetic": 25, "energy_load": 5}, 
+		"cost": {"credits": 1000, "Fe": 50},
+		"desc": "Magnetic projectile. Crushes armor.",
+		"research_req": "kinetics_101"
 	},
 	"targeting_computer": {
 		"name": "Targeting Computer",
@@ -97,7 +99,7 @@ var modules: Dictionary = {
 		"name": "Cryo-Cooled Laser Mk.III",
 		"slot_type": "weapon",
 		"stats": {"atk_energy": 60, "energy_load": 25},
-		"cost": {"credits": 2500, "Ti": 30, "CoolantCell": 5, "AdvCircuit": 3},
+		"cost": {"credits": 25000, "Ti": 30, "CoolantCell": 5, "AdvCircuit": 3},
 		"desc": "Helium-cooled beam. Extreme shield damage.",
 		"research_req": "cryogenic_systems"
 	},
@@ -107,7 +109,8 @@ var modules: Dictionary = {
 		"slot_type": "battery",
 		"stats": {"energy_capacity": 50},
 		"cost": {"BatteryT1": 10},
-		"desc": "Standard Energy Storage."
+		"desc": "Standard Energy Storage.",
+		"research_req": "power_systems"
 	},
 	"battery_t2": {
 		"name": "Graphene Matrix",
@@ -123,14 +126,14 @@ var modules: Dictionary = {
 		"stats": {"energy_capacity": 500},
 		"cost": {"BatteryT3": 10},
 		"desc": "Infinite Void Energy.",
-		"research_req": "quantum_dynamics"
+		"research_req": "warp_drive"
 	},
 	# Shields
 	"basic_shield": {
 		"name": "Deflector Shield", 
 		"slot_type": "shield", 
 		"stats": {"max_shield": 50, "shield_regen": 2, "energy_load": 10}, 
-		"cost": {"credits": 1000, "Si": 100},
+		"cost": {"credits": 10000, "Si": 100},
 		"desc": "Generates a regenerative energy field.",
 		"research_req": "energy_shields"
 	},
@@ -138,7 +141,7 @@ var modules: Dictionary = {
 		"name": "Graphite Armor",
 		"slot_type": "shield", 
 		"stats": {"def": 12, "hp": 50}, 
-		"cost": {"credits": 500, "Graphite": 20},
+		"cost": {"credits": 5000, "Graphite": 20},
 		"desc": "Ablative carbon armor. Increases Hull & Armor.",
 		"research_req": "adv_materials"
 	},
@@ -146,7 +149,7 @@ var modules: Dictionary = {
 		"name": "Titanium Plating",
 		"slot_type": "shield",
 		"stats": {"def": 15, "hp": 100},
-		"cost": {"credits": 800, "Ti": 20},
+		"cost": {"credits": 20000, "Ti": 20},
 		"desc": "Heavy-duty alloy armor.",
 		"research_req": "shipwright_1"
 	},
@@ -169,7 +172,7 @@ var modules: Dictionary = {
 	"antimatter_engine": {
 		"name": "Antimatter Engine",
 		"slot_type": "engine",
-		"stats": {"eva": 50, "energy_load": 30},
+		"stats": {"eva": 70, "energy_load": 30},
 		"cost": {"credits": 5000, "VoidArtifact": 1, "AdvCircuit": 5},
 		"desc": "Experimental FTL-capable drive.",
 		"research_req": "capital_ship_engineering"
@@ -181,12 +184,12 @@ var modules: Dictionary = {
 		"stats": {"atk_energy": 50, "energy_load": 30},
 		"cost": {"credits": 2000, "Si": 50, "Ti": 20, "AdvCircuit": 10},
 		"desc": "Cutting-edge beam weapon. Devastates shields.",
-		"research_req": "energy_metrics"
+		"research_req": "shipwright_2"
 	},
 	"railgun_mk2": {
 		"name": "Heavy Railgun",
 		"slot_type": "weapon",
-		"stats": {"atk_kinetic": 40, "energy_load": 15},
+		"stats": {"atk_kinetic": 50, "energy_load": 15},
 		"cost": {"credits": 1500, "Steel": 50, "W": 10},
 		"desc": "Magnetic accelerator. Armor penetration.",
 		"research_req": "ballistics_optimization"
@@ -194,7 +197,7 @@ var modules: Dictionary = {
 	"railgun_mk3": {
 		"name": "Coil Cannon",
 		"slot_type": "weapon",
-		"stats": {"atk_kinetic": 75, "energy_load": 25},
+		"stats": {"atk_kinetic": 100, "energy_load": 25},
 		"cost": {"credits": 5000, "Steel": 100, "U": 5, "AdvCircuit": 5},
 		"desc": "Devastating kinetic damage. Hull shredder.",
 		"research_req": "capital_ship_engineering"
@@ -222,14 +225,16 @@ var modules: Dictionary = {
 		"slot_type": "shield",
 		"stats": {"def": 8, "hp": 30},
 		"cost": {"credits": 100, "Bronze": 10},
-		"desc": "Ancient alloy. Cheap early armor alternative to Graphite."
+		"desc": "Ancient alloy. Cheap early armor alternative to Graphite.",
+		"research_req": "bronze_smithing"
 	},
 	"aluminum_hull_patch": {
 		"name": "Aluminum Hull Patch",
 		"slot_type": "shield",
 		"stats": {"hp": 50, "eva": 5},
 		"cost": {"credits": 150, "Al": 15},
-		"desc": "Lightweight plating. Less protection but improved maneuverability."
+		"desc": "Lightweight plating. Less protection but improved maneuverability.",
+		"research_req": "lightweight_alloys"
 	},
 	"mg_al_frame": {
 		"name": "Magnesium-Aluminum Frame",
@@ -245,7 +250,7 @@ var modules: Dictionary = {
 		"stats": {"def": 18, "hp": 100},
 		"cost": {"credits": 600, "GalvanizedSteel": 15},
 		"desc": "Corrosion-proof steel. Reliable mid-tier armor.",
-		"research_req": "alloy_synthesis"
+		"research_req": "smelting"
 	},
 	# Mid-Game Advanced Modules
 	"stainless_armor": {
@@ -275,7 +280,7 @@ var modules: Dictionary = {
 	"superalloy_engine": {
 		"name": "Superalloy Engine Core",
 		"slot_type": "engine",
-		"stats": {"eva": 35, "energy_load": 20},
+		"stats": {"eva": 45, "energy_load": 20},
 		"cost": {"credits": 3500, "Superalloy": 20, "Circuit": 15},
 		"desc": "Heat-resistant alloy engine. High performance between Plasma and Antimatter.",
 		"research_req": "superalloy_engineering"
@@ -320,6 +325,43 @@ var modules: Dictionary = {
 		"cost": {"credits": 10000, "Pt": 20, "Si": 100, "AdvCircuit": 15},
 		"desc": "Pt-coated optics. Superior energy damage.",
 		"research_req": "industrial_catalysis"
+	},
+	# UNIQUE MODULES (Mid-Late Game)
+	"reactive_armor": {
+		"name": "Reactive Plate Alpha",
+		"slot_type": "shield",
+		"stats": {"hp": 1000, "def": 20},
+		"cost": {"credits": 250000, "Superalloy": 50, "AdvCircuit": 10, "AncientComponent": 5},
+		"desc": "(Unique) Adaptive plating. Reduces incoming damage as Hull decreases.",
+		"research_req": "superalloy_engineering",
+		"unique_id": "reactive_armor_effect"
+	},
+	"plasma_overcharger": {
+		"name": "Plasma Overcharger",
+		"slot_type": "weapon",
+		"stats": {"atk_energy": 20, "energy_load": 50},
+		"cost": {"credits": 100000, "AdvCircuit": 20, "He": 100},
+		"desc": "(Unique) Heavily boosts Energy Damage but consumes massive Reactor power.",
+		"research_req": "energy_metrics",
+		"unique_id": "plasma_overload_effect"
+	},
+	"reflective_sheath": {
+		"name": "Reflective Phase Sheath",
+		"slot_type": "shield",
+		"stats": {"max_shield": 500, "shield_regen": 10},
+		"cost": {"credits": 500000, "VoidCrystal": 5, "AdvCircuit": 15},
+		"desc": "(Unique) 20% chance to reflect 50% of incoming damage back to the attacker.",
+		"research_req": "exotic_metallurgy",
+		"unique_id": "reflect_damage_effect"
+	},
+	"warp_stabilizer": {
+		"name": "Warp-Field Stabilizer",
+		"slot_type": "engine",
+		"stats": {"eva": 40},
+		"cost": {"credits": 150000, "NavData": 10, "Circuit": 20, "AncientComponent": 2},
+		"desc": "(Unique) Stabilizes internal fields. Increases Combat Attack Speed by 15%.",
+		"research_req": "warp_drive",
+		"unique_id": "warp_combat_speed_effect"
 	}
 }
 
@@ -360,7 +402,9 @@ func construct_hull(hull_id: String) -> bool:
 	for i in range(hull_data["slots"].size()):
 		loadout[i] = null
 		
+	# Recalculate to get new max_hp
 	recalc_stats()
+	current_hp = max_hp # Explicitly force full health for the new hull
 	return true
 
 func unequip_all():
@@ -440,6 +484,10 @@ func unequip_slot(slot_idx: int):
 		loadout[slot_idx] = null
 		recalc_stats()
 
+func set_slot_ammo(slot_idx: int, ammo_id: String):
+	ammo_loadout[slot_idx] = ammo_id
+	# No recalc needed as ammo doesn't affect base stats usually
+
 func recalc_stats():
 	var hp = 0
 	var shield = 0.0
@@ -473,7 +521,14 @@ func recalc_stats():
 			e_cap += m.get("energy_capacity", 0)
 			e_load += m.get("energy_load", 0)
 			
-	max_hp = hp if hp > 0 else 10
+	var rm = GameState.research_manager
+	var hp_mult = 1.0
+	if rm:
+		hp_mult += rm.get_efficiency_bonus("max_hp_mult")
+	
+	max_hp = int(hp * hp_mult)
+	if max_hp <= 0: max_hp = 10
+	
 	max_shield = shield
 	shield_regen = s_reg
 	attack_kinetic = atk_k
@@ -483,11 +538,11 @@ func recalc_stats():
 	evasion = eva
 	energy_used = e_load
 	
+	current_hp = min(current_hp, max_hp)
+	
 	# Update Global Resources
 	if GameState.resources:
 		GameState.resources.set_max_energy(e_cap)
-	
-	if current_hp > max_hp: current_hp = max_hp
 
 
 func get_save_data_manager() -> Dictionary:
@@ -496,7 +551,7 @@ func get_save_data_manager() -> Dictionary:
 	data["loadout"] = loadout
 	data["inventory"] = module_inventory
 	data["hp"] = current_hp
-	data["active_ammo"] = active_ammo
+	data["ammo_loadout"] = ammo_loadout
 	return data
 
 func load_save_data_manager(data: Dictionary):
@@ -516,7 +571,12 @@ func load_save_data_manager(data: Dictionary):
 			loadout[i] = val
 			
 	module_inventory = data.get("inventory", {})
-	active_ammo = data.get("active_ammo", "")
+	
+	# Convert JSON string keys for ammo_loadout back to int
+	var saved_ammo = data.get("ammo_loadout", {})
+	ammo_loadout = {}
+	for key in saved_ammo:
+		ammo_loadout[int(key)] = saved_ammo[key]
 	recalc_stats()
 	current_hp = data.get("hp", max_hp)
 	
@@ -524,7 +584,7 @@ func reset():
 	active_hull = "corvette_hull"
 	module_inventory = {}
 	loadout = {}
-	active_ammo = ""
+	ammo_loadout = {}
 	if active_hull in hulls:
 		for i in range(hulls[active_hull]["slots"].size()):
 			loadout[i] = null

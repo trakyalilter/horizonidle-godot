@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://d1jt06yrhcshv"]
 
-[ext_resource type="Script" path="res://scripts/ui/research_page.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://pilf6rrft1dl" path="res://scripts/ui/research_page.gd" id="1_script"]
 
 [node name="ResearchPage" type="Control"]
 layout_mode = 3
@@ -36,18 +36,14 @@ text = "Research Network"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CreditsLabel" type="Label" parent="VBoxContainer/Header"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.792157, 0.156863, 1)
-theme_override_font_sizes/font_size = 18
-text = "Credits: 0"
-
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+current_tab = 0
 
 [node name="Operations" type="Control" parent="VBoxContainer/TabContainer"]
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/TabContainer/Operations"]
 layout_mode = 1
@@ -65,6 +61,7 @@ mouse_filter = 1
 [node name="Engineering" type="Control" parent="VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/TabContainer/Engineering"]
 layout_mode = 1
@@ -82,6 +79,7 @@ mouse_filter = 1
 [node name="Ships" type="Control" parent="VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/TabContainer/Ships"]
 layout_mode = 1

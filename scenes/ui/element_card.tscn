@@ -44,9 +44,7 @@ vertical_alignment = 1
 text_overrun_behavior = 3
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
 theme_override_font_sizes/font_size = 10
 text = "Iron"

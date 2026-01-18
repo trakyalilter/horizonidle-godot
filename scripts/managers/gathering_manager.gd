@@ -15,30 +15,65 @@ var events: Array = [] # Buffer for UI
 var actions: Dictionary = {
 	"gather_dirt": {
 		"name": "Excavate Soil",
-		"loot_table": [
-			["Dirt", 1.0, 1, 3] # [Element, Chance, Min, Max]
-		],
-		"xp": 10,
-		"level_req": 1,
-		"research_req": null
+		"loot_table": [["Dirt", 1.0, 1, 3]],
+		"xp": 5,
+		"level_req": 1
 	},
 	"collect_water": {
 		"name": "Pump Water",
-		"loot_table": [
-			["Water", 1.0, 1, 2]
-		],
-		"xp": 15,
-		"level_req": 1,
+		"loot_table": [["Water", 1.0, 1, 2]],
+		"xp": 8,
+		"level_req": 3,
 		"research_req": "fluid_dynamics"
+	},
+	"mine_cassiterite": {
+		"name": "Mine Cassiterite (Tin Ore)",
+		"loot_table": [["Cassiterite", 1.0, 1, 2]],
+		"xp": 12,
+		"level_req": 8
 	},
 	"gather_wood": {
 		"name": "Deforest Zone",
-		"loot_table": [
-			["Wood", 1.0, 1, 2]
-		],
+		"loot_table": [["Wood", 1.0, 1, 2]],
+		"xp": 10,
+		"level_req": 5
+	},
+	"mine_dolomite": {
+		"name": "Quarry Dolomite",
+		"loot_table": [["Dolomite", 1.0, 1, 3], ["Dirt", 0.5, 1, 2]],
+		"xp": 18,
+		"level_req": 15
+	},
+	"mine_bauxite": {
+		"name": "Strip Mine Bauxite",
+		"loot_table": [["Bauxite", 1.0, 2, 4], ["Fe", 0.3, 1, 2]],
 		"xp": 20,
-		"level_req": 3,
-		"research_req": "combustion"
+		"level_req": 18
+	},
+	"extract_salts": {
+		"name": "Extract Lithium Salt",
+		"loot_table": [["Spodumene", 1.0, 1, 3]],
+		"xp": 30,
+		"level_req": 30,
+		"research_req": "basic_engineering"
+	},
+	"mine_zinc_ore": {
+		"name": "Extract Zinc Ore",
+		"loot_table": [["ZincOre", 1.0, 1, 3], ["Si", 0.4, 1, 1]],
+		"xp": 25,
+		"level_req": 25
+	},
+	"mine_malachite": {
+		"name": "Extract Malachite (Copper Ore)",
+		"loot_table": [["Malachite", 1.0, 1, 2]],
+		"xp": 14,
+		"level_req": 10
+	},
+	"mine_quartz": {
+		"name": "Collect Quartz Clusters",
+		"loot_table": [["Quartz", 1.0, 1, 3]],
+		"xp": 22,
+		"level_req": 22
 	},
 	"harvest_nebula": {
 		"name": "Harvest Nebula (Orbital)",
@@ -46,58 +81,10 @@ var actions: Dictionary = {
 			["H", 0.7, 1, 2],
 			["He", 0.3, 1, 1]
 		],
-		"xp": 50,
-		"level_req": 10,
+		"xp": 60, # Increased from 50 (Late game)
+		"level_req": 40, # Increased from 10
 		"research_req": null
 	},
-	"extract_salts": {
-		"name": "Extract Lithium Salt",
-		"loot_table": [
-			["Spodumene", 1.0, 1, 3]
-		],
-		"xp": 30,
-		"level_req": 5,
-		"research_req": "basic_engineering"
-	},
-	"mine_bauxite": {
-		"name": "Strip Mine Bauxite",
-		"loot_table": [
-			["Bauxite", 1.0, 2, 4],
-			["Fe", 0.3, 1, 2]  # Iron as byproduct
-		],
-		"xp": 25,
-		"level_req": 4,
-		"research_req": null
-	},
-	"mine_dolomite": {
-		"name": "Quarry Dolomite",
-		"loot_table": [
-			["Dolomite", 1.0, 1, 3],
-			["Dirt", 0.5, 1, 2]
-		],
-		"xp": 22,
-		"level_req": 4,
-		"research_req": null
-	},
-	"mine_cassiterite": {
-		"name": "Mine Cassiterite (Tin Ore)",
-		"loot_table": [
-			["Cassiterite", 1.0, 1, 2]
-		],
-		"xp": 18,
-		"level_req": 3,
-		"research_req": null
-	},
-	"mine_zinc_ore": {
-		"name": "Extract Zinc Ore",
-		"loot_table": [
-			["ZincOre", 1.0, 1, 3],
-			["Si", 0.4, 1, 1]
-		],
-		"xp": 20,
-		"level_req": 4,
-		"research_req": null
-	}
 }
 
 func _init():
@@ -195,6 +182,11 @@ func complete_action():
 		
 		if randf() < chance:
 			var amount = randi_range(min_amt, max_amt)
+			
+			# Apply Yield Bonus
+			if GameState.research_manager:
+				amount += int(GameState.research_manager.get_efficiency_bonus("gathering_yield"))
+				
 			GameState.resources.add_element(element, amount)
 			events.append(["loot", "+%d %s" % [amount, element], current_action_id])
 			dropped_any = true
@@ -238,6 +230,10 @@ func calculate_offline(delta: float):
 			
 			if randf() < chance:
 				var amount = randi_range(min_amt, max_amt)
+				
+				if GameState.research_manager:
+					amount += int(GameState.research_manager.get_efficiency_bonus("gathering_yield"))
+					
 				GameState.resources.add_element(element, amount)
 				loot_summary[element] = loot_summary.get(element, 0) + amount
 				dropped_any = true
@@ -248,6 +244,10 @@ func calculate_offline(delta: float):
 			var min_amt = entry[2]
 			var max_amt = entry[3]
 			var amount = randi_range(min_amt, max_amt)
+			
+			if GameState.research_manager:
+				amount += int(GameState.research_manager.get_efficiency_bonus("gathering_yield"))
+				
 			GameState.resources.add_element(element, amount)
 			loot_summary[element] = loot_summary.get(element, 0) + amount
 	
@@ -280,3 +280,30 @@ func load_save_data_manager(data: Dictionary):
 			current_action = actions[current_action_id]
 		else:
 			is_active = false
+			
+func get_current_rate() -> Dictionary:
+	"""Returns estimated yield per minute for the active action"""
+	if not is_active or current_action.is_empty():
+		return {}
+		
+	var speed_mult = get_action_speed_multiplier(current_action_id)
+	var effective_duration = action_duration / speed_mult
+	var actions_per_min = 60.0 / effective_duration
+	
+	var rates = {}
+	var loot_table = current_action["loot_table"]
+	
+	for entry in loot_table:
+		var symbol = entry[0]
+		var chance = entry[1]
+		var min_amt = entry[2]
+		var max_amt = entry[3]
+		var avg_amt = (min_amt + max_amt) / 2.0
+		
+		# Resource Yield Bonus
+		if GameState.research_manager:
+			avg_amt += GameState.research_manager.get_efficiency_bonus("gathering_yield")
+			
+		rates[symbol] = avg_amt * chance * actions_per_min
+		
+	return rates

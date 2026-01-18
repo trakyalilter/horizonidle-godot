@@ -6,7 +6,7 @@
     "mass": 18.015,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 1,
+    "base_value": 0,
     "description": "Essential for life and a source of Hydrogen/Oxygen."
   },
   {
@@ -16,7 +16,7 @@
     "mass": 100.0,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 1,
+    "base_value": 0,
     "description": "Common soil containing trace minerals."
   },
   {
@@ -26,7 +26,7 @@
     "mass": 50.0,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 2,
+    "base_value": 0,
     "description": "Organic matter, rich in Carbon."
   },
   {
@@ -36,8 +36,28 @@
     "mass": 10.0,
     "category": "Raw Material",
     "tier": 0,
-    "base_value": 2,
+    "base_value": 0,
     "description": "Lithium-rich pyroxene mineral found in pegmatites."
+  },
+  {
+    "atomic_number": -5,
+    "symbol": "Quartz",
+    "name": "Quartz Cluster",
+    "mass": 25.0,
+    "category": "Raw Material",
+    "tier": 1,
+    "base_value": 0,
+    "description": "Crystalline Silicon dioxide. Source of Silicon."
+  },
+  {
+    "atomic_number": -6,
+    "symbol": "Malachite",
+    "name": "Malachite Ore",
+    "mass": 30.0,
+    "category": "Raw Material",
+    "tier": 1,
+    "base_value": 0,
+    "description": "Copper carbonate hydroxide mineral. Source of Copper."
   },
   {
     "atomic_number": 1,
@@ -168,6 +188,16 @@
     "tier": 3,
     "base_value": 80,
     "description": "High-performance integrated circuits."
+  },
+  {
+    "atomic_number": -307,
+    "symbol": "Chip",
+    "name": "Microchip",
+    "mass": 0.05,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 50,
+    "description": "Miniaturized semiconductor logic unit."
   },
   {
     "atomic_number": -10,
@@ -330,7 +360,7 @@
     "mass": 0.1,
     "category": "Ammo",
     "tier": 1,
-    "base_value": 5,
+    "base_value": 15,
     "description": "Standard iron slugs. +5 Kinetic Dmg (20s)."
   },
   {
@@ -340,7 +370,7 @@
     "mass": 0.2,
     "category": "Ammo",
     "tier": 2,
-    "base_value": 20,
+    "base_value": 35,
     "description": "Armor-piercing heavy slugs. +15 Kinetic Dmg (20s)."
   },
   {
@@ -350,7 +380,7 @@
     "mass": 0.1,
     "category": "Ammo",
     "tier": 1,
-    "base_value": 5,
+    "base_value": 15,
     "description": "Lenses for beam cohesion. +5 Energy Dmg (20s)."
   },
   {
@@ -360,7 +390,7 @@
     "mass": 0.2,
     "category": "Ammo",
     "tier": 2,
-    "base_value": 20,
+    "base_value": 35,
     "description": "Superheated gas canister. +15 Energy Dmg (20s)."
   },
   {
@@ -380,7 +410,7 @@
     "mass": 0.5,
     "category": "Ammo",
     "tier": 3,
-    "base_value": 50,
+    "base_value": 60,
     "description": "Self-sharpening penetrator. +30 Kinetic Dmg (20s)."
   },
   {
@@ -390,7 +420,7 @@
     "mass": 0.5,
     "category": "Ammo",
     "tier": 3,
-    "base_value": 50,
+    "base_value": 60,
     "description": "Unstable singularity core. +30 Energy Dmg (20s)."
   },
   {
@@ -547,5 +577,85 @@
     "tier": 3,
     "base_value": 500,
     "description": "Infinite energy extraction from the void (Sort of)."
+  },
+  {
+    "atomic_number": -400,
+    "symbol": "Res1",
+    "name": "Common Research Artifact",
+    "mass": 0.01,
+    "category": "Data",
+    "tier": 1,
+    "base_value": 25,
+    "description": "Salvaged data core containing basic engineering schematics."
+  },
+  {
+    "atomic_number": -401,
+    "symbol": "DroneCore",
+    "name": "Drone Core",
+    "mass": 0.5,
+    "category": "Combat Component",
+    "tier": 1,
+    "base_value": 15,
+    "description": "Intact processing unit from a destroyed drone. Required for circuit fabrication."
+  },
+  {
+    "atomic_number": -402,
+    "symbol": "SalvageData",
+    "name": "Salvage Data",
+    "mass": 0.01,
+    "category": "Combat Data",
+    "tier": 1,
+    "base_value": 30,
+    "description": "Technical schematics recovered from derelict probes. Essential for engineering research."
+  },
+  {
+    "atomic_number": -403,
+    "symbol": "PirateManifest",
+    "name": "Pirate Manifest",
+    "mass": 0.01,
+    "category": "Combat Data",
+    "tier": 2,
+    "base_value": 50,
+    "description": "Encrypted cargo logs revealing hidden sector coordinates."
+  },
+  {
+    "atomic_number": -404,
+    "symbol": "Res2",
+    "name": "Rare Research Artifact",
+    "mass": 0.01,
+    "category": "Data",
+    "tier": 2,
+    "base_value": 75,
+    "description": "Advanced technical schematics from Martian ruins. Required for mid-game research."
+  },
+  {
+    "atomic_number": -405,
+    "symbol": "Res3",
+    "name": "Exotic Research Artifact",
+    "mass": 0.01,
+    "category": "Data",
+    "tier": 3,
+    "base_value": 200,
+    "description": "Xenon technology data cores. Essential for capital ship engineering."
+  },
+  {
+    "atomic_number": -500,
+    "symbol": "ColonySalvage",
+    "name": "Colony Salvage",
+    "mass": 2.0,
+    "category": "Raw Material",
+    "tier": 3,
+    "base_value": 150,
+    "description": "Dense clusters of tech from failed colonies. High in rare metals."
+  },
+  {
+    "atomic_number": -501,
+    "symbol": "RadIsotope",
+    "name": "Radioactive Isotope",
+    "mass": 0.5,
+    "category": "Raw Material",
+    "tier": 4,
+    "base_value": 300,
+    "description": "Highly unstable isotope harvested from nebulae. Essential for gamma tech."
   }
 ]

@@ -19,6 +19,7 @@ func refresh_actions():
 	widgets.clear()
 	
 	var sorted_keys = manager.actions.keys()
+	# Sort ascending (lowest level requirement first)
 	sorted_keys.sort_custom(func(a, b): return manager.actions[a]["level_req"] < manager.actions[b]["level_req"])
 	
 	for aid in sorted_keys:

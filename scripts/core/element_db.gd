@@ -111,7 +111,12 @@ var ELEMENT_NAMES = {
 	"Water": "Water",
 	"NavData": "Navigation Data",
 	"IrPlate": "Iridium Plating",
-	"OsCore": "Osmium Core"
+	"OsCore": "Osmium Core",
+	
+	# New Research Artifacts
+	"Res1": "Common Artifact",
+	"Res2": "Rare Artifact",
+	"Res3": "Exotic Artifact"
 }
 
 ## Category mappings for inventory filtering
@@ -127,7 +132,8 @@ var CATEGORIES = {
 	"ammo": ["SlugT1", "SlugT2", "SlugT3", "CellT1", "CellT2", "CellT3"],
 	"special": ["VoidArtifact", "QuantumCore", "ExoticMatter", "VoidCrystal", "Diamond", "SyntheticCrystal", 
 				"Neutronium", "AntimatterParticle", "ExoticIsotope", "ReactiveCore", "AICore", "AncientTech",
-				"NavData", "IrPlate", "OsCore", "PtCatalyst"],
+				"NavData", "IrPlate", "OsCore", "PtCatalyst",
+				"Res1", "Res2", "Res3"],
 	"basic": ["H", "He", "C", "O", "Si", "S", "Li", "Wood", "Water"]
 }
 

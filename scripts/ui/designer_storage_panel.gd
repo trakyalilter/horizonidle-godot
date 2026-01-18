@@ -19,8 +19,10 @@ func _drop_data(_at_position, data):
 			_refresh_designer()
 			
 	elif type == "unequip_ammo":
-		shipyard_manager.active_ammo = ""
-		_refresh_designer()
+		var slot_idx = data.get("slot_idx", -1)
+		if slot_idx != -1:
+			shipyard_manager.set_slot_ammo(slot_idx, "")
+			_refresh_designer()
 
 func _refresh_designer():
 	# Find designer page to trigger refresh

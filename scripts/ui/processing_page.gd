@@ -28,6 +28,7 @@ func refresh_recipes():
 	widgets.clear()
 	
 	var sorted_keys = manager.recipes.keys()
+	# Sort ascending (lowest level requirement first)
 	sorted_keys.sort_custom(func(a, b): 
 		var ra = manager.recipes[a]
 		var rb = manager.recipes[b]

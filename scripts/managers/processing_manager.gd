@@ -8,14 +8,23 @@ var action_progress: float = 0.0
 var events: Array = []
 
 var recipes: Dictionary = {
+	"charcoal_burning": {
+		"name": "Charcoal Kiln",
+		"description": "Burn Wood to produce Carbon.",
+		"input": { "Wood": 1 },
+		"output": { "C": 1 },
+		"duration": 4.0,
+		"level_req": 5,
+		"xp": 5
+	},
 	"electrolysis": {
 		"name": "Water Electrolysis",
 		"description": "Split Water into Hydrogen and Oxygen.",
 		"input": {"Water": 1},
 		"output": { "H": 2, "O": 1 },
 		"duration": 2.0,
-		"level_req": 2,
-		"xp": 8,
+		"level_req": 6,
+		"xp": 5,
 		"research_req": "fluid_dynamics"
 	},
 	"centrifuge_dirt": {
@@ -24,28 +33,73 @@ var recipes: Dictionary = {
 		"input": {"Dirt": 5, "Water": 5},
 		"output": { "Fe": 3, "Si": 1 }, 
 		"duration": 3.0,
-		"level_req": 1, 
-		"xp": 8,
+		"level_req": 8,
+		"xp": 10,
 		"research_req": "basic_engineering"
 	},
-	"charcoal_burning": {
-		"name": "Charcoal Kiln",
-		"description": "Burn Wood to produce Carbon.",
-		"input": { "Wood": 1 },
-		"output": { "C": 1 },
-		"duration": 4.0,
-		"level_req": 3,
-		"xp": 10
+	"craft_bronze": {
+		"name": "Bronze Alloy",
+		"description": "Ancient but effective Cu-Tin alloy. Cheaper than Steel.",
+		"input": { "Cu": 3, "Sn": 1 },
+		"output": { "Bronze": 2 },
+		"duration": 3.0,
+		"level_req": 10,
+		"xp": 15
 	},
-	"smelt_steel": {
+	"smelt_steel_basic": {
+		"name": "Basic Steel Smelting",
+		"description": "Foundry smelting of Iron and Carbon into Steel.",
+		"input": { "Fe": 5, "C": 2 },
+		"output": { "Steel": 1 },
+		"duration": 10.0,
+		"level_req": 12,
+		"research_req": "smelting"
+	},
+	"smelt_cassiterite": {
+		"name": "Tin Smelting",
+		"description": "Reduce Cassiterite ore to pure Tin.",
+		"input": { "Cassiterite": 2, "C": 1 },
+		"output": { "Sn": 1 },
+		"duration": 4.0,
+		"level_req": 14,
+		"xp": 15
+	},
+	"smelt_copper": {
+		"name": "Copper Smelting",
+		"description": "Refine Malachite ore into pure Copper.",
+		"input": { "Malachite": 2, "C": 1 },
+		"output": { "Cu": 1 },
+		"duration": 5.0,
+		"level_req": 15,
+		"xp": 15
+	},
+	"smelt_zinc": {
+		"name": "Zinc Reduction",
+		"description": "Extract Zinc from ore via carbon reduction.",
+		"input": { "ZincOre": 3, "C": 1 },
+		"output": { "Zn": 2 },
+		"duration": 4.0,
+		"level_req": 18,
+		"xp": 12
+	},
+	"smelt_quartz": {
+		"name": "Silicon Smelting",
+		"description": "Refine Quartz into industrial Silicon.",
+		"input": { "Quartz": 2, "C": 1 },
+		"output": { "Si": 1 },
+		"duration": 6.0,
+		"level_req": 20,
+		"xp": 20
+	},
+	"smelt_steel_oxygen": {
 		"name": "Oxygen-Enriched Smelting",
 		"description": "Use Oxygen to blast smelt Steel efficiently.",
 		"input": { "Fe": 2, "C": 1, "O": 2 },
 		"output": { "Steel": 2 },
 		"duration": 4.0,
-		"level_req": 4,
-		"xp": 30,
-		"research_req": "alloy_synthesis"
+		"level_req": 22,
+		"xp": 25,
+		"research_req": "smelting"
 	},
 	"press_graphite": {
 		"name": "Graphite Press",
@@ -53,8 +107,8 @@ var recipes: Dictionary = {
 		"input": { "C": 5 },
 		"output": { "Graphite": 1 },
 		"duration": 6.0,
-		"level_req": 5,
-		"xp": 25,
+		"level_req": 25, # Increased from 5
+		"xp": 20, # Reduced from 25
 		"research_req": "adv_materials"
 	},
 	"analyze_artifact": {
@@ -69,15 +123,15 @@ var recipes: Dictionary = {
 			["AncientComponent", 0.05, 1, 1]
 		],
 		"duration": 10.0,
-		"level_req": 5,
-		"xp": 100,
+		"level_req": 50, # Increased from 5
+		"xp": 200, # Increased from 100
 		"research_req": "xeno_archaeology"
 	},
 	"recycle_scrap": {
 		"name": "Scrap Recycling",
-		"description": "Disassemble salvage into components. Rolls 10 items.",
-		"input": { "Scrap": 5 },
-		"roll_count": 10,  # Roll 10 times from the table
+		"description": "Disassemble salvage into components. Rolls 5 items.",
+		"input": { "Scrap": 20 },
+		"roll_count": 5,  # Roll 5 times from the table
 		"output_table": [
 			# COMMON (70% combined) - Basic materials
 			["Fe", 0.30, 1, 3],       # Iron - most common
@@ -92,15 +146,37 @@ var recipes: Dictionary = {
 			# RARE (7% combined) - Components
 			["Circuit", 0.04, 1, 1],  # Basic Circuit
 			["Chip", 0.01, 1, 1],     # Microprocessor
-			# VERY RARE (1% combined) - Jackpot
+			# UNCOMMON (7.5%) - Research
+			["Res1", 0.075, 1, 2], # Common Research Artifact
+			# VERY RARE (0.7% combined) - Jackpot
 			["W", 0.005, 1, 1],       # Tungsten
 			["Ti", 0.002, 1, 1],      # Titanium
-			["NavData", 0.001, 1, 1]  # Encrypted Data
 		],
 		"duration": 20.0,
-		"level_req": 2,
-		"xp": 15,
+		"level_req": 10, # Increased from 2
+		"xp": 12, # Reduced from 15
 		"research_req": "basic_engineering"
+	},
+	# Research Fragment Upgrade Chain
+	"upgrade_rare_artifact": {
+		"name": "Synthesize Rare Artifact",
+		"description": "Combine Common artifacts with circuits to create Rare research data.",
+		"input": { "Res1": 5, "Circuit": 2 },
+		"output": { "Res2": 1 },
+		"duration": 30.0,
+		"level_req": 35, # Increased from 8
+		"xp": 100, # Increased from 50
+		"research_req": "smelting"
+	},
+	"upgrade_exotic_artifact": {
+		"name": "Compile Exotic Artifact",
+		"description": "Merge Rare artifacts with advanced tech to unlock capital-class research.",
+		"input": { "Res2": 5, "AdvCircuit": 2, "NavData": 5 },
+		"output": { "Res3": 1 },
+		"duration": 60.0,
+		"level_req": 60, # Increased from 15
+		"xp": 300, # Increased from 150
+		"research_req": "sector_alpha_decryption"
 	},
 	"craft_carbon_fiber": {
 		"name": "Carbon Fiber",
@@ -108,8 +184,8 @@ var recipes: Dictionary = {
 		"input": { "C": 3 },
 		"output": { "Fiber": 1 },
 		"duration": 5.0,
-		"level_req": 2,
-		"xp": 15
+		"level_req": 8, # Increased from 2
+		"xp": 10, # Reduced from 15
 	},
 	"craft_polymer": {
 		"name": "Polymer Resin",
@@ -117,8 +193,38 @@ var recipes: Dictionary = {
 		"input": { "C": 1, "H": 2, "O": 1 },
 		"output": { "Resin": 1 },
 		"duration": 5.0,
-		"level_req": 2,
-		"xp": 15
+		"level_req": 10, # Increased from 2
+		"xp": 10, # Reduced from 15
+	},
+	"craft_aluminum_alloy": {
+		"name": "Aluminum-Magnesium Alloy",
+		"description": "Lightweight aerospace alloy. High strength-to-weight ratio.",
+		"input": { "Al": 3, "Mg": 1 },
+		"output": { "AlMgAlloy": 2 },
+		"duration": 5.0,
+		"level_req": 24,
+		"xp": 30,
+		"research_req": "adv_materials"
+	},
+	"galvanize_steel": {
+		"name": "Galvanized Steel",
+		"description": "Zinc-coated steel. Corrosion resistant.",
+		"input": { "Steel": 2, "Zn": 1 },
+		"output": { "GalvanizedSteel": 2 },
+		"duration": 4.0,
+		"level_req": 25,
+		"xp": 40,
+		"research_req": "smelting"
+	},
+	"craft_stainless_steel": {
+		"name": "Stainless Steel Alloy",
+		"description": "Fe-Cr-Ni alloy. Superior corrosion resistance and strength.",
+		"input": { "Fe": 5, "Cr": 2, "Ni": 1 },
+		"output": { "StainlessSteel": 4 },
+		"duration": 8.0,
+		"level_req": 30,
+		"xp": 60,
+		"research_req": "metallurgy_advanced"
 	},
 	"craft_nanoweave": {
 		"name": "Nanoweave Mesh",
@@ -126,8 +232,8 @@ var recipes: Dictionary = {
 		"input": { "Fiber": 2, "Si": 1 },
 		"output": { "Mesh": 1 },
 		"duration": 15.0,
-		"level_req": 3,
-		"xp": 30
+		"level_req": 26, # Increased from 3
+		"xp": 25, # Reduced from 30
 	},
 	"craft_sealant": {
 		"name": "Hull Sealant",
@@ -135,8 +241,8 @@ var recipes: Dictionary = {
 		"input": { "Resin": 2, "Fe": 1 },
 		"output": { "Seal": 1 },
 		"duration": 15.0,
-		"level_req": 3,
-		"xp": 30
+		"level_req": 28, # Increased from 3
+		"xp": 25, # Reduced from 30
 	},
 	"craft_slug_t1": {
 		"name": "Ferrite Rounds",
@@ -145,7 +251,7 @@ var recipes: Dictionary = {
 		"output": { "SlugT1": 10 },
 		"duration": 10.0,
 		"level_req": 1,
-		"xp": 10
+		"xp": 5 # Reduced from 10
 	},
 	"craft_cell_t1": {
 		"name": "Focus Crystal",
@@ -153,8 +259,8 @@ var recipes: Dictionary = {
 		"input": { "Si": 2 },
 		"output": { "CellT1": 10 },
 		"duration":10.0,
-		"level_req": 1,
-		"xp": 10
+		"level_req": 2, # Increased from 1
+		"xp": 5 # Reduced from 10
 	},
 	"craft_slug_t2": {
 		"name": "Tungsten Sabot",
@@ -162,8 +268,9 @@ var recipes: Dictionary = {
 		"input": { "Steel": 2, "W": 1 },
 		"output": { "SlugT2": 10 },
 		"duration": 10.0,
-		"level_req": 4,
-		"xp": 20
+		"level_req": 32, # Increased from 4
+		"xp": 40, # Increased from 20
+		"research_req": "processing_tungsten"
 	},
 	"craft_cell_t2": {
 		"name": "Plasma Cell",
@@ -171,8 +278,8 @@ var recipes: Dictionary = {
 		"input": { "H": 5, "Resin": 1 },
 		"output": { "CellT2": 10 },
 		"duration": 10.0,
-		"level_req": 4,
-		"xp": 20
+		"level_req": 34, # Increased from 4
+		"xp": 40, # Increased from 20
 	},
 	"craft_coolant_cell": {
 		"name": "Helium Coolant Cell",
@@ -180,8 +287,8 @@ var recipes: Dictionary = {
 		"input": { "He": 10, "Steel": 2, "Resin": 1 },
 		"output": { "CoolantCell": 1 },
 		"duration": 15.0,
-		"level_req": 12,
-		"xp": 60,
+		"level_req": 42, # Increased from 12
+		"xp": 80, # Increased from 60
 		"research_req": "cryogenic_systems"
 	},
 	"craft_slug_t3": {
@@ -190,8 +297,8 @@ var recipes: Dictionary = {
 		"input": { "SlugT2": 5, "U": 1 },
 		"output": { "SlugT3": 5 },
 		"duration": 15.0,
-		"level_req": 8,
-		"xp": 50,
+		"level_req": 55, # Increased from 8
+		"xp": 120, # Increased from 50
 		"research_req": "ballistics_optimization"
 	},
 	"craft_cell_t3": {
@@ -200,19 +307,19 @@ var recipes: Dictionary = {
 		"input": { "CellT2": 5, "U": 1 },
 		"output": { "CellT3": 5 },
 		"duration": 15.0,
-		"level_req": 8,
-		"xp": 50,
+		"level_req": 58, # Increased from 8
+		"xp": 120, # Increased from 50
 		"research_req": "energy_metrics"
 	},
 	# Components
 	"craft_circuit": {
 		"name": "Basic Circuitry",
-		"description": "Solder Silicon and Copper.",
-		"input": { "Si": 1, "Cu": 1 },
+		"description": "Integrate salvaged drone processor with silicon.",
+		"input": { "Si": 2, "DroneCore": 1 },  # Requires combat drop
 		"output": { "Circuit": 1 },
 		"duration": 8.0,
-		"level_req": 3,
-		"xp": 25
+		"level_req": 30, # Increased from 3
+		"xp": 50, # Increased from 25
 	},
 	"craft_hydraulics": {
 		"name": "Hydraulic Servo",
@@ -220,7 +327,7 @@ var recipes: Dictionary = {
 		"input": { "Steel": 2, "Resin": 1 },
 		"output": { "Hydraulics": 1 },
 		"duration": 10.0,
-		"level_req": 5,
+		"level_req": 24, # Increased from 5
 		"xp": 40
 	},
 	# Lithium Chain
@@ -230,10 +337,11 @@ var recipes: Dictionary = {
 		"input": { "Spodumene": 2 },
 		"output": { "Li": 1 },
 		"duration": 5.0,
-		"level_req": 5,
-		"xp": 20,
+		"level_req": 18, # Increased from 5
+		"xp": 15, # Reduced from 20
 		"research_req": "basic_engineering"
 	},
+	# Basic metallurgy moved to top
 	# Germanium / Advanced Electronics
 	"extract_germanium": {
 		"name": "Fly Ash Separation",
@@ -241,8 +349,8 @@ var recipes: Dictionary = {
 		"input": { "C": 10 },
 		"output": { "Ge": 1 },
 		"duration": 8.0,
-		"level_req": 5,
-		"xp": 25,
+		"level_req": 36, # Increased from 5
+		"xp": 40, # Increased from 25
 		"research_req": "combustion"
 	},
 	"craft_semiconductor": {
@@ -251,8 +359,8 @@ var recipes: Dictionary = {
 		"input": { "Si": 2, "Ge": 1 },
 		"output": { "Semiconductor": 1 },
 		"duration": 10.0,
-		"level_req": 6,
-		"xp": 35,
+		"level_req": 38, # Increased from 6
+		"xp": 50, # Increased from 35
 		"research_req": "adv_materials"
 	},
 	"refine_gold": {
@@ -261,7 +369,7 @@ var recipes: Dictionary = {
 		"input": { "Dirt": 100, "Water": 100 },
 		"output": { "Au": 1 },
 		"duration": 12.0,
-		"level_req": 6,
+		"level_req": 20, # Increased from 6
 		"xp": 30,
 		"research_req": "basic_engineering"
 	},
@@ -271,7 +379,7 @@ var recipes: Dictionary = {
 		"input": { "Dirt": 70, "Water": 30, "H": 10 },
 		"output": { "Au": 5 },
 		"duration": 20.0,
-		"level_req": 15,
+		"level_req": 48, # Increased from 15
 		"xp": 100,
 		"research_req": "industrial_electrolysis"
 	},
@@ -281,8 +389,8 @@ var recipes: Dictionary = {
 		"input": { "Semiconductor": 1, "Au": 1 },
 		"output": { "AdvCircuit": 1 },
 		"duration": 15.0,
-		"level_req": 8,
-		"xp": 50,
+		"level_req": 45, # Increased from 8
+		"xp": 80, # Increased from 50
 		"research_req": "automation"
 	},
 	"craft_battery_t1": {
@@ -291,8 +399,8 @@ var recipes: Dictionary = {
 		"input": { "Li": 5, "Fe": 2 },
 		"output": { "BatteryT1": 1 },
 		"duration": 10.0,
-		"level_req": 10,
-		"xp": 50
+		"level_req": 40, # Increased from 10
+		"xp": 60, # Increased from 50
 	},
 	"craft_battery_t2": {
 		"name": "Graphene Matrix Battery",
@@ -300,8 +408,8 @@ var recipes: Dictionary = {
 		"input": { "BatteryT1": 1, "Graphite": 5, "AdvCircuit": 5 },
 		"output": { "BatteryT2": 1 },
 		"duration": 20.0,
-		"level_req": 15,
-		"xp": 150,
+		"level_req": 55, # Increased from 15
+		"xp": 200, # Increased from 150
 		"research_req": "adv_materials"
 	},
 	"craft_battery_t3": {
@@ -310,8 +418,8 @@ var recipes: Dictionary = {
 		"input": { "BatteryT2": 1, "VoidArtifact": 1, "Circuit": 20 },
 		"output": { "BatteryT3": 1 },
 		"duration": 60.0,
-		"level_req": 30,
-		"xp": 500,
+		"level_req": 80, # Increased from 30
+		"xp": 800, # Increased from 500
 		"research_req": "quantum_dynamics"
 	},
 	# Early Game Element Processing
@@ -320,9 +428,9 @@ var recipes: Dictionary = {
 		"description": "Extract Aluminum from Bauxite ore using oxygen.",
 		"input": { "Bauxite": 3, "O": 2 },
 		"output": { "Al": 2 },
-		"duration": 5.0,
-		"level_req": 4,
-		"xp": 20,
+		"duration": 3.0,
+		"level_req": 16, # Increased from 4
+		"xp": 15, # Reduced from 20
 		"research_req": "basic_engineering"
 	},
 	"process_dolomite": {
@@ -331,77 +439,11 @@ var recipes: Dictionary = {
 		"input": { "Dolomite": 4, "C": 1 },
 		"output": { "Mg": 1, "C": 1 },  # C is returned as CO2 → C cycle
 		"duration": 6.0,
-		"level_req": 4,
-		"xp": 25,
+		"level_req": 15, # Increased from 4
+		"xp": 15, # Reduced from 25
 		"research_req": "combustion"
 	},
-	"smelt_cassiterite": {
-		"name": "Tin Smelting",
-		"description": "Reduce Cassiterite ore to pure Tin.",
-		"input": { "Cassiterite": 2, "C": 1 },
-		"output": { "Sn": 1 },
-		"duration": 4.0,
-		"level_req": 3,
-		"xp": 15
-	},
-	"smelt_zinc": {
-		"name": "Zinc Reduction",
-		"description": "Extract Zinc from ore via carbon reduction.",
-		"input": { "ZincOre": 3, "C": 1 },
-		"output": { "Zn": 2 },
-		"duration": 4.0,
-		"level_req": 4,
-		"xp": 18
-	},
-	"craft_bronze": {
-		"name": "Bronze Alloy",
-		"description": "Ancient but effective Cu-Tin alloy. Cheaper than Steel.",
-		"input": { "Cu": 3, "Sn": 1 },
-		"output": { "Bronze": 2 },
-		"duration": 3.0,
-		"level_req": 3,
-		"xp": 20
-	},
-	"craft_aluminum_alloy": {
-		"name": "Aluminum-Magnesium Alloy",
-		"description": "Lightweight aerospace alloy. High strength-to-weight ratio.",
-		"input": { "Al": 3, "Mg": 1 },
-		"output": { "AlMgAlloy": 2 },
-		"duration": 5.0,
-		"level_req": 5,
-		"xp": 30,
-		"research_req": "adv_materials"
-	},
-	"craft_al_wire": {
-		"name": "Aluminum Wiring",
-		"description": "Insulated aluminum wire for electrical systems.",
-		"input": { "Al": 2, "Resin": 1 },
-		"output": { "AlWire": 3 },
-		"duration": 3.0,
-		"level_req": 4,
-		"xp": 15
-	},
-	"galvanize_steel": {
-		"name": "Galvanized Steel",
-		"description": "Zinc-coated steel. Corrosion resistant.",
-		"input": { "Steel": 2, "Zn": 1 },
-		"output": { "GalvanizedSteel": 2 },
-		"duration": 4.0,
-		"level_req": 5,
-		"xp": 25,
-		"research_req": "alloy_synthesis"
-	},
-	# Mid-Game Advanced Materials
-	"craft_stainless_steel": {
-		"name": "Stainless Steel Alloy",
-		"description": "Fe-Cr-Ni alloy. Superior corrosion resistance and strength.",
-		"input": { "Fe": 5, "Cr": 2, "Ni": 1 },
-		"output": { "StainlessSteel": 4 },
-		"duration": 8.0,
-		"level_req": 12,
-		"xp": 60,
-		"research_req": "metallurgy_advanced"
-	},
+	# Removed misplaced alloys here (moved up)
 	"craft_cobalt_battery": {
 		"name": "Lithium-Cobalt Battery",
 		"description": "Advanced battery tech. High energy density.",
@@ -525,15 +567,15 @@ func get_recipe_speed_multiplier(recipe_id: String) -> float:
 			{"id": "resonance_splitters", "bonus": 0.75}
 		],
 		"charcoal_burning": [{"id": "pyrolysis_control", "bonus": 0.25}],
-		"smelt_steel": [{"id": "blast_furnace", "bonus": 0.25}],
+		"smelt_steel_basic": [{"id": "blast_furnace", "bonus": 0.25}],
+		"smelt_steel_oxygen": [{"id": "blast_furnace", "bonus": 0.25}],
 		"press_graphite": [{"id": "hydraulic_press", "bonus": 0.25}]
 	}
 	
-	if recipe_id in upgrades_db:
-		for upgrade in upgrades_db[recipe_id]:
-			if GameState.research_manager and GameState.research_manager.is_tech_unlocked(upgrade["id"]):
-				multiplier += upgrade["bonus"]
-		
+	# Global Speed Bonus (Nano-Fabrication)
+	if GameState.research_manager:
+		multiplier += GameState.research_manager.get_efficiency_bonus("processing_speed")
+	
 	# TODO: Check Infrastructure (count fabricator > 0)
 	
 	return multiplier
@@ -606,6 +648,11 @@ func complete_process():
 			
 	if "output_table" in current_recipe:
 		var roll_count = current_recipe.get("roll_count", 1)  # Default 1 roll
+		
+		# Apply Scrap Recycling Bonus
+		if current_recipe_id == "recycle_scrap":
+			roll_count += int(GameState.research_manager.get_efficiency_bonus("scrap_rolls"))
+			
 		var results = {}  # Accumulate results: {item: total_qty}
 		
 		for i in range(roll_count):
@@ -697,17 +744,24 @@ func calculate_offline(delta: float):
 			loot_summary[item] = loot_summary.get(item, 0) + total
 			
 	if "output_table" in current_recipe:
+		var roll_count = current_recipe.get("roll_count", 1)
+		
+		# Apply Scrap Recycling Bonus
+		if current_recipe_id == "recycle_scrap":
+			roll_count += int(GameState.research_manager.get_efficiency_bonus("scrap_rolls"))
+			
 		for i in range(actions):
-			for entry in current_recipe["output_table"]:
-				var item = entry[0]
-				var chance = entry[1]
-				var min_q = entry[2]
-				var max_q = entry[3]
-				
-				if randf() < chance:
-					var qty = randi_range(min_q, max_q)
-					GameState.resources.add_element(item, qty)
-					loot_summary[item] = loot_summary.get(item, 0) + qty
+			for j in range(roll_count):
+				for entry in current_recipe["output_table"]:
+					var item = entry[0]
+					var chance = entry[1]
+					var min_q = entry[2]
+					var max_q = entry[3]
+					
+					if randf() < chance:
+						var qty = randi_range(min_q, max_q)
+						GameState.resources.add_element(item, qty)
+						loot_summary[item] = loot_summary.get(item, 0) + qty
 
 	var report = "Engineering (%s):\n" % current_recipe['name']
 	report += "Time Adjusted: %dm\n" % int(delta/60)
@@ -738,3 +792,38 @@ func load_save_data_manager(data: Dictionary):
 			current_recipe = recipes[current_recipe_id]
 		else:
 			is_active = false
+
+func get_current_rate() -> Dictionary:
+	"""Returns units produced per minute for active recipe"""
+	if not is_active or current_recipe_id.is_empty():
+		return {}
+		
+	var recipe = recipes[current_recipe_id]
+	var speed_mult = get_recipe_speed_multiplier(current_recipe_id)
+	var effective_duration = recipe["duration"] / speed_mult
+	var actions_per_min = 60.0 / effective_duration
+	
+	var rates = {}
+	
+	# Fixed Outputs
+	if "output" in recipe:
+		for item in recipe["output"]:
+			rates[item] = recipe["output"][item] * actions_per_min
+			
+	# Probability Outputs
+	if "output_table" in recipe:
+		var roll_count = recipe.get("roll_count", 1)
+		if current_recipe_id == "recycle_scrap":
+			roll_count += int(GameState.research_manager.get_efficiency_bonus("scrap_rolls"))
+			
+		for entry in recipe["output_table"]:
+			var item = entry[0]
+			var chance = entry[1]
+			var min_q = entry[2]
+			var max_q = entry[3]
+			var avg = (min_q + max_q) / 2.0
+			
+			var rate = avg * chance * roll_count * actions_per_min
+			rates[item] = rates.get(item, 0.0) + rate
+			
+	return rates

@@ -2,6 +2,7 @@ extends Node
 
 signal element_added(symbol, amount)
 signal currency_added(type, amount)
+signal currency_removed(type, amount)
 signal element_removed(symbol, amount)
 signal energy_changed(current, maximum)
 
@@ -43,6 +44,7 @@ func remove_currency(currency_type: String, amount: float) -> bool:
 	var current = currencies.get(currency_type, 0.0)
 	if current >= amount:
 		currencies[currency_type] = current - amount
+		currency_removed.emit(currency_type, amount)
 		return true
 	return false
 

@@ -9,6 +9,7 @@ var parent_ui: Node
 @onready var stats_lbl = $MarginContainer/VBoxContainer/StatsLabel
 @onready var cost_lbl = $MarginContainer/VBoxContainer/CostLabel
 @onready var owned_lbl = $MarginContainer/VBoxContainer/OwnedLabel
+@onready var research_lbl = $MarginContainer/VBoxContainer/ResearchLabel
 @onready var btn = $MarginContainer/VBoxContainer/Button
 
 func setup(p_mid: String, p_data: Dictionary, p_manager, p_parent):
@@ -30,6 +31,7 @@ func setup(p_mid: String, p_data: Dictionary, p_manager, p_parent):
 	
 	# Cost text handled dynamically in update_state
 	cost_lbl.text = ""
+	research_lbl.hide()
 
 func _process(delta):
 	update_state()
@@ -38,6 +40,21 @@ func update_state():
 	var owned = manager.module_inventory.get(mid, 0)
 	owned_lbl.text = "In Storage: %d" % owned
 	
+	# Check Research Requirements
+	var req_id = data.get("research_req")
+	var tech_unlocked = GameState.research_manager.is_tech_unlocked(req_id)
+	
+	if not tech_unlocked:
+		var tech_name = GameState.research_manager.tech_tree.get(req_id, {}).get("name", req_id)
+		research_lbl.text = "Req: %s" % tech_name
+		research_lbl.show()
+		btn.disabled = true
+		cost_lbl.hide()
+		return
+	else:
+		research_lbl.hide()
+		cost_lbl.show()
+
 	var affordable = true
 	var cost_str = "[center]"
 	
@@ -58,7 +75,7 @@ func update_state():
 		if not can_afford:
 			affordable = false
 			
-		cost_str += "[color=%s]%d %s[/color]\n" % [color, qty, ElementDB.get_display_name(res)]
+		cost_str += "[color=%s]%s %s[/color]\n" % [color, FormatUtils.format_number(qty), ElementDB.get_display_name(res)]
 	
 	cost_str += "[/center]"
 	cost_lbl.text = cost_str
@@ -66,5 +83,4 @@ func update_state():
 	btn.disabled = not affordable
 
 func _on_button_pressed():
-	if manager.craft_module(mid):
-		parent_ui.update_ui()
+	manager.craft_module(mid)

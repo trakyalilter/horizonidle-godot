@@ -16,7 +16,7 @@ var graphs = {
 			"diamond_drills", "ultrasonic_drills", "plasma_bore",
 			"high_flow_pumps", "superfluid_intake", "hydro_vortex",
 			"laser_cutters", "mono_filament", "molecular_disassembler",
-			"magnetic_funnels"
+			"magnetic_funnels", "deep_core_optics"
 		],
 		"pos": {
 			"high_flow_pumps": Vector2(40, 40),
@@ -38,12 +38,15 @@ var graphs = {
 	},
 	"Engineering": {
 		"nodes": [
-			"basic_engineering", "fluid_dynamics", "combustion", "alloy_synthesis", "adv_materials",
+			"basic_engineering", "fluid_dynamics", "combustion", "smelting", "adv_materials",
 			"fast_centrifuges", "maglev_bearings", "quantum_separators",
 			"catalytic_electrodes", "ion_exchange", "resonance_splitters",
 			"pyrolysis_control", "blast_furnace", "hydraulic_press",
-			"automated_logistics", "ballistics_optimization", "energy_metrics",
-			"automated_smelting", "industrial_electrolysis", "molecular_compression", "mass_production_tactics"
+			"automated_logistics", "processing_tungsten", "ballistics_optimization", "energy_metrics",
+			"automated_smelting", "industrial_electrolysis", "molecular_compression", "mass_production_tactics",
+			"kinetics_101", "laser_optics", "power_systems", "bronze_smithing", "lightweight_alloys",
+			"salvage_heuristics", "scavenger_protocol", "combat_heuristics", "shield_harmonics", "hull_hardening", 
+			"core_overclocking", "nano_fabrication", "data_clustering"
 		],
 		"pos": {
 			"basic_engineering": Vector2(40, 350),
@@ -61,10 +64,11 @@ var graphs = {
 			"pyrolysis_control": Vector2(440, 250),
 			
 			# Mid: Alloy Synthesis (Major Hub)
-			"alloy_synthesis": Vector2(440, 350),
+			"smelting": Vector2(440, 350),
 			"blast_furnace": Vector2(640, 350),
 			"automated_smelting": Vector2(840, 350),
-			"ballistics_optimization": Vector2(640, 430),
+			"processing_tungsten": Vector2(640, 430),
+			"ballistics_optimization": Vector2(840, 430),
 			
 			# Mid-Lower: Advanced Materials (Child of Alloy)
 			"adv_materials": Vector2(640, 520),
@@ -78,18 +82,25 @@ var graphs = {
 			
 			# Bottom: Logistics
 			"automated_logistics": Vector2(240, 720),
-			"mass_production_tactics": Vector2(440, 720)
+			"mass_production_tactics": Vector2(440, 720),
+			
+			# New Early Game Gates
+			"kinetics_101": Vector2(40, 460),
+			"power_systems": Vector2(40, 540),
+			"lightweight_alloys": Vector2(40, 620),
+			"laser_optics": Vector2(440, 180),
+			"bronze_smithing": Vector2(640, 260)
 		},
 		"container": null
 	},
 	"Ships": {
 		"nodes": [
-			"alloy_synthesis",
+			"smelting",
 			"shipwright_1", "shipwright_2", "sector_alpha_decryption", "warp_drive",
 			"molecular_printing", "capital_ship_engineering", "quantum_dynamics"
 		],
 		"pos": {
-			"alloy_synthesis": Vector2(40, 150),
+			"smelting": Vector2(40, 150),
 			"shipwright_1": Vector2(240, 150),
 			"shipwright_2": Vector2(440, 150),
 			"sector_alpha_decryption": Vector2(440, 40),
@@ -260,5 +271,5 @@ func _process(delta):
 func update_ui():
 	# Update text
 	if not manager: return
-	var cr = GameState.resources.get_currency("credits")
-	credits_lbl.text = "Credits: %d" % int(cr)
+	# Credits now handled by GlobalHeader
+	pass

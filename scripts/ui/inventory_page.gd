@@ -5,7 +5,7 @@ extends Control
 
 # Details Panel
 @onready var sel_name = $HBoxContainer/RightPanel/VBoxContainer/Details/NameLabel
-@onready var sel_desc = $HBoxContainer/RightPanel/VBoxContainer/Details/DescLabel
+@onready var sel_desc = $HBoxContainer/RightPanel/VBoxContainer/Details/ScrollContainer/DescLabel
 @onready var price_lbl = $HBoxContainer/RightPanel/VBoxContainer/Details/PriceLabel
 @onready var qty_spin = $HBoxContainer/RightPanel/VBoxContainer/Details/HBoxContainer/QtySpinBox
 @onready var total_lbl = $HBoxContainer/RightPanel/VBoxContainer/Details/TotalLabel
@@ -23,6 +23,7 @@ extends Control
 var card_scene = preload("res://scenes/ui/element_card.tscn")
 var empty_slot_scene = preload("res://scenes/ui/empty_slot.tscn")
 var cards = {} # {symbol: widget}
+var selected_card = null
 var min_slots = 48 # Increased from 40 for better grid
 var selected_element = null
 var price_val = 0
@@ -113,6 +114,13 @@ func refresh_inventory():
 			
 	update_credits()
 	
+	# Re-apply selection highlight if it exists in the new list
+	if selected_element and selected_element["symbol"] in cards:
+		selected_card = cards[selected_element["symbol"]]
+		selected_card.set_selected(true)
+	else:
+		selected_card = null
+	
 	if selected_element:
 		var amt = GameState.resources.get_element_amount(selected_element["symbol"])
 		if amt > 0:
@@ -122,18 +130,37 @@ func refresh_inventory():
 			clear_selection()
 
 func _on_item_clicked(data):
+	# Clear old highlight
+	if selected_card:
+		selected_card.set_selected(false)
+	
 	selected_element = data
+	selected_card = cards[data["symbol"]]
+	selected_card.set_selected(true)
+	
 	var amt = GameState.resources.get_element_amount(data["symbol"])
 	update_selection_view(data, amt)
 
 func update_selection_view(data, amount):
 	sel_name.text = ElementDB.get_full_display(data["symbol"])
-	sel_desc.text = data["description"]
 	
-	price_val = data.get("base_value", 1) # Fallback to 1 if missing? (JSON usually has base_value?)
-	# I should check if base_value is in elements.json.
-	# Assuming it is based on Python viewing.
-	price_lbl.text = "Unit Price: %d Credits" % price_val
+	var desc = data["description"]
+	var info = GameState.resources.get_resource_info(data["symbol"])
+	
+	if not info["sources"].is_empty():
+		desc += "\n\nSOURCES:"
+		for src in info["sources"]:
+			desc += "\n- %s: %s" % [src["name"], src.get("amount", "??")]
+			
+	if not info["uses"].is_empty():
+		desc += "\n\nUSES:"
+		for use in info["uses"]:
+			desc += "\n- %s: %s" % [use["name"], str(use.get("amount", "??"))]
+			
+	sel_desc.text = desc
+	
+	price_val = data.get("base_value", 1) 
+	price_lbl.text = "Unit Price: %s Cr" % UITheme.format_num(price_val)
 	
 	qty_spin.max_value = amount
 	qty_spin.value = 1
@@ -150,10 +177,10 @@ func clear_selection():
 	qty_spin.editable = false
 	sell_btn.disabled = true
 	sell_all_btn.disabled = true
-	total_lbl.text = "Total: 0"
+	total_lbl.text = "Total: 0 Cr"
 
 func update_total_price(val):
-	total_lbl.text = "Total: %d" % (val * price_val)
+	total_lbl.text = "Total: %s Cr" % UITheme.format_num(val * price_val)
 
 func _on_qty_spin_box_value_changed(value):
 	update_total_price(value)
@@ -176,7 +203,8 @@ func perform_sale(symbol, qty):
 		refresh_inventory()
 
 func update_credits():
-	credits_lbl.text = "Credits: %d" % GameState.resources.get_currency("credits")
+	# Credits now handled by GlobalHeader
+	pass
 
 func _process(delta):
 	# Poll for inventory changes?

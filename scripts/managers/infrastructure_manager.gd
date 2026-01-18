@@ -101,7 +101,7 @@ var building_db: Dictionary = {
 	"munitions_factory": {
 		"name": "Munitions Factory",
 		"description": "Mass produces basic ammunition.",
-		"cost": {"credits": 5000, "Circuit": 20, "Steel": 20},
+		"cost": {"credits": 75000, "Circuit": 20, "Steel": 20},
 		"energy_gen": 0.0,
 		"energy_cons": 80.0,
 		"yield": {"SlugT1": 10, "CellT1": 10},
@@ -113,7 +113,7 @@ var building_db: Dictionary = {
 	"catalyst_chamber": {
 		"name": "Platinum Catalyst Chamber",
 		"description": "Pt catalyst increases ALL processing speed by 25%. Global effect.",
-		"cost": {"credits": 20000, "PtCatalyst": 5, "AdvCircuit": 30, "Superalloy": 20},
+		"cost": {"credits": 500000, "PtCatalyst": 5, "AdvCircuit": 30, "Superalloy": 20},
 		"energy_gen": 0.0,
 		"energy_cons": 150.0,
 		"max": 1,
@@ -123,13 +123,48 @@ var building_db: Dictionary = {
 	"palladium_generator": {
 		"name": "Palladium Fuel Cell Generator",
 		"description": "Pd-H2 fuel cells. Passive energy generation from hydrogen.",
-		"cost": {"credits": 15000, "PdFuelCell": 20, "Circuit": 40},
+		"cost": {"credits": 250000, "PdFuelCell": 20, "Circuit": 40},
 		"energy_gen": 200.0,
 		"energy_cons": 0.0,
 		"input": {"H": 1},  # Consumes 1 H per cycle
 		"interval": 10.0,
 		"max": 3,
 		"research_req": "fuel_cell_tech"
+	},
+	"hydrogen_reactor": {
+		"name": "Hydrogen Reactor",
+		"description": "Fuses Hydrogen for high energy output. Perfect mid-game power source.",
+		"cost": {"credits": 50000, "Steel": 200, "Circuit": 50, "NavData": 5},
+		"energy_gen": 100.0,
+		"energy_cons": 0.0,
+		"input": {"H": 5},
+		"interval": 10.0,
+		"max": 5,
+		"research_req": "fluid_dynamics"
+	},
+	"industrial_centrifuge": {
+		"name": "Industrial Centrifuge",
+		"description": "Automated Mineral Washing. Extracts Iron and Silicon from Dirt + Water.",
+		"cost": {"credits": 25000, "Steel": 100, "Si": 20, "DroneCore": 10},
+		"energy_gen": 0.0,
+		"energy_cons": 45.0,
+		"yield": {"Fe": 3, "Si": 1},
+		"input": {"Dirt": 5, "Water": 5},
+		"interval": 3.0,
+		"max": 3,
+		"research_req": "automated_logistics"
+	},
+	"electronics_assembler": {
+		"name": "Electronics Assembler",
+		"description": "Automated production of Circuitry and Advanced Circuitry.",
+		"cost": {"credits": 100000, "Ti": 50, "Circuit": 100, "SalvageData": 20},
+		"energy_gen": 0.0,
+		"energy_cons": 120.0,
+		"yield": {"Circuit": 2},
+		"input": {"Si": 4, "DroneCore": 2},
+		"interval": 8.0,
+		"max": 1,
+		"research_req": "industrial_automation"
 	}
 }
 
@@ -262,6 +297,14 @@ func process_tick(delta: float):
 						for res in data["yield"]:
 							var qty = data["yield"][res]
 							GameState.resources.add_element(res, qty * count)
+						
+						# Special Upgrade: Industrial Centrifuge Titanium Extraction
+						if bid == "industrial_centrifuge":
+							if GameState.research_manager and GameState.research_manager.is_tech_unlocked("advanced_mineralogy"):
+								# 20% chance per cycle per centrifuge to find Titanium
+								for i in range(count):
+									if randf() < 0.2:
+										GameState.resources.add_element("Ti", 1)
 					
 					production_timers[bid] = 0.0
 			

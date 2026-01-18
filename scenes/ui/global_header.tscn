@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://y4uthi8atkod"]
+
+[ext_resource type="Script" uid="uid://btqvo6qmao2ut" path="res://scripts/ui/global_header.gd" id="1_header"]
+
+[node name="GlobalHeader" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+script = ExtResource("1_header")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+text = "Credits: 0"
+vertical_alignment = 1
+
+[node name="TaskLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Idle"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightSideSpacer" type="Control" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3

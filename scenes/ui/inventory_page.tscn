@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://qf1ohkbh6tp3"]
 
-[ext_resource type="Script" path="res://scripts/ui/inventory_page.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://h3xd8rvotwo7" path="res://scripts/ui/inventory_page.gd" id="1_script"]
 
 [node name="InventoryPage" type="Control"]
 layout_mode = 3
@@ -120,8 +120,15 @@ theme_override_font_sizes/font_size = 16
 text = "Select an Item"
 horizontal_alignment = 1
 
-[node name="DescLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/RightPanel/VBoxContainer/Details"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DescLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/Details/ScrollContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.666667, 0.666667, 0.666667, 1)
 theme_override_font_sizes/font_size = 12
 text = "..."
@@ -173,13 +180,6 @@ text = "Sell Items"
 layout_mode = 2
 disabled = true
 text = "Sell All Stack"
-
-[node name="CreditsLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.792157, 0.156863, 1)
-theme_override_font_sizes/font_size = 20
-text = "Credits: 0"
-horizontal_alignment = 1
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="value_changed" from="HBoxContainer/RightPanel/VBoxContainer/Details/HBoxContainer/QtySpinBox" to="." method="_on_qty_spin_box_value_changed"]

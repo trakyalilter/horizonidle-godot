@@ -30,11 +30,21 @@ func setup(p_rid: String, p_data: Dictionary, p_manager, p_parent):
 	# Input text is handled dynamically in update_state for coloring
 	in_lbl.text = ""
 	
-	var out_str = ""
+	var out_str = "[center]"
+	var rates = manager.get_current_rate() if manager.is_active and manager.current_recipe_id == rid else {}
+	
 	if "output" in recipe:
 		for item in recipe["output"]:
 			var display_name = ElementDB.get_display_name(item)
-			out_str += "%d %s\n" % [recipe["output"][item], display_name]
+			var qty = recipe["output"][item]
+			var line = "%s %s" % [FormatUtils.format_number(qty), display_name]
+			
+			if item in rates:
+				out_str += "%s [color=#55ff55](%s/m)[/color]\n" % [line, FormatUtils.format_number(rates[item])]
+			else:
+				out_str += "%s\n" % line
+				
+	out_str += "[/center]"
 	out_lbl.text = out_str.strip_edges()
 
 func _on_button_pressed():
@@ -65,7 +75,7 @@ func update_state():
 		else:
 			missing_any = true
 			
-		in_str += "[color=%s]%d %s[/color]\n" % [color_hex, req_qty, ElementDB.get_display_name(item)]
+		in_str += "[color=%s]%s %s[/color]\n" % [color_hex, FormatUtils.format_number(req_qty), ElementDB.get_display_name(item)]
 	
 	in_str += "[/center]"
 	in_lbl.text = in_str
@@ -90,10 +100,10 @@ func update_state():
 		var effective_duration = recipe["duration"] / speed_mult
 		var prog = (manager.action_progress / effective_duration) * 100.0
 		prog_bar.value = prog
-		time_lbl.text = "%.1fs / %.1fs" % [manager.action_progress, effective_duration]
+		time_lbl.text = "%s / %s" % [FormatUtils.format_time(manager.action_progress), FormatUtils.format_time(effective_duration)]
 	else:
 		prog_bar.value = 0
-		time_lbl.text = "0.0s / %.1fs" % (recipe["duration"] / manager.get_recipe_speed_multiplier(rid))
+		time_lbl.text = "0.0s / %s" % (FormatUtils.format_time(recipe["duration"] / manager.get_recipe_speed_multiplier(rid)))
 		modulate = Color(1, 1, 1)
 		
 		if not has_research:

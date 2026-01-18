@@ -92,16 +92,3 @@ func focus_module_tab(module_id: String):
 		"shield": sub_tabs.current_tab = 1
 		"engine": sub_tabs.current_tab = 2
 		"battery": sub_tabs.current_tab = 3
-
-func _process(delta):
-	update_ui()
-
-func update_ui():
-	if not manager: return
-	
-	# Update Stats
-	hp_lbl.text = "Structure: %d / %d" % [manager.current_hp, manager.max_hp]
-	atk_lbl.text = "Firepower: %d" % manager.attack
-	def_lbl.text = "Shield: %d | Eva: %.1f%%" % [manager.defense, manager.evasion]
-	
-	# Widgets update via their own _process

@@ -48,16 +48,29 @@ func update_state():
 		style.border_color = BORDER_UNLOCKED
 		cost_lbl.text = "Researched"
 		cost_lbl.add_theme_color_override("font_color", Color.GREEN)
-	elif can_unlock:
-		style.bg_color = COL_AVAILABLE
-		style.border_color = BORDER_AVAILABLE
-		cost_lbl.text = "%d Cr" % data.get("cost", 0)
-		cost_lbl.add_theme_color_override("font_color", Color.GOLD)
 	else:
-		style.bg_color = COL_LOCKED
-		style.border_color = BORDER_LOCKED
-		cost_lbl.text = "%d Cr" % data.get("cost", 0)
-		cost_lbl.add_theme_color_override("font_color", Color.GRAY)
+		# Build cost string with credits + items
+		var cost_parts = []
+		cost_parts.append(FormatUtils.format_number(data.get("cost", 0)) + " Cr")
+		
+		if "cost_items" in data:
+			for item in data["cost_items"]:
+				var qty = data["cost_items"][item]
+				var display_name = ElementDB.get_display_name(item)
+				cost_parts.append("%s %s" % [FormatUtils.format_number(qty), display_name])
+		
+		# More compact layout: itemized costs use smaller font
+		cost_lbl.text = "\n".join(cost_parts)
+		cost_lbl.add_theme_font_size_override("font_size", 10)
+		
+		if can_unlock:
+			style.bg_color = COL_AVAILABLE
+			style.border_color = BORDER_AVAILABLE
+			cost_lbl.add_theme_color_override("font_color", Color.GOLD)
+		else:
+			style.bg_color = COL_LOCKED
+			style.border_color = BORDER_LOCKED
+			cost_lbl.add_theme_color_override("font_color", Color.GRAY)
 		
 	add_theme_stylebox_override("panel", style)
 

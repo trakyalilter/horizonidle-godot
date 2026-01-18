@@ -34,12 +34,14 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LootLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="LootLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.411765, 0.941176, 0.682353, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
 text = "Loot Info"
-horizontal_alignment = 1
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
 
 [node name="Control2" type="Control" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

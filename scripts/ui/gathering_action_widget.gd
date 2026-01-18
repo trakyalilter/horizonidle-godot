@@ -28,11 +28,20 @@ func setup(p_aid: String, p_data: Dictionary, p_manager, p_parent):
 	UITheme.apply_premium_button_style(btn, "ops")
 	UITheme.apply_progress_bar_style(prog_bar, "ops")
 	
-	var loot_text = ""
+	var loot_text = "[center]"
+	var rates = manager.get_current_rate() if manager.is_active and manager.current_action_id == aid else {}
+	
 	for entry in data["loot_table"]:
-		# [Element, Chance, Min, Max]
-		var display_name = ElementDB.get_display_name(entry[0])
-		loot_text += "%s: %d-%d\n" % [display_name, entry[2], entry[3]]
+		var symbol = entry[0]
+		var display_name = ElementDB.get_display_name(symbol)
+		var base_loot = "%s: %d-%d" % [display_name, entry[2], entry[3]]
+		
+		if symbol in rates:
+			loot_text += "%s [color=#55ff55](%s/m)[/color]\n" % [base_loot, FormatUtils.format_number(rates[symbol])]
+		else:
+			loot_text += "%s\n" % base_loot
+			
+	loot_text += "[/center]"
 	loot_lbl.text = loot_text.strip_edges()
 
 func _on_button_pressed():
@@ -75,14 +84,14 @@ func update_state():
 			var effective_duration = manager.action_duration / speed_mult
 			var prog = (manager.action_progress / effective_duration) * 100.0
 			prog_bar.value = prog
-			time_lbl.text = "%.1fs / %.1fs" % [manager.action_progress, effective_duration]
+			time_lbl.text = "%s / %s" % [FormatUtils.format_time(manager.action_progress), FormatUtils.format_time(effective_duration)]
 		else:
 			btn.text = "Start"
 			btn.modulate = Color(1, 1, 1)
 			modulate = Color(1, 1, 1)
 			prog_bar.value = 0
 			var speed_mult = manager.get_action_speed_multiplier(aid)
-			time_lbl.text = "0.0s / %.1fs" % (manager.action_duration / speed_mult)
+			time_lbl.text = "0.0s / %s" % FormatUtils.format_time(manager.action_duration / speed_mult)
 	else:
 		btn.text = "Locked"
 		btn.disabled = true

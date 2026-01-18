@@ -20,6 +20,7 @@ var offline_modal
 
 var pages = {}
 var current_page_name = ""
+var header_widget: Control
 
 func _ready():
 	_init_pages()
@@ -93,6 +94,11 @@ func _init_pages():
 		modal_layer.add_child(offline_modal)
 		offline_modal.visible = false
 		offline_modal.check_and_show()
+		
+	# 3. Create & Inject Global HUD
+	header_widget = preload("res://scenes/ui/global_header.tscn").instantiate()
+	$HBoxContainer/Content.add_child(header_widget)
+	$HBoxContainer/Content.move_child(header_widget, 0) # Top of VBox
 
 func switch_to(page_name):
 	if current_page_name == page_name: return
@@ -114,6 +120,8 @@ func _update_sidebar_styling():
 	UITheme.apply_sidebar_button_style(mission_btn, current_page_name == "mission")
 	UITheme.apply_sidebar_button_style(designer_btn, current_page_name == "designer")
 	UITheme.apply_sidebar_button_style(inventory_btn, current_page_name == "inventory")
+	UITheme.apply_sidebar_button_style(options_btn, current_page_name == "options")
+	
 	UITheme.apply_sidebar_button_style(options_btn, current_page_name == "options")
 
 func _process(delta):
@@ -256,6 +264,7 @@ func _update_navigation_hints():
 		start_hint_pulse(target_to_pulse)
 	else:
 		stop_hint_pulse()
+
 
 var hint_tween: Tween
 var pulsing_button: Control = null

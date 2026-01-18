@@ -30,6 +30,7 @@ func setup_page_background(page: Control):
 	pass
 
 func apply_card_style(panel: Control, category: String = "ops") -> StyleBoxFlat:
+	if not panel: return null
 	var accent = CATEGORY_COLORS.get(category, COLORS["accent"])
 	
 	var style = StyleBoxFlat.new()
@@ -61,6 +62,7 @@ func apply_card_style(panel: Control, category: String = "ops") -> StyleBoxFlat:
 	return style
 
 func apply_premium_button_style(button: Button, category: String = "ops"):
+	if not button: return
 	var accent = CATEGORY_COLORS.get(category, COLORS["accent"])
 	
 	var style_normal = StyleBoxFlat.new()
@@ -94,6 +96,7 @@ func apply_premium_button_style(button: Button, category: String = "ops"):
 	button.add_theme_font_size_override("font_size", 13)
 
 func apply_progress_bar_style(pb: ProgressBar, category: String = "ops"):
+	if not pb: return
 	var accent = CATEGORY_COLORS.get(category, COLORS["accent"])
 	
 	var style_bg = StyleBoxFlat.new()
@@ -102,9 +105,16 @@ func apply_progress_bar_style(pb: ProgressBar, category: String = "ops"):
 	style_bg.corner_radius_top_right = 2
 	style_bg.corner_radius_bottom_right = 2
 	style_bg.corner_radius_bottom_left = 2
+	style_bg.set_border_width_all(1)
+	style_bg.border_color = Color(0,0,0,0.5)
 	
 	var style_fill = StyleBoxFlat.new()
 	style_fill.bg_color = accent
+	# Subtle Glossy Gradient
+	style_fill.bg_color = accent.lerp(Color.WHITE, 0.1)
+	style_fill.border_width_top = 1
+	style_fill.border_color = Color(1, 1, 1, 0.3) # Highlight
+	
 	style_fill.corner_radius_top_left = 2
 	style_fill.corner_radius_top_right = 2
 	style_fill.corner_radius_bottom_right = 2
@@ -113,7 +123,11 @@ func apply_progress_bar_style(pb: ProgressBar, category: String = "ops"):
 	pb.add_theme_stylebox_override("background", style_bg)
 	pb.add_theme_stylebox_override("fill", style_fill)
 
+static func format_num(val: float) -> String:
+	return FormatUtils.format_number(val)
+
 func apply_panel_style(panel: PanelContainer):
+	if not panel: return
 	var style = StyleBoxFlat.new()
 	style.bg_color = COLORS["panel_bg"]
 	style.set_border_width_all(1)
@@ -125,6 +139,7 @@ func apply_panel_style(panel: PanelContainer):
 	panel.add_theme_stylebox_override("panel", style)
 
 func apply_sidebar_button_style(button: Button, is_active: bool):
+	if not button: return
 	var style_normal = StyleBoxFlat.new()
 	style_normal.bg_color = COLORS["sidebar"] if not is_active else COLORS["accent"]
 	style_normal.draw_center = true
@@ -149,6 +164,7 @@ func apply_sidebar_button_style(button: Button, is_active: bool):
 		button.add_theme_color_override("font_color", COLORS["text_dim"])
 
 func apply_modal_style(panel: PanelContainer):
+	if not panel: return
 	var style = StyleBoxFlat.new()
 	style.bg_color = COLORS["background"].lightened(0.02)
 	style.set_border_width_all(2)
@@ -168,6 +184,7 @@ func apply_modal_style(panel: PanelContainer):
 	panel.add_theme_stylebox_override("panel", style)
 
 func apply_tab_style(tabs: TabContainer, category: String = "ops"):
+	if not tabs: return
 	var accent = CATEGORY_COLORS.get(category, COLORS["accent"])
 	
 	# Tab Selected (Matches panel background)
@@ -220,6 +237,7 @@ func apply_tab_style(tabs: TabContainer, category: String = "ops"):
 	tabs.add_theme_font_size_override("font_size", 13)
 
 func apply_sharp_button_style(button: Button, category: String = "ops"):
+	if not button: return
 	var accent = CATEGORY_COLORS.get(category, COLORS["accent"])
 	
 	var style_normal = StyleBoxFlat.new()

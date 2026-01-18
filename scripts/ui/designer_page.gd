@@ -81,9 +81,17 @@ func rebuild_slots():
 
 func rebuild_ammo_slots():
 	for child in ammo_slot_box.get_children(): child.queue_free()
-	var slot = ammo_slot_scene.instantiate()
-	ammo_slot_box.add_child(slot)
-	slot.setup(self, manager)
+	
+	if not manager.active_hull in manager.hulls: return
+	
+	var h_data = manager.hulls[manager.active_hull]
+	var slots = h_data["slots"]
+	
+	for i in range(slots.size()):
+		if slots[i] == "weapon":
+			var slot = ammo_slot_scene.instantiate()
+			ammo_slot_box.add_child(slot)
+			slot.setup(i, self, manager)
 
 func rebuild_storage():
 	for grid in [weapon_grid, shield_grid, engine_grid, battery_grid]:
