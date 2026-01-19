@@ -12,7 +12,7 @@ var node_scene = preload("res://scenes/ui/research_node_widget.tscn")
 var graphs = {
 	"Operations": {
 		"nodes": [
-			"energy_shields",
+			"energy_shields", "industrial_logistics",
 			"diamond_drills", "ultrasonic_drills", "plasma_bore",
 			"high_flow_pumps", "superfluid_intake", "hydro_vortex",
 			"laser_cutters", "mono_filament", "molecular_disassembler",
@@ -38,7 +38,8 @@ var graphs = {
 	},
 	"Engineering": {
 		"nodes": [
-			"basic_engineering", "fluid_dynamics", "combustion", "smelting", "adv_materials",
+			"basic_engineering", "applied_physics", "materials_science", "industrial_logistics",
+			"fluid_dynamics", "combustion", "smelting", "adv_materials",
 			"fast_centrifuges", "maglev_bearings", "quantum_separators",
 			"catalytic_electrodes", "ion_exchange", "resonance_splitters",
 			"pyrolysis_control", "blast_furnace", "hydraulic_press",

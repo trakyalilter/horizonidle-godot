@@ -12,9 +12,9 @@ var recipes: Dictionary = {
 		"name": "Charcoal Kiln",
 		"description": "Burn Wood to produce Carbon.",
 		"input": { "Wood": 1 },
-		"output": { "C": 1 },
+		"output": { "C": 3 },
 		"duration": 4.0,
-		"level_req": 5,
+		"level_req": 3,
 		"xp": 5
 	},
 	"electrolysis": {
@@ -23,7 +23,7 @@ var recipes: Dictionary = {
 		"input": {"Water": 1},
 		"output": { "H": 2, "O": 1 },
 		"duration": 2.0,
-		"level_req": 6,
+		"level_req": 2,
 		"xp": 5,
 		"research_req": "fluid_dynamics"
 	},
@@ -33,8 +33,8 @@ var recipes: Dictionary = {
 		"input": {"Dirt": 5, "Water": 5},
 		"output": { "Fe": 3, "Si": 1 }, 
 		"duration": 3.0,
-		"level_req": 8,
-		"xp": 10,
+		"level_req": 1,
+		"xp": 5,
 		"research_req": "basic_engineering"
 	},
 	"craft_bronze": {
@@ -44,7 +44,8 @@ var recipes: Dictionary = {
 		"output": { "Bronze": 2 },
 		"duration": 3.0,
 		"level_req": 10,
-		"xp": 15
+		"xp": 15,
+		"research_req": "bronze_smithing"
 	},
 	"smelt_steel_basic": {
 		"name": "Basic Steel Smelting",
@@ -62,7 +63,8 @@ var recipes: Dictionary = {
 		"output": { "Sn": 1 },
 		"duration": 4.0,
 		"level_req": 14,
-		"xp": 15
+		"xp": 15,
+		"research_req": "basic_engineering"
 	},
 	"smelt_copper": {
 		"name": "Copper Smelting",
@@ -71,7 +73,8 @@ var recipes: Dictionary = {
 		"output": { "Cu": 1 },
 		"duration": 5.0,
 		"level_req": 15,
-		"xp": 15
+		"xp": 15,
+		"research_req": "basic_engineering"
 	},
 	"smelt_zinc": {
 		"name": "Zinc Reduction",
@@ -127,6 +130,17 @@ var recipes: Dictionary = {
 		"xp": 200, # Increased from 100
 		"research_req": "xeno_archaeology"
 	},
+	"decrypt_nav_data": {
+		"name": "Decrypt Nav-Data",
+		"description": "Synthesize navigation data from salvaged schematics and credits.",
+		"input": { "SalvageData": 5 },
+		"credits_cost": 500, # Manual check in implementation or handled via logic
+		"output": { "NavData": 1 },
+		"duration": 30.0,
+		"level_req": 20,
+		"xp": 50,
+		"research_req": "basic_engineering"
+	},
 	"recycle_scrap": {
 		"name": "Scrap Recycling",
 		"description": "Disassemble salvage into components. Rolls 5 items.",
@@ -138,22 +152,19 @@ var recipes: Dictionary = {
 			["C", 0.20, 1, 2],        # Carbon
 			["Si", 0.15, 1, 2],       # Silicon
 			["Dirt", 0.05, 1, 2],     # Junk filler
-			# UNCOMMON (22% combined) - Useful materials
+			# UNCOMMON (25% combined) - Useful materials
 			["Cu", 0.10, 1, 2],       # Copper - valuable for circuits
-			["Steel", 0.06, 1, 1],    # Pre-refined steel
-			["Fiber", 0.04, 1, 1],    # Carbon Fiber
+			["Steel", 0.08, 1, 1],    # Pre-refined steel (+2%)
+			["Fiber", 0.05, 1, 1],    # Carbon Fiber (+1%)
 			["Resin", 0.02, 1, 1],    # Polymer Resin
-			# RARE (7% combined) - Components
-			["Circuit", 0.04, 1, 1],  # Basic Circuit
-			["Chip", 0.01, 1, 1],     # Microprocessor
-			# UNCOMMON (7.5%) - Research
-			["Res1", 0.075, 1, 2], # Common Research Artifact
-			# VERY RARE (0.7% combined) - Jackpot
-			["W", 0.005, 1, 1],       # Tungsten
-			["Ti", 0.002, 1, 1],      # Titanium
+			# RARE (10% combined) - Components
+			["Circuit", 0.06, 1, 1],  # Basic Circuit (+2%)
+			["Chip", 0.02, 1, 1],     # Microprocessor (+1%)
+			["Res1", 0.02, 1, 1],     # Research Fragment
+			["DroneCore", 0.02, 1, 1], # NEW: DroneCore Bridge (2% chance)
 		],
 		"duration": 20.0,
-		"level_req": 10, # Increased from 2
+		"level_req": 4, 
 		"xp": 12, # Reduced from 15
 		"research_req": "basic_engineering"
 	},
@@ -283,13 +294,33 @@ var recipes: Dictionary = {
 	},
 	"craft_coolant_cell": {
 		"name": "Helium Coolant Cell",
-		"description": "Pressurized helium for weapon cooling.",
-		"input": { "He": 10, "Steel": 2, "Resin": 1 },
+		"description": "Pressurized helium and nitrogen for weapon cooling.",
+		"input": { "He": 10, "NitroCoolant": 5, "Steel": 2 },
 		"output": { "CoolantCell": 1 },
 		"duration": 15.0,
 		"level_req": 42, # Increased from 12
 		"xp": 80, # Increased from 60
 		"research_req": "cryogenic_systems"
+	},
+	"cryogenic_distillation": {
+		"name": "Cryogenic Distillation",
+		"description": "Extract Nitrogen from liquid Hydrogen/Oxygen mix.",
+		"input": { "H": 10, "O": 10 },
+		"output": { "N": 5 },
+		"duration": 20.0,
+		"level_req": 25,
+		"xp": 30,
+		"research_req": "fluid_dynamics"
+	},
+	"nitrogen_coolant": {
+		"name": "Nitrogen Coolant",
+		"description": "Synthesize liquid nitrogen for cooling systems.",
+		"input": { "N": 10, "Water": 2 },
+		"output": { "NitroCoolant": 5 },
+		"duration": 15.0,
+		"level_req": 26,
+		"xp": 35,
+		"research_req": "fluid_dynamics"
 	},
 	"craft_slug_t3": {
 		"name": "Depleted Uranium Round",
@@ -315,11 +346,12 @@ var recipes: Dictionary = {
 	"craft_circuit": {
 		"name": "Basic Circuitry",
 		"description": "Integrate salvaged drone processor with silicon.",
-		"input": { "Si": 2, "DroneCore": 1 },  # Requires combat drop
+		"input": { "Si": 2, "DroneCore": 1 }, 
 		"output": { "Circuit": 1 },
-		"duration": 8.0,
-		"level_req": 30, # Increased from 3
-		"xp": 50, # Increased from 25
+		"duration": 6.0,
+		"level_req": 6,
+		"xp": 50,
+		"research_req": "automated_logistics"
 	},
 	"craft_hydraulics": {
 		"name": "Hydraulic Servo",
@@ -327,7 +359,7 @@ var recipes: Dictionary = {
 		"input": { "Steel": 2, "Resin": 1 },
 		"output": { "Hydraulics": 1 },
 		"duration": 10.0,
-		"level_req": 24, # Increased from 5
+		"level_req": 10,
 		"xp": 40
 	},
 	# Lithium Chain
@@ -337,8 +369,8 @@ var recipes: Dictionary = {
 		"input": { "Spodumene": 2 },
 		"output": { "Li": 1 },
 		"duration": 5.0,
-		"level_req": 18, # Increased from 5
-		"xp": 15, # Reduced from 20
+		"level_req": 3,
+		"xp": 7,
 		"research_req": "basic_engineering"
 	},
 	# Basic metallurgy moved to top
@@ -393,13 +425,23 @@ var recipes: Dictionary = {
 		"xp": 80, # Increased from 50
 		"research_req": "automation"
 	},
+	"craft_chip": {
+		"name": "Chip Fabrication",
+		"description": "High-precision logic unit. Requires nitrogen cooling for etching.",
+		"input": { "Semiconductor": 2, "Au": 1, "N": 5 },
+		"output": { "Chip": 1 },
+		"duration": 20.0,
+		"level_req": 40,
+		"xp": 60,
+		"research_req": "adv_materials"
+	},
 	"craft_battery_t1": {
 		"name": "Assemble Basic Battery",
 		"description": "Basic energy storage for ships.",
 		"input": { "Li": 5, "Fe": 2 },
 		"output": { "BatteryT1": 1 },
 		"duration": 10.0,
-		"level_req": 40, # Increased from 10
+		"level_req": 6,
 		"xp": 60, # Increased from 50
 	},
 	"craft_battery_t2": {
@@ -420,7 +462,7 @@ var recipes: Dictionary = {
 		"duration": 60.0,
 		"level_req": 80, # Increased from 30
 		"xp": 800, # Increased from 500
-		"research_req": "quantum_dynamics"
+		"research_req": "warp_drive"
 	},
 	# Early Game Element Processing
 	"smelt_bauxite": {
@@ -576,7 +618,15 @@ func get_recipe_speed_multiplier(recipe_id: String) -> float:
 	if GameState.research_manager:
 		multiplier += GameState.research_manager.get_efficiency_bonus("processing_speed")
 	
-	# TODO: Check Infrastructure (count fabricator > 0)
+	# Forensic 3: Infrastructure Buffs
+	if GameState.infrastructure_manager:
+		# Molecular Fabricator (20% Speed Increase)
+		if GameState.infrastructure_manager.get_building_count("fabricator") > 0:
+			multiplier += 0.20
+		
+		# Platinum Catalyst Chamber (Global Processing Speed +25%)
+		if GameState.infrastructure_manager.get_building_count("catalyst_chamber") > 0:
+			multiplier += 0.25
 	
 	return multiplier
 
@@ -596,8 +646,9 @@ func start_action(action_id: String):
 			return
 		
 		# Ingredients
-		if not has_ingredients(recipe["input"]):
-			print("Missing ingredients.")
+		var c_cost = recipe.get("credits_cost", 0)
+		if not has_ingredients(recipe["input"], c_cost):
+			print("Missing ingredients/credits.")
 			return
 			
 		current_recipe = recipe
@@ -630,7 +681,8 @@ func process_tick(delta_time: float):
 
 func complete_process():
 	# 1. Check ingredients again
-	if not has_ingredients(current_recipe["input"]):
+	var c_cost = current_recipe.get("credits_cost", 0)
+	if not has_ingredients(current_recipe["input"], c_cost):
 		stop_action()
 		return
 		
@@ -639,10 +691,18 @@ func complete_process():
 		var qty = current_recipe["input"][item]
 		GameState.resources.remove_element(item, qty)
 		
+	if "credits_cost" in current_recipe:
+		GameState.resources.remove_currency("credits", current_recipe["credits_cost"])
+		
 	# 3. Output
 	if "output" in current_recipe:
 		for item in current_recipe["output"]:
 			var qty = current_recipe["output"][item]
+			
+			# Apply Steel Scalability (Oxygen-Blast Furnace)
+			if item == "Steel" and GameState.research_manager.is_tech_unlocked("oxygen_blast_furnace"):
+				qty *= 5
+				
 			GameState.resources.add_element(item, qty)
 			events.append(["loot", "+%d %s" % [qty, item], current_recipe_id])
 			
@@ -688,11 +748,16 @@ func complete_process():
 	if not has_ingredients(current_recipe["input"]):
 		stop_action()
 
-func has_ingredients(inputs: Dictionary) -> bool:
+func has_ingredients(inputs: Dictionary, credits: int = 0) -> bool:
 	for item in inputs:
 		var qty = inputs[item]
 		if GameState.resources.get_element_amount(item) < qty:
 			return false
+			
+	if credits > 0:
+		if GameState.resources.get_currency("credits") < credits:
+			return false
+			
 	return true
 
 func calculate_offline(delta: float):
@@ -739,6 +804,11 @@ func calculate_offline(delta: float):
 	if "output" in current_recipe:
 		for item in current_recipe["output"]:
 			var qty = current_recipe["output"][item]
+			
+			# Apply Steel Scalability (Oxygen-Blast Furnace)
+			if item == "Steel" and GameState.research_manager.is_tech_unlocked("oxygen_blast_furnace"):
+				qty *= 5
+				
 			var total = qty * actions
 			GameState.resources.add_element(item, total)
 			loot_summary[item] = loot_summary.get(item, 0) + total

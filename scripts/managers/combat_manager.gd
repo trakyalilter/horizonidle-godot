@@ -6,9 +6,7 @@ var current_zone = null
 var current_enemy = null
 var target_enemy_id = null
 
-# Battle State
-var player_hp = 0
-var player_max_hp = 100
+# Battle State (Enemies only, player uses shipyard_manager.current_hp)
 var player_shield = 0.0
 var player_max_shield = 0.0
 
@@ -40,6 +38,13 @@ var active_buffs = {} # {buff_name: duration}
 
 # Session Tracking
 var session_loot = {} # {item_id: total_amount}
+
+# Balanced Phase 2 Buffs
+var broadside_timer = 0.0
+var coolant_flush_timer = 0.0
+
+# Forensic 3: Logic Fixes
+var shield_regen_accumulator = 0.0
 
 var zones = {
 	"lunar_orbit": {
@@ -100,13 +105,13 @@ var enemy_db = {
 	# === ZONE 1: LUNAR ORBIT ===
 	"dust_mite": {
 		"name": "Space Dust Mite",
-		"stats": {"hp": 120, "max_shield": 0, "atk": 6, "def": 0, "atk_interval": 1.2},
+		"stats": {"hp": 50, "max_shield": 0, "atk": 3, "def": 0, "atk_interval": 2.5},
 		"loot": [["Scrap", 1, 2]],  # Primary scrap source for recycling
 		"xp": 8
 	},
 	"lunar_drone": {
 		"name": "Lunar Drone",
-		"stats": {"hp": 300, "max_shield": 0, "atk": 12, "def": 15, "atk_interval": 1.8},
+		"stats": {"hp": 75, "max_shield": 0, "atk": 5, "def": 3, "atk_interval": 2.5},
 		"loot": [["Scrap", 2, 3], ["Fe", 4, 10], ["DroneCore", 1, 1]],  # EXCLUSIVE: DroneCore
 		"rare_loot": [["Cu", 0.5, 1, 2], ["Chip", 0.08, 1, 1], ["SalvageData", 0.20, 1, 1]],  # 20% safety net
 		"xp": 12
@@ -114,8 +119,8 @@ var enemy_db = {
 	"scrap_collector": {
 		"name": "Scrap Collector",
 		"stats": {"hp": 350, "max_shield": 0, "atk": 20, "def": 5, "atk_interval": 2.2},
-		"loot": [["Scrap", 7, 12]],  # BEST scrap farm
-		"rare_loot": [["Res1", 1.0, 2, 5]],
+		"loot": [["Scrap", 7, 12], ["Res1", 2, 5]],  # BEST scrap farm + Guaranteed Artifacts
+		"rare_loot": [],
 		"xp": 10
 	},
 	"survey_probe": {
@@ -128,29 +133,29 @@ var enemy_db = {
 	# New Asteroid Belt Enemies
 	"claim_jumper": {
 		"name": "Claim Jumper",
-		"stats": {"hp": 1200, "max_shield": 40, "atk": 14, "def": 8, "atk_interval": 2.2},
-		"loot": [["credits", 100, 150]],  # Best credits farm in D2
-		"rare_loot": [["Cu", 0.45, 10, 20], ["NavData", 0.1, 2, 4]],  # Cu as rare keeps Lunar Drone relevant
-		"xp": 22
+		"stats": {"hp": 2500, "max_shield": 100, "atk": 45, "def": 25, "atk_interval": 2.2},
+		"loot": [["credits", 250, 450]],  # Yield buffed to match difficulty
+		"rare_loot": [["Cu", 0.45, 15, 30], ["NavData", 0.15, 2, 5]],
+		"xp": 50
 	},
 	"ore_hauler": {
 		"name": "Ore Hauler Wreck",
-		"stats": {"hp": 1800, "max_shield": 0, "atk": 30, "def": 12, "atk_interval": 5.0},
-		"loot": [["Fe", 80, 150], ["C", 100, 300]],  # Best Fe+C bulk farm
-		"rare_loot": [["W", 0.25, 10, 20]],  # Tungsten introduction
-		"xp": 28
+		"stats": {"hp": 4500, "max_shield": 0, "atk": 80, "def": 40, "atk_interval": 5.0},
+		"loot": [["Fe", 150, 300], ["C", 200, 500], ["Scrap", 10, 20]],
+		"rare_loot": [["W", 0.35, 15, 30], ["U", 0.10, 2, 5]], 
+		"xp": 80
 	},
 	# New Mars Debris Enemies
 	"derelict_frigate": {
 		"name": "Derelict Frigate",
-		"stats": {"hp": 5000, "max_shield": 180, "atk": 40, "def": 30, "atk_interval": 5.0},
-		"loot": [["Steel", 2, 5], ["Scrap", 8, 15]],
-		"rare_loot": [["Circuit", 0.25, 1, 2], ["Chip", 0.15, 1, 1], ["Res2", 0.50, 3, 6]],
-		"xp": 55
+		"stats": {"hp": 12000, "max_shield": 500, "atk": 150, "def": 65, "atk_interval": 4.0},
+		"loot": [["Steel", 5, 12], ["Scrap", 20, 40]],
+		"rare_loot": [["Circuit", 0.35, 2, 4], ["Chip", 0.20, 2, 2], ["Res2", 0.80, 5, 10]],
+		"xp": 250
 	},
 	"salvage_swarm": {
 		"name": "Salvage Swarm",
-		"stats": {"hp": 900, "max_shield": 0, "atk": 40, "def": 0, "atk_interval": 0.8},
+		"stats": {"hp": 2500, "max_shield": 0, "atk": 60, "def": 10, "atk_interval": 0.6},
 		"loot": [["Scrap", 10, 20]],  # Glass cannon, massive Scrap
 		"rare_loot": [["Resin", 0.3, 1, 2], ["Cu", 0.2, 1, 2]],
 		"xp": 35
@@ -218,46 +223,46 @@ var enemy_db = {
 	},
 	"alien_frigate": {
 		"name": "Xenon Patrol Frigate",
-		"stats": {"hp": 600, "max_shield": 1000, "atk": 25, "def": 5},
-		"loot": [["Ti", 5, 10], ["Scrap", 5, 10]],
-		"rare_loot": [["NavData", 0.2, 1, 2], ["Chip", 0.2, 1, 2], ["VoidArtifact", 0.1, 1, 1], ["Res3", 0.40, 2, 4]],
-		"xp": 100
+		"stats": {"hp": 15000, "max_shield": 8000, "atk": 250, "def": 50, "atk_interval": 3.0},
+		"loot": [["Ti", 15, 30], ["Scrap", 30, 60]],
+		"rare_loot": [["NavData", 0.3, 2, 5], ["Chip", 0.3, 2, 5], ["VoidArtifact", 0.15, 1, 2], ["Res3", 0.50, 5, 10]],
+		"xp": 500
 	},
 	"xenon_corvette": {
 		"name": "Xenon Corvette",
-		"stats": {"hp": 600, "max_shield": 3000, "atk": 40, "def": 40},
-		"loot": [["Ti", 2, 5], ["U", 2, 5]],
-		"rare_loot": [["NavData", 0.2, 1, 2], ["VoidArtifact", 0.2, 1, 1], ["Res3", 0.15, 1, 1]],
-		"xp": 100
+		"stats": {"hp": 25000, "max_shield": 15000, "atk": 400, "def": 80, "atk_interval": 2.5},
+		"loot": [["Ti", 20, 50], ["U", 5, 15]],
+		"rare_loot": [["NavData", 0.4, 3, 7], ["VoidArtifact", 0.3, 2, 4], ["Res3", 0.25, 5, 8]],
+		"xp": 800
 	},
 	"xenon_mothership": {
 		"name": "XENON MOTHERSHIP",
-		"stats": {"hp": 5000, "max_shield": 10000, "atk": 160, "def": 120, "atk_interval": 8.0},
-		"loot": [["Ti", 50, 100], ["Chip", 10, 20]],
-		"rare_loot": [["QuantumCore", 1.0, 1, 1], ["VoidArtifact", 1.0, 2, 5], ["Res3", 1.0, 10, 20]],
-		"xp": 1000
+		"stats": {"hp": 150000, "max_shield": 80000, "atk": 1200, "def": 250, "atk_interval": 6.0},
+		"loot": [["Ti", 200, 500], ["Chip", 25, 50], ["AdvCircuit", 10, 20]],
+		"rare_loot": [["QuantumCore", 1.0, 5, 10], ["VoidArtifact", 1.0, 10, 25], ["Res3", 1.0, 50, 100]],
+		"xp": 5000
 	},
 	# Sector Beta Enemies (Difficulty 6) - HP ~8k-15k
 	"mining_sentinel": {
 		"name": "Mining Sentinel MK-VII",
-		"stats": {"hp": 8000, "max_shield": 5000, "atk": 80, "def": 50},
-		"loot": [["ColonySalvage", 2, 5], ["Steel", 5, 10]],
-		"rare_loot": [["Co", 0.4, 1, 3], ["Ni", 0.4, 1, 3], ["Circuit", 0.3, 1, 2]],
-		"xp": 200
+		"stats": {"hp": 250000, "max_shield": 100000, "atk": 2500, "def": 400},
+		"loot": [["ColonySalvage", 10, 20], ["Steel", 50, 100]],
+		"rare_loot": [["Co", 0.5, 5, 15], ["Ni", 0.5, 5, 15], ["Circuit", 0.5, 10, 25]],
+		"xp": 20000
 	},
 	"defense_turret": {
 		"name": "Automated Defense Turret",
-		"stats": {"hp": 15000, "max_shield": 0, "atk": 120, "def": 80},
-		"loot": [["ColonySalvage", 5, 8], ["Circuit", 2, 5], ["Hydraulics", 1, 3]],
-		"rare_loot": [["Cr", 0.3, 1, 2], ["AdvCircuit", 0.2, 1, 1]],
-		"xp": 250
+		"stats": {"hp": 500000, "max_shield": 0, "atk": 5000, "def": 800},
+		"loot": [["ColonySalvage", 25, 50], ["Circuit", 20, 50], ["Hydraulics", 10, 20]],
+		"rare_loot": [["Cr", 0.5, 5, 10], ["AdvCircuit", 0.4, 5, 10]],
+		"xp": 45000
 	},
 	"colony_overseer": {
 		"name": "Colony Overseer AI",
-		"stats": {"hp": 12000, "max_shield": 8000, "atk": 100, "def": 60},
-		"loot": [["AdvCircuit", 2, 4], ["ColonySalvage", 3, 6], ["ColonyDataCore", 1, 1]],
-		"rare_loot": [["Pd", 0.15, 1, 1], ["AICore", 0.2, 1, 1], ["Chip", 0.3, 1, 2]],
-		"xp": 300
+		"stats": {"hp": 300000, "max_shield": 150000, "atk": 3500, "def": 500},
+		"loot": [["AdvCircuit", 10, 20], ["ColonySalvage", 20, 40], ["ColonyDataCore", 1, 1]],
+		"rare_loot": [["Pd", 0.3, 2, 5], ["AICore", 0.5, 1, 1], ["Chip", 0.5, 5, 10]],
+		"xp": 60000
 	},
 	# Sector Gamma Enemies (Difficulty 7) - HP ~20k-80k
 	"radiation_beast": {
@@ -276,10 +281,10 @@ var enemy_db = {
 	},
 	"gamma_colossus": {
 		"name": "GAMMA COLOSSUS",
-		"stats": {"hp": 80000, "max_shield": 40000, "atk": 300, "def": 150},
-		"loot": [["RadIsotope", 10, 15], ["Pt", 5, 10], ["QuantumCore", 1, 2]],
-		"rare_loot": [["Ir", 0.3, 1, 2], ["ExoticIsotope", 0.2, 1, 1]],
-		"xp": 2000
+		"stats": {"hp": 2500000, "max_shield": 1000000, "atk": 15000, "def": 1500},
+		"loot": [["RadIsotope", 50, 100], ["Pt", 25, 50], ["QuantumCore", 5, 10]],
+		"rare_loot": [["Ir", 0.5, 5, 15], ["ExoticIsotope", 1.0, 1, 3]],
+		"xp": 500000
 	},
 	# Sector Delta Enemies (Difficulty 8) - HP ~50k-150k
 	"crystal_golem": {
@@ -380,12 +385,12 @@ func spawn_enemy():
 	
 	var sm = GameState.shipyard_manager
 	var rm = GameState.research_manager
-	var hp_mult = 1.0 + rm.get_efficiency_bonus("max_hp_mult")
-	player_max_hp = int(sm.max_hp * hp_mult)
 	player_max_shield = sm.max_shield
 	
-	if player_hp <= 0:
-		player_hp = player_max_hp
+	if sm.current_hp <= 0:
+		# If they start combat at 0 (after death), we give them internal battle HP
+		# but they should have paid the repair bill already.
+		sm.current_hp = sm.max_hp
 		player_shield = player_max_shield
 	
 	# Initialize Player Weapon Battery
@@ -435,6 +440,7 @@ func retreat():
 		w["timer"] = 0.0
 	enemy_attack_timer = 0.0
 	session_loot.clear()
+	
 	log_msg("Emergency Warp engaged! Expedition aborted.")
 
 func stop_action():
@@ -476,21 +482,53 @@ func process_tick(delta: float):
 	# Cooldowns tick per second conceptually
 	if consumable_cooldown > 0:
 		consumable_cooldown -= delta
+		
+	# Balanced Phase 2: Coolant Flush
+	if coolant_flush_timer > 0:
+		coolant_flush_timer -= delta
+		p_speed_mult *= 2.0 # Doubled speed
+		
+	# Balanced Phase 2: Broadside Burst
+	var has_broadside = false
+	for slot in sm.loadout:
+		if sm.loadout[slot] == "broadside_array":
+			has_broadside = true
+			break
+			
+	if has_broadside and in_combat and current_enemy:
+		broadside_timer += delta
+		if broadside_timer >= 20.0:
+			_execute_broadside_burst()
+			broadside_timer = 0.0
+			
+	# Forensic 3: Constant Shield Regen (Standalone timer)
+	var regen_mult = 1.0 + rm.get_efficiency_bonus("shield_regen")
+	shield_regen_accumulator += delta
+	if shield_regen_accumulator >= 1.0:
+		if player_shield < player_max_shield:
+			player_shield = min(player_max_shield, player_shield + (sm.shield_regen * regen_mult))
+		shield_regen_accumulator = 0.0
 
 func _execute_player_attack(weapon_idx: int = 0):
 	if weapon_idx >= player_weapon_states.size(): return
 	var w = player_weapon_states[weapon_idx]
 	var sm = GameState.shipyard_manager
 	
+	# Forensic 3: Energy Enforcement
+	var e_cost = w.get("energy_load", 0) * 0.1 # Concept: 10% of load per shot
+	if GameState.resources.get_energy() < e_cost:
+		log_msg("LACK OF ENERGY: Weapon Offline!")
+		return
+	GameState.resources.add_energy(-e_cost)
+
 	# --- Periodic Maintenance (Only on first weapon or special tick?) ---
 	# We perform shield regen and buff decay once per "firing cycle" of the hull if possible
 	# but for simplicity, let's keep it here or handle independently.
 	# Decision: Regen on every firing increases regen speed, so we scale it.
-	var regen_tick = 1.0 / player_weapon_states.size()
 	# Auto-Consume
 	if auto_consume_enabled and equipped_consumable_id:
-		var hp_thresh = auto_consume_threshold * player_max_hp
-		if player_hp < hp_thresh:
+		var hp_thresh = auto_consume_threshold * sm.max_hp
+		if sm.current_hp < hp_thresh:
 			use_consumable()
 		elif equipped_consumable_id == "Mesh": # Shield Item
 			var s_thresh = auto_consume_threshold * player_max_shield
@@ -505,14 +543,6 @@ func _execute_player_attack(weapon_idx: int = 0):
 			if "dmg_bonus_e" in active_buffs: active_buffs.erase("dmg_bonus_e")
 			active_buffs.erase("dmg_bonus_duration")
 			log_msg("Ammo depleted.")
-
-	# Shield Regen (Scaled by number of weapons to keep total regen constant)
-	var rm = GameState.research_manager
-	var regen_mult = 1.0 + rm.get_efficiency_bonus("shield_regen")
-	
-	if player_shield < player_max_shield:
-		var r_amt = (sm.shield_regen * regen_mult) * regen_tick
-		player_shield = min(player_max_shield, player_shield + r_amt)
 
 	# --- Attack Calculation for this specific weapon ---
 	var p_atk_k = w["dmg_k"]
@@ -606,7 +636,7 @@ func _execute_enemy_attack():
 		var p_def = sm.defense
 		
 		# Reactive Armor Implementation
-		var hp_percent = float(player_hp) / float(player_max_hp)
+		var hp_percent = float(sm.current_hp) / float(sm.max_hp)
 		var reactive_reduction = 1.0
 		if hp_percent < 0.9: # Bonus starts below 90%
 			for slot in sm.loadout:
@@ -620,7 +650,7 @@ func _execute_enemy_attack():
 		var eres = resolve_damage(e_atk_k * reactive_reduction, e_atk_e * reactive_reduction, player_shield, p_def)
 		
 		player_shield = max(0, player_shield - eres[0])
-		player_hp -= eres[1]
+		sm.current_hp -= eres[1]
 		
 		if eres[0] > 0:
 			combat_events.append({"type": "dmg_shield", "text": "-%d" % eres[0], "color": Color.CYAN, "side": "player"})
@@ -640,7 +670,7 @@ func _execute_enemy_attack():
 
 		log_msg("ENEMY: -%d Shield, -%d Hull" % [eres[0], eres[1]])
 
-	if player_hp <= 0:
+	if sm.current_hp <= 0:
 		lose_fight()
 
 func resolve_damage(atk_k, atk_e, c_shield, c_armor):
@@ -729,7 +759,25 @@ func win_fight():
 
 func lose_fight():
 	log_msg("CRITICAL FAILURE. Ship destroyed.")
+	
+	# Calculate Repair Cost based on ship tier from shipyard_manager
+	var sm = GameState.shipyard_manager
+	var repair_cost = sm.get_full_repair_cost(sm.active_hull)
+	
+	# Deduct credits (can go negative = debt)
+	GameState.resources.add_currency("credits", -repair_cost)
+	
+	log_msg("REPAIR BILL: %d Credits" % repair_cost)
+	combat_events.append({
+		"type": "repair", 
+		"text": "REPAIR: -%d Cr" % repair_cost, 
+		"color": Color.ORANGE, 
+		"side": "player"
+	})
+	
 	retreat()
+
+# Deleted local _get_repair_cost as it's now centralized in shipyard_manager
 
 func equip_consumable(item_id):
 	equipped_consumable_id = item_id
@@ -760,14 +808,45 @@ func use_consumable():
 		
 	elif equipped_consumable_id == "Seal":
 		# Hull Repair
+		var sm = GameState.shipyard_manager
 		var heal_amount = 50
-		player_hp = min(player_max_hp, player_hp + heal_amount)
+		sm.current_hp = min(sm.max_hp, sm.current_hp + heal_amount)
 		combat_events.append({"type": "heal", "text": "+%d HP" % heal_amount, "color": Color.GREEN, "side": "player"})
 		log_msg("Used Hull Sealant (+%d HP)" % heal_amount)
 		
+	elif equipped_consumable_id == "NitroCoolant":
+		# Coolant Flush
+		coolant_flush_timer = 10.0
+		log_msg("NITROGEN FLUSH: Attack speed doubled for 10s!")
+		combat_events.append({"type": "buff", "text": "SPEED BOOST", "color": Color.AQUA, "side": "player"})
+
 	else:
 		# Unknown consumable - just consume it silently
 		log_msg("Used %s (no effect)" % equipped_consumable_id)
+
+func _execute_broadside_burst():
+	var total_kinetic_dps = 0.0
+	for w in player_weapon_states:
+		if w["type"] == "kinetic":
+			total_kinetic_dps += (w["dmg_k"] / w["interval"])
+			
+	if total_kinetic_dps <= 0:
+		# Fallback if no specific kinetic weapons, use 20% of base atk as proxy
+		total_kinetic_dps = GameState.shipyard_manager.attack * 0.2
+		
+	var burst_dmg = int(total_kinetic_dps * 3.0 * 20.0) # 300% of DPS over the 20s interval
+	# Apply Mitigation
+	var mitigation = float(current_enemy.get("def", 0)) / (float(current_enemy.get("def", 0)) + 20.0)
+	var final_dmg = int(burst_dmg * (1.0 - mitigation))
+	
+	if final_dmg < 1: final_dmg = 1
+	
+	enemy_hp -= final_dmg
+	log_msg("BROADSIDE BURST: %d Kinetic damage!" % final_dmg)
+	combat_events.append({"type": "dmg_hull", "text": "BURST %d" % final_dmg, "color": Color.GOLD, "side": "enemy"})
+	
+	if enemy_hp <= 0:
+		win_fight()
 
 
 func log_msg(msg: String):

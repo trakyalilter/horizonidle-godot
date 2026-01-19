@@ -38,7 +38,8 @@ func setup(data):
 	
 	for item in data["loot"]:
 		# format: [name, min, max]
-		var txt = "• %s: %d-%d" % [item[0], item[1], item[2]]
+		var d_name = ElementDB.get_display_name(item[0])
+		var txt = "• %s: %d-%d" % [d_name, item[1], item[2]]
 		add_item_label(txt, Color.WHITE)
 		
 	# Rare Loot
@@ -46,8 +47,9 @@ func setup(data):
 		add_header("Rare Drops", Color.MAGENTA)
 		for item in data["rare_loot"]:
 			# format: [name, chance, min, max]
+			var d_name = ElementDB.get_display_name(item[0])
 			var chance = item[1] * 100.0
-			var txt = "• %s: %.1f%% (%d-%d)" % [item[0], chance, item[2], item[3]]
+			var txt = "• %s: %.1f%% (%d-%d)" % [d_name, chance, item[2], item[3]]
 			add_item_label(txt, Color.LIGHT_BLUE)
 			
 	visible = true

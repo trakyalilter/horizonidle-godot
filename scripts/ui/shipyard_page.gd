@@ -10,6 +10,7 @@ extends Control
 @onready var engine_grid = $VBoxContainer/TabContainer/Modules/Engines/EngineGrid
 @onready var battery_grid = $VBoxContainer/TabContainer/Modules/Batteries/BatteryGrid
 
+var repair_btn: Button
 var manager: RefCounted
 var hull_widget_scene = preload("res://scenes/ui/hull_widget.tscn")
 var module_widget_scene = preload("res://scenes/ui/module_widget.tscn")
@@ -22,7 +23,48 @@ func _ready():
 	UITheme.apply_tab_style($VBoxContainer/TabContainer, "shipyard")
 	UITheme.apply_card_style($VBoxContainer/TabContainer, "shipyard")
 	
+	# UI Robustness: Ensure parent containers don't block mouse events
+	$VBoxContainer/StatsPanel.mouse_filter = Control.MOUSE_FILTER_PASS
+	$VBoxContainer/StatsPanel/HBoxContainer.mouse_filter = Control.MOUSE_FILTER_PASS
+	
+	# Create Repair Button dynamically
+	repair_btn = Button.new()
+	repair_btn.text = "Repair (0 Cr)"
+	repair_btn.custom_minimum_size = Vector2(120, 30) # Ensure it's clickable
+	repair_btn.mouse_filter = Control.MOUSE_FILTER_STOP # Detect clicks
+	repair_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	repair_btn.pressed.connect(_on_repair_pressed)
+	$VBoxContainer/StatsPanel/HBoxContainer.add_child(repair_btn)
+	UITheme.apply_premium_button_style(repair_btn, "shipyard")
+	
 	call_deferred("refresh_list")
+
+func _process(_delta):
+	_update_repair_button()
+	_update_hp_display()
+
+func _update_repair_button():
+	if not repair_btn: return
+	var cost = manager.get_repair_cost()
+	if cost == 0:
+		repair_btn.text = "Hull OK"
+		repair_btn.disabled = true
+	else:
+		repair_btn.text = "Repair (%d Cr)" % cost
+		repair_btn.disabled = not manager.can_repair()
+
+func _update_hp_display():
+	if hp_lbl:
+		hp_lbl.text = "HP: %d / %d" % [manager.current_hp, manager.max_hp]
+
+func _on_repair_pressed():
+	print("[UI] Repair button pressed!")
+	if manager.repair_hull():
+		print("[UI] Repair successful, refreshing UI...")
+		# We don't need a full refresh_list, but let's ensure labels update immediately
+		_update_hp_display()
+		_update_repair_button()
+
 
 func refresh_list():
 	for child in hull_grid.get_children(): child.queue_free()

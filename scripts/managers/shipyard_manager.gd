@@ -29,34 +29,34 @@ var hulls: Dictionary = {
 	"corvette_hull": {
 		"name": "Mining Corvette",
 		"stats": {"hp": 100, "atk": 5},
-		"cost": {"credits": 50, "Fe": 10},
+		"cost": {"credits": 50, "Fe": 10, "Wood": 10},
 		"slots": ["weapon", "shield", "engine", "battery"] 
 	},
 	"frigate_hull": {
 		"name": "Industrial Frigate",
 		"stats": {"hp": 800, "atk": 15},
-		"cost": {"credits": 50000, "Steel": 2000, "Circuit": 100, "Chip": 10},
+		"cost": {"credits": 50000, "Steel": 2000, "Bronze": 50, "Circuit": 100, "Chip": 10},
 		"slots": ["weapon", "weapon", "shield", "shield", "engine", "battery", "battery"],
 		"research_req": "shipwright_1"
 	},
 	"destroyer_hull": {
 		"name": "Escort Destroyer",
-		"stats": {"hp": 2500, "atk": 40, "energy_capacity": 600},
+		"stats": {"hp": 3000, "atk": 40, "energy_capacity": 600},
 		"cost": {"credits": 500000, "Steel": 25000, "Ti": 250, "Circuit": 500, "Chip": 100, "Superalloy": 10, "AdvCircuit": 10},
 		"slots": ["weapon", "weapon", "weapon", "shield", "shield", "engine", "engine", "battery", "battery", "battery"],
 		"research_req": "shipwright_2"
 	},
 	"battlecruiser_hull": {
 		"name": "Battlecruiser",
-		"stats": {"hp": 7500, "atk": 100, "energy_capacity": 1500},
-		"cost": {"credits": 2000000, "Steel": 100000, "Ti": 1500, "Circuit": 1000, "Chip": 250, "Superalloy": 50, "AdvCircuit": 50, "VoidArtifact": 10},
+		"stats": {"hp": 9000, "atk": 100, "energy_capacity": 1500},
+		"cost": {"credits": 5000000, "Steel": 100000, "Ti": 1500, "Circuit": 1000, "Chip": 250, "Superalloy": 50, "AdvCircuit": 50, "VoidArtifact": 10},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery"],
 		"research_req": "capital_ship_engineering"
 	},
 	"dreadnought_hull": {
 		"name": "Dreadnought",
 		"stats": {"hp": 20000, "atk": 250, "energy_capacity": 4000},
-		"cost": {"credits": 10000000, "Steel": 500000, "Ti": 5000, "Circuit": 2500, "Chip": 500, "Superalloy": 200, "AdvCircuit": 200, "QuantumCore": 20, "VoidArtifact": 50},
+		"cost": {"credits": 25000000, "Steel": 500000, "Ti": 5000, "Circuit": 2500, "Chip": 500, "Superalloy": 200, "AdvCircuit": 200, "QuantumCore": 20, "VoidArtifact": 50},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery", "battery", "battery"],
 		"research_req": "quantum_dynamics"
 	}
@@ -93,7 +93,7 @@ var modules: Dictionary = {
 		"stats": {"atk_kinetic": 5, "atk_energy": 5, "energy_load": 5},
 		"cost": {"credits": 300, "Chip": 10, "Si": 20},
 		"desc": "Advanced analytics. Improves all weapon tracking.",
-		"research_req": "basic_engineering"
+		"research_req": "automated_logistics"
 	},
 	"cryo_laser_mk3": {
 		"name": "Cryo-Cooled Laser Mk.III",
@@ -133,7 +133,7 @@ var modules: Dictionary = {
 		"name": "Deflector Shield", 
 		"slot_type": "shield", 
 		"stats": {"max_shield": 50, "shield_regen": 2, "energy_load": 10}, 
-		"cost": {"credits": 10000, "Si": 100},
+		"cost": {"credits": 2500, "Si": 50, "Circuit": 2},
 		"desc": "Generates a regenerative energy field.",
 		"research_req": "energy_shields"
 	},
@@ -264,7 +264,7 @@ var modules: Dictionary = {
 	"cobalt_battery_module": {
 		"name": "Cobalt-Lithium Battery Pack",
 		"slot_type": "battery",
-		"stats": {"energy_cap": 300},
+		"stats": {"energy_capacity": 300},
 		"cost": {"credits": 2000, "CoBattery": 5, "Circuit": 10},
 		"desc": "High energy density. 3x capacity of basic batteries.",
 		"research_req": "advanced_batteries"
@@ -272,7 +272,7 @@ var modules: Dictionary = {
 	"mg_battery_module": {
 		"name": "Magnesium-Ion Cell Array",
 		"slot_type": "battery",
-		"stats": {"energy_cap": 250, "eva": 5},
+		"stats": {"energy_capacity": 250, "eva": 5},
 		"cost": {"credits": 1800, "MgBattery": 5, "AlWire": 15},
 		"desc": "Lightweight batteries. Fast charge + improved evasion.",
 		"research_req": "advanced_batteries"
@@ -305,7 +305,7 @@ var modules: Dictionary = {
 	"palladium_fuel_cell": {
 		"name": "Palladium Fuel Cell Array",
 		"slot_type": "battery",
-		"stats": {"energy_cap": 400, "energy_gen": 10},
+		"stats": {"energy_capacity": 400, "energy_gen": 10},
 		"cost": {"credits": 8000, "PdFuelCell": 10, "AdvCircuit": 5},
 		"desc": "Pd-H2 fuel cell. Generates energy passively.",
 		"research_req": "fuel_cell_tech"
@@ -362,6 +362,15 @@ var modules: Dictionary = {
 		"desc": "(Unique) Stabilizes internal fields. Increases Combat Attack Speed by 15%.",
 		"research_req": "warp_drive",
 		"unique_id": "warp_combat_speed_effect"
+	},
+	"broadside_array": {
+		"name": "Broadside Integrated Array",
+		"slot_type": "weapon",
+		"stats": {"energy_load": 100},
+		"cost": {"credits": 500000, "Steel": 5000, "AdvCircuit": 20, "Hydraulics": 10},
+		"desc": "(Unique) Automated burst fire system. Deals 300% Total Kinetic DPS every 20s.",
+		"research_req": "broadside_tactics",
+		"unique_id": "broadside_burst_effect"
 	}
 }
 
@@ -579,6 +588,51 @@ func load_save_data_manager(data: Dictionary):
 		ammo_loadout[int(key)] = saved_ammo[key]
 	recalc_stats()
 	current_hp = data.get("hp", max_hp)
+
+# Manual Repair System
+func get_full_repair_cost(hull_id: String) -> int:
+	var costs = {
+		"corvette_hull": 1000,
+		"frigate_hull": 5000,
+		"destroyer_hull": 25000,
+		"battlecruiser_hull": 100000,
+		"dreadnought_hull": 500000
+	}
+	return costs.get(hull_id, 1000)
+
+func get_repair_cost() -> int:
+	if current_hp >= max_hp:
+		return 0
+	
+	var full_cost = get_full_repair_cost(active_hull)
+	var missing_hp = max_hp - current_hp
+	var damage_ratio = float(missing_hp) / float(max_hp)
+	
+	var cost = max(10, int(full_cost * damage_ratio))
+	return cost
+
+func can_repair() -> bool:
+	var has_damage = current_hp < max_hp
+	var can_afford = GameState.resources.get_currency("credits") >= get_repair_cost()
+	return has_damage and can_afford
+
+func repair_hull() -> bool:
+	print("[Repair] Attempting repair...")
+	if current_hp >= max_hp:
+		print("[Repair] Failed: Already at max HP (%f/%d)" % [current_hp, max_hp])
+		return false
+	
+	var cost = get_repair_cost()
+	var credits_val = GameState.resources.get_currency("credits")
+	
+	if credits_val < cost:
+		print("[Repair] Failed: Insufficient credits (%f < %d)" % [credits_val, cost])
+		return false
+	
+	GameState.resources.remove_currency("credits", cost)
+	current_hp = max_hp
+	print("[Repair] Success! New HP: %d" % current_hp)
+	return true
 	
 func reset():
 	active_hull = "corvette_hull"

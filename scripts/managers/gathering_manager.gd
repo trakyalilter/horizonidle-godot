@@ -15,13 +15,13 @@ var events: Array = [] # Buffer for UI
 var actions: Dictionary = {
 	"gather_dirt": {
 		"name": "Excavate Soil",
-		"loot_table": [["Dirt", 1.0, 1, 3]],
+		"loot_table": [["Dirt", 1.0, 8, 10]],
 		"xp": 5,
 		"level_req": 1
 	},
 	"collect_water": {
 		"name": "Pump Water",
-		"loot_table": [["Water", 1.0, 1, 2]],
+		"loot_table": [["Water", 1.0, 8, 10]],
 		"xp": 8,
 		"level_req": 3,
 		"research_req": "fluid_dynamics"
@@ -30,11 +30,12 @@ var actions: Dictionary = {
 		"name": "Mine Cassiterite (Tin Ore)",
 		"loot_table": [["Cassiterite", 1.0, 1, 2]],
 		"xp": 12,
-		"level_req": 8
+		"level_req": 8,
+		"research_req": "basic_engineering"
 	},
 	"gather_wood": {
 		"name": "Deforest Zone",
-		"loot_table": [["Wood", 1.0, 1, 2]],
+		"loot_table": [["Wood", 1.0, 8, 10]],
 		"xp": 10,
 		"level_req": 5
 	},
@@ -42,32 +43,36 @@ var actions: Dictionary = {
 		"name": "Quarry Dolomite",
 		"loot_table": [["Dolomite", 1.0, 1, 3], ["Dirt", 0.5, 1, 2]],
 		"xp": 18,
-		"level_req": 15
+		"level_req": 15,
+		"research_req": "adv_materials"
 	},
 	"mine_bauxite": {
 		"name": "Strip Mine Bauxite",
 		"loot_table": [["Bauxite", 1.0, 2, 4], ["Fe", 0.3, 1, 2]],
 		"xp": 20,
-		"level_req": 18
+		"level_req": 18,
+		"research_req": "adv_materials"
 	},
 	"extract_salts": {
 		"name": "Extract Lithium Salt",
 		"loot_table": [["Spodumene", 1.0, 1, 3]],
-		"xp": 30,
-		"level_req": 30,
+		"xp": 10,
+		"level_req": 4,
 		"research_req": "basic_engineering"
 	},
 	"mine_zinc_ore": {
 		"name": "Extract Zinc Ore",
 		"loot_table": [["ZincOre", 1.0, 1, 3], ["Si", 0.4, 1, 1]],
 		"xp": 25,
-		"level_req": 25
+		"level_req": 25,
+		"research_req": "smelting"
 	},
 	"mine_malachite": {
 		"name": "Extract Malachite (Copper Ore)",
 		"loot_table": [["Malachite", 1.0, 1, 2]],
 		"xp": 14,
-		"level_req": 10
+		"level_req": 10,
+		"research_req": "basic_engineering"
 	},
 	"mine_quartz": {
 		"name": "Collect Quartz Clusters",
@@ -81,10 +86,31 @@ var actions: Dictionary = {
 			["H", 0.7, 1, 2],
 			["He", 0.3, 1, 1]
 		],
-		"xp": 60, # Increased from 50 (Late game)
-		"level_req": 40, # Increased from 10
-		"research_req": null
+		"xp": 60,
+		"level_req": 40,
+		"research_req": "energy_metrics"
 	},
+	"extract_platinum": {
+		"name": "Extract Platinum samples",
+		"loot_table": [["PtOre", 1.0, 1, 3], ["Ti", 0.2, 1, 2]],
+		"xp": 80,
+		"level_req": 45,
+		"research_req": "precious_metal_refining"
+	},
+	"mine_iridium": {
+		"name": "Mine Iridium Crystals",
+		"loot_table": [["Ir", 1.0, 1, 2], ["PtOre", 0.3, 1, 1]],
+		"xp": 150,
+		"level_req": 60,
+		"research_req": "iridium_metallurgy"
+	},
+	"harvest_osmium": {
+		"name": "Condense Osmium Vapor",
+		"loot_table": [["Os", 1.0, 1, 1], ["Ir", 0.2, 1, 1]],
+		"xp": 300,
+		"level_req": 75,
+		"research_req": "exotic_metallurgy"
+	}
 }
 
 func _init():

@@ -657,5 +657,15 @@
     "tier": 4,
     "base_value": 300,
     "description": "Highly unstable isotope harvested from nebulae. Essential for gamma tech."
+  },
+  {
+    "atomic_number": -63,
+    "symbol": "NitroCoolant",
+    "name": "Liquid Nitrogen Coolant",
+    "mass": 0.4,
+    "category": "Component",
+    "tier": 2,
+    "base_value": 35,
+    "description": "Super-cooled nitrogen for industrial cooling systems."
   }
 ]

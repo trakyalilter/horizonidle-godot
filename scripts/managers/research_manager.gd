@@ -14,31 +14,49 @@ var tech_tree = {
 		"name": "Basic Engineering",
 		"description": "Unlocks:\n• Mineral Washing\n• Scrap Recycling\n• Lithium Refining",
 		"cost": 50,
-		"cost_items": {"SalvageData": 2},  # Requires 2 Survey Probe kills
 		"type": "technology",
 		"parent": null
+	},
+	"applied_physics": {
+		"name": "Applied Physics",
+		"description": "Fundamental theory of energy and mass.\nFirst tier accessible with Credits.",
+		"cost": 100,
+		"type": "technology",
+		"parent": "basic_engineering"
+	},
+	"materials_science": {
+		"name": "Materials Science",
+		"description": "Elementary studies of matter and chemical bonding.\nFirst tier accessible with Credits.",
+		"cost": 100,
+		"type": "technology",
+		"parent": "basic_engineering"
+	},
+	"industrial_logistics": {
+		"name": "Industrial Logistics",
+		"description": "Efficiency frameworks and sorting algorithms.\nFirst tier accessible with Credits.",
+		"cost": 100,
+		"type": "technology",
+		"parent": "basic_engineering"
 	},
 	"fluid_dynamics": {
 		"name": "Fluid Dynamics",
 		"description": "Unlocks:\n• Water Pumping\n• Electrolysis",
 		"cost": 50,
-		"cost_items": {"Res1": 2},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "applied_physics"
 	},
 	"combustion": {
 		"name": "Organic Combustion",
 		"description": "Unlocks:\n• Charcoal Kiln\n• Fly Ash Separation",
 		"cost": 50,
-		"cost_items": {"Res1": 2},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "materials_science"
 	},
 	"smelting": {
-		"name": "Smelting",
+		"name": "Efficient Smelting",
 		"description": "Unlocks:\n• Steel Foundry\n• Bronze Alloy",
-		"cost": 300,
-		"cost_items": {"Res1": 5},
+		"cost": 3000,
+		"cost_items": {"Res1": 5, "Bronze": 50, "Circuit": 20},
 		"type": "technology",
 		"parent": "combustion"
 	},
@@ -50,16 +68,7 @@ var tech_tree = {
 		"type": "construction",
 		"parent": "smelting"
 	},
-	"upgrade_rare_artifact": {
-		"name": "Synthesize Rare Artifact",
-		"description": "Combine Common artifacts with circuits to create Rare research data.",
-		"input": { "Res1": 15, "Circuit": 5 },
-		"output": { "Res2": 1 },
-		"duration": 30.0,
-		"level_req": 35, # Increased from 8
-		"xp": 100, # Increased from 50
-		"research_req": "smelting"
-	},
+
 	"shipwright_2": {
 		"name": "Shipwright II",
 		"description": "Unlocks:\n• Escort Destroyer (T3)",
@@ -79,20 +88,11 @@ var tech_tree = {
 	"energy_shields": {
 		"name": "Energy Fields",
 		"description": "Unlocks:\n• Deflector Shield",
-		"cost": 400,
+		"cost": 500,
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "applied_physics"
 	},
-	"upgrade_exotic_artifact": {
-		"name": "Compile Exotic Artifact",
-		"description": "Merge Rare artifacts with advanced tech to unlock capital-class research.",
-		"input": { "Res2": 15, "AdvCircuit": 5, "NavData": 10 },
-		"output": { "Res3": 1 },
-		"duration": 60.0,
-		"level_req": 60, # Increased from 15
-		"xp": 300, # Increased from 150
-		"research_req": "sector_alpha_decryption"
-	},
+
 	"automation": {
 		"name": "Factory Automation",
 		"description": "Unlocks:\n• Advanced Circuitry\n• Automated Assembly Line",
@@ -130,9 +130,8 @@ var tech_tree = {
 		"name": "Kinetic Weapons Theory",
 		"description": "Unlocks:\n• Mass Driver",
 		"cost": 50,
-		"cost_items": {"Res1": 3},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "applied_physics"
 	},
 	"laser_optics": {
 		"name": "Laser Optics",
@@ -145,18 +144,16 @@ var tech_tree = {
 	"power_systems": {
 		"name": "Power Systems",
 		"description": "Unlocks:\n• Basic Battery Module",
-		"cost": 150,
-		"cost_items": {"Res1": 3},
+		"cost": 300,
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "applied_physics"
 	},
 	"bronze_smithing": {
 		"name": "Bronze Smithing",
 		"description": "Unlocks:\n• Bronze Plating",
 		"cost": 100,
-		"cost_items": {"Res1": 2},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "materials_science"
 	},
 	"lightweight_alloys": {
 		"name": "Lightweight Alloys",
@@ -164,7 +161,7 @@ var tech_tree = {
 		"cost": 200,
 		"cost_items": {"Res1": 3},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "materials_science"
 	},
 	# --- GATHERING UPGRADES ---
 	"diamond_drills": {
@@ -173,7 +170,7 @@ var tech_tree = {
 		"cost": 200,
 		"cost_items": {"Res1": 2},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "industrial_logistics"
 	},
 	"high_flow_pumps": {
 		"name": "High-Flow Pumps",
@@ -249,7 +246,7 @@ var tech_tree = {
 		"description": "Bonus:\n• +25% Mineral Washing speed",
 		"cost": 200,
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "industrial_logistics"
 	},
 	"catalytic_electrodes": {
 		"name": "Catalytic Electrodes",
@@ -337,7 +334,8 @@ var tech_tree = {
 	"energy_metrics": {
 		"name": "Energy Metrics",
 		"description": "Unlocks:\n• Vaporizer Cells (T3)\n• Plasma Lance Mk.III",
-		"cost": 1500,
+		"cost": 5000,
+		"cost_items": {"Res2": 15, "AdvCircuit": 10},
 		"type": "technology",
 		"parent": "fluid_dynamics"
 	},
@@ -354,9 +352,8 @@ var tech_tree = {
 		"name": "Automated Logistics",
 		"description": "Unlocks:\n• Drone Bay",
 		"cost": 3000,
-		"cost_items": {"Circuit": 20},
 		"type": "construction",
-		"parent": "basic_engineering"
+		"parent": "industrial_logistics"
 	},
 	"molecular_printing": {
 		"name": "Molecular Printing",
@@ -374,6 +371,14 @@ var tech_tree = {
 		"cost_items": {"Ti": 20},
 		"type": "technology",
 		"parent": "blast_furnace"
+	},
+	"oxygen_blast_furnace": {
+		"name": "Oxygen-Blast Furnaces",
+		"description": "Industrial optimization for Steel production. Increases Steel yield from 1 to 5 per cycle.",
+		"cost": 10000,
+		"cost_items": {"Steel": 500, "O": 500},
+		"type": "technology",
+		"parent": "automated_smelting"
 	},
 	"industrial_electrolysis": {
 		"name": "Industrial Electrolysis",
@@ -422,6 +427,14 @@ var tech_tree = {
 		"cost": 5000000,
 		"cost_items": {"QuantumCore": 20, "VoidArtifact": 50, "Res3": 500},
 		"type": "construction",
+		"parent": "capital_ship_engineering"
+	},
+	"broadside_tactics": {
+		"name": "Broadside Tactics",
+		"description": "Unlocks:\n• Broadside Integrated Array (Burst Module)",
+		"cost": 250000,
+		"cost_items": {"Res3": 25, "AdvCircuit": 50},
+		"type": "technology",
 		"parent": "capital_ship_engineering"
 	},
 	# New Zone Unlocks
@@ -477,9 +490,9 @@ var tech_tree = {
 	# Late-Game Rare Metal Technologies
 	"precious_metal_refining": {
 		"name": "Precious Metal Refining",
-		"description": "Unlocks:\n• Platinum Refining\n• Palladium Refining",
+		"description": "Unlocks:\n• Platinum Extraction\n• Palladium Refining",
 		"cost": 150000,
-		"cost_items": {"Ti": 200, "Circuit": 50},
+		"cost_items": {"Ti": 200, "Res2": 25},
 		"type": "technology",
 		"parent": "deep_space_nav"
 	},
@@ -501,17 +514,17 @@ var tech_tree = {
 	},
 	"iridium_metallurgy": {
 		"name": "Iridium Metallurgy",
-		"description": "Unlocks:\n• Iridium Armor\n• Iridium Rounds",
+		"description": "Unlocks:\n• Iridium Mining\n• Iridium Armor",
 		"cost": 40000,
-		"cost_items": {"Ir": 50, "Ti": 300},
+		"cost_items": {"Pt": 50, "Res3": 10},
 		"type": "technology",
 		"parent": "superalloy_engineering"
 	},
 	"exotic_metallurgy": {
 		"name": "Exotic Metallurgy",
-		"description": "Unlocks:\n• Osmium Armor\n• Void-Infused Hull",
+		"description": "Unlocks:\n• Osmium Harvesting\n• Osmium Armor",
 		"cost": 2000000,
-		"cost_items": {"Os": 20, "VoidCrystal": 5, "QuantumCore": 5},
+		"cost_items": {"Ir": 100, "Res3": 50},
 		"type": "technology",
 		"parent": "iridium_metallurgy"
 	},
@@ -571,7 +584,7 @@ var tech_tree = {
 		"cost": 1500,
 		"cost_items": {"Res1": 10},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "industrial_logistics"
 	},
 	"shield_harmonics": {
 		"name": "Shield Harmonics",
@@ -619,7 +632,7 @@ var tech_tree = {
 		"cost": 2000,
 		"cost_items": {"Res1": 15},
 		"type": "technology",
-		"parent": "basic_engineering"
+		"parent": "industrial_logistics"
 	},
 	"industrial_automation": {
 		"name": "Industrial Automation",
@@ -693,7 +706,7 @@ func get_efficiency_bonus(bonus_type: String) -> float:
 		"gathering_yield":
 			var yield_bonus = 0.0
 			if "deep_core_optics" in unlocked_techs: yield_bonus += 1.0
-			if "colony_automation" in unlocked_techs: yield_bonus += 2.0 # Significant late-game boost
+			if "colony_automation" in unlocked_techs: yield_bonus += 5.0 # Buffed from 2.0
 			return yield_bonus
 		"processing_speed":
 			var p_speed = 0.0

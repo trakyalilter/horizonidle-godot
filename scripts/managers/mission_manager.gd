@@ -37,19 +37,38 @@ func init_missions():
 	# Structure: [id, name, description, type, target, target_qty, reward_cr, reward_xp, next_mission_id]
 	var m_list = [
 		# ID, Name, Desc, Type, Target, TargetQty, RewardCr, RewardXP, NextID
-		["m001", "Stranded in Orbit", "Gather 500 Dirt to begin basic repairs.", "gather", "Dirt", 500, 200, 50, "m002"],
-		["m002", "Analytical Breakthrough", "Research 'Basic Engineering' to unlock refining.", "research", "basic_engineering", 1, 100, 50, "m003"],
-		["m003", "Pump Master", "Research 'Fluid Dynamics' to unlock water collection.", "research", "fluid_dynamics", 1, 100, 50, "m004"],
-		["m004", "Deep Space Harvest", "Gather 500 Water and 100 Lithium Ore.", "gather_multi", {"Water": 500, "Spodumene": 100}, 600, 300, 100, "m005"],
-		["m005", "Core Selection", "Extract 100 Silicon, 80 Iron, and 50 Lithium.", "gather_multi", {"Si": 100, "Fe": 80, "Li": 50}, 230, 300, 100, "m006"],
-		["m006", "Mobility Check", "Craft 'Ion Thrusters' in the Shipyard for evasion.", "craft", "basic_thruster", 1, 250, 100, "m007"],
-		["m007", "Hull Integrity", "Research 'Energy Fields' to unlock shielding.", "research", "energy_shields", 1, 300, 150, "m008"],
-		["m008", "Aegis System", "Craft a 'Deflector Shield' for defensive protection.", "craft", "basic_shield", 1, 400, 200, "m008b"],
-		["m008b", "Industrial Energy", "Craft 10 Basic Batteries in the Engineering tab.", "gather", "BatteryT1", 10, 200, 100, "m009"],
-		["m009", "Power Storage", "Craft a 'Basic Battery Module' in the Shipyard.", "craft", "battery_t1", 1, 300, 150, "m010"],
-		["m010", "Prototype Arsenal", "Craft a 'Mass Driver' to enable kinetic attacks.", "craft", "railgun_mk1", 1, 400, 200, "m011"],
-		["m011", "Kinetic Munitions", "Produce 10 Ferrite Rounds for your new weapon.", "gather", "SlugT1", 10, 200, 100, "m012"],
-		["m012", "Target Locked", "Defeat 1 Lunar Drone in Lunar Orbit.", "defeat", "lunar_drone", 1, 1000, 500, ""]
+		["m001", "Stranded in Orbit", "Gather 500 Dirt to begin basic repairs.", "gather", "Dirt", 500, 500, 50, "m002"],
+		["m002", "Analytical Breakthrough", "Research 'Basic Engineering' to unlock refining.", "research", "basic_engineering", 1, 300, 50, "m003"],
+		["m003", "Pump Master", "Research 'Fluid Dynamics' to unlock water collection.", "research", "fluid_dynamics", 1, 300, 50, "m004"],
+		["m004", "Hydration", "Gather 500 units of Water.", "gather", "Water", 500, 500, 100, "m005"],
+		["m005", "Mineral Washing", "Recover 100 Silicon and 100 Iron from Dirt.", "gather_multi", {"Si": 100, "Fe": 100}, 200, 1000, 200, "m006"],
+		["m006", "Applied Physics", "Research the 'Applied Physics' hub.", "research", "applied_physics", 1, 500, 100, "m007"],
+		["m007", "Mobility Check", "Craft 'Ion Thrusters' in the Shipyard.", "craft", "basic_thruster", 1, 1000, 100, "m008"],
+		["m008", "Materials Science", "Research the 'Materials Science' hub.", "research", "materials_science", 1, 500, 100, "m009"],
+		["m009", "Deforestation", "Gather 100 units of Wood from the orbital debris.", "gather", "Wood", 100, 500, 100, "m010"],
+		["m010", "Organic Combustion", "Research 'Organic Combustion' to unlock the Kiln.", "research", "combustion", 1, 1000, 150, "m011"],
+		["m011", "Essential Carbon", "Use the Charcoal Kiln to produce 50 Carbon.", "gather", "C", 50, 600, 150, "m012"],
+		["m012", "Lithium Discovery", "Gather 100 samples of Spodumene ore.", "gather", "Spodumene", 100, 800, 200, "m013"],
+		["m013", "Voltaic Storage", "Refine 50 Lithium in the Engineering tab.", "gather", "Li", 50, 1000, 250, "m014"],
+		["m014", "Ballistics Theory", "Research 'Kinetics 101' for weapons technology.", "research", "kinetics_101", 1, 500, 100, "m015"],
+		["m015", "Prototype Arsenal", "Craft a 'Mass Driver' in the Shipyard.", "craft", "railgun_mk1", 1, 1500, 200, "m016"],
+		["m016", "Kinetic Munitions", "Produce 40 Ferrite Rounds for your weapon.", "gather", "SlugT1", 40, 500, 100, "m017"],
+		["m017", "Target Locked", "Defeat 1 Lunar Drone in Lunar Orbit.", "defeat", "lunar_drone", 1, 2500, 500, "m018"],
+		["m018", "Industrial Logistics", "Research the 'Industrial Logistics' hub.", "research", "industrial_logistics", 1, 500, 100, "m018b"],
+		["m018b", "Automated Intelligence", "Research 'Automated Logistics' for circuitry.", "research", "automated_logistics", 1, 1000, 200, "m019"],
+		["m019", "Cybernetic Integration", "Craft 5 Basic Circuitry in the Engineering tab.", "gather", "Circuit", 5, 2000, 300, "m020"],
+		["m020", "Advanced Energy", "Research 'Power Systems' for batteries.", "research", "power_systems", 1, 500, 100, "m021"],
+		["m021", "Industrial Energy", "Craft 10 Basic Batteries in the Engineering tab.", "gather", "BatteryT1", 10, 1000, 100, "m022"],
+		["m022", "Power Storage", "Craft a 'Basic Battery Module' in the Shipyard.", "craft", "battery_t1", 1, 1500, 150, "m023"],
+		["m023", "Hull Integrity", "Research 'Energy Fields' to unlock shielding.", "research", "energy_shields", 1, 1000, 150, "m024"],
+		["m024", "Aegis System", "Craft a 'Deflector Shield' for protection.", "craft", "basic_shield", 1, 2500, 200, "m025"],
+		["m025", "Refining Mastery", "Research 'Efficient Smelting' for alloys.", "research", "smelting", 1, 5000, 500, "m026"],
+		["m026", "Master Constructor", "Research 'Shipwright I' for hull reinforcement.", "research", "shipwright_1", 1, 5000, 500, "m027"],
+		["m027", "Scanning Horizon", "Unlock 'Sector Alpha' via decryption.", "research", "sector_alpha_decryption", 1, 5000, 500, "m028"],
+		["m028", "Deep Field Mining", "Mine 1000 Cassiterite in Sector Alpha.", "gather", "Cassiterite", 1000, 10000, 2000, "m029"],
+		["m029", "Hardened Shell", "Craft 'Titanium Plating' in the Shipyard.", "craft", "titanium_armor", 1, 15000, 5000, "m030"],
+		["m030", "Flight Data", "Defeat Lunar Drones to gather 10 NavData.", "gather", "NavData", 10, 20000, 8000, "m031"],
+		["m031", "Belt Bound", "Research 'Warp Drive Theory' to reach the Belt.", "research", "warp_drive", 1, 50000, 10000, ""]
 	]
 	
 	for entry in m_list:
@@ -123,6 +142,7 @@ func _update_multi_progress(symbol, amount):
 				
 				mission_updated.emit()
 
+
 func check_completion(mission):
 	if mission["current_qty"] >= mission["target_qty"]:
 		mission["current_qty"] = mission["target_qty"]
@@ -191,7 +211,7 @@ func sync_progress():
 				total_p += prog
 				if prog < req: all_done = false
 			m["current_qty"] = total_p
-			# Note: all_done check handled by check_completion
+		
 			
 		elif m["type"] == "research":
 			if GameState.research_manager.is_tech_unlocked(m["target"]):

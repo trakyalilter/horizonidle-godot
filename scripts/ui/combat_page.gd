@@ -168,12 +168,13 @@ func _process(delta):
 
 func update_ui():
 	# Player Stats
-	p_hp_bar.max_value = manager.player_max_hp
-	p_hp_bar.value = manager.player_hp
+	var sm = GameState.shipyard_manager
+	# Player Stats
+	p_hp_bar.max_value = sm.max_hp
+	p_hp_bar.value = sm.current_hp
 	p_shield_bar.max_value = max(1, manager.player_max_shield)
 	p_shield_bar.value = manager.player_shield
 	
-	var sm = GameState.shipyard_manager
 	p_stat_lbl.text = "ATK: %s | DEF: %s | EVA: %.1f%%" % [UITheme.format_num(sm.attack), UITheme.format_num(sm.defense), sm.evasion]
 	
 	# Enemy Stats

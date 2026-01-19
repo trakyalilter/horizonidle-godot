@@ -20,7 +20,8 @@ var building_db: Dictionary = {
 		"cost": {"credits": 150, "Fe": 10},
 		"energy_gen": 50.0, 
 		"energy_cons": 0.0,
-		"max": 5
+		"max": 5,
+		"research_req": "combustion"
 	},
 	"auto_excavator": {
 		"name": "Auto-Excavator (XL)",
@@ -140,7 +141,7 @@ var building_db: Dictionary = {
 		"input": {"H": 5},
 		"interval": 10.0,
 		"max": 5,
-		"research_req": "fluid_dynamics"
+		"research_req": "energy_metrics"
 	},
 	"industrial_centrifuge": {
 		"name": "Industrial Centrifuge",
@@ -262,6 +263,34 @@ func process_tick(delta: float):
 			# No battery - complete shutdown
 			energy_efficiency = 0.0
 	
+	# 4. Handle Fuel-Based Generation (Forensic 3: Consumption logic)
+	for bid in buildings:
+		var count = buildings[bid]
+		if count <= 0: continue
+		var data = building_db.get(bid)
+		if data.get("energy_gen", 0.0) > 0 and "input" in data:
+			# This is a fuel-based generator (Coal Burner, H Reactor)
+			var can_fuel = true
+			for res in data["input"]:
+				# Concept: input qty is per cycle (scaled by delta)
+				var needed = data["input"][res] * count * (delta / data.get("interval", 10.0))
+				if GameState.resources.get_element_amount(res) < needed:
+					can_fuel = false
+					break
+			
+			if can_fuel:
+				# Consume Fuel
+				for res in data["input"]:
+					var qty = data["input"][res] * count * (delta / data.get("interval", 10.0))
+					GameState.resources.remove_element(res, qty)
+				# Generation is already handled in net_energy * delta calculation
+			else:
+				# Generator stalls - decrease energy_efficiency for subsequent logic
+				# For simplicity, we just reduce the effective net_energy or skip adding it
+				# Re-calculating net_energy locally to properly stall generator:
+				var stall_gen = data.get("energy_gen") * count
+				GameState.resources.add_energy(-stall_gen * delta) # Reverse the generation
+	
 	# Production Logic (scaled by energy efficiency)
 	if energy_efficiency > 0:
 		for bid in buildings:
@@ -298,6 +327,14 @@ func process_tick(delta: float):
 							var qty = data["yield"][res]
 							GameState.resources.add_element(res, qty * count)
 						
+						# Logic Polish: Nitrogen Automation Bridge
+						if bid == "hydro_plant":
+							if GameState.research_manager and GameState.research_manager.is_tech_unlocked("fluid_dynamics"):
+								# 20% chance per cycle per plant to extract trace Nitrogen
+								for i in range(count):
+									if randf() < 0.2:
+										GameState.resources.add_element("N", 1)
+					
 						# Special Upgrade: Industrial Centrifuge Titanium Extraction
 						if bid == "industrial_centrifuge":
 							if GameState.research_manager and GameState.research_manager.is_tech_unlocked("advanced_mineralogy"):
@@ -339,8 +376,8 @@ func process_tick(delta: float):
 									
 									if randf() < chance:
 										var amount = randi_range(min_amt, max_amt)
-										# 10% efficiency
-										amount = max(1, int(amount * 0.1))
+										# Forensic 3: Drone Bay Buff (5x increase from 10% to 50%)
+										amount = max(1, int(amount * 0.5))
 										GameState.resources.add_element(element, amount)
 					
 					production_timers[bid] = 0.0

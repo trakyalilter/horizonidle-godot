@@ -139,8 +139,8 @@ func _update_navigation_hints():
 	
 	# 1. Claim Reminder (Top Priority)
 	var can_claim_tutorial = false
-	for mid in ["m001", "m002", "m003", "m004", "m005", "m006", "m007", "m008", "m009", "m010", "m011", "m012"]:
-		if mid in mm.missions and mm.missions[mid]["completed"] and not mm.missions[mid]["claimed"]:
+	for mid in mm.missions:
+		if mid.begins_with("m0") and mm.missions[mid]["completed"] and not mm.missions[mid]["claimed"]:
 			can_claim_tutorial = true
 			break
 	
@@ -172,36 +172,32 @@ func _update_navigation_hints():
 			if widget: target_to_pulse = widget
 			
 	elif "m004" in mm.active_missions:
-		# Gather Water & Spodumene
+		# Gather Water
 		if current_page_name != "gathering": target_to_pulse = gathering_btn
 		else:
-			var gm = GameState.gathering_manager
-			var target_id = "collect_water"
-			# If already collecting water, guide to spodumene
-			if gm.is_active and gm.current_action_id == "collect_water":
-				target_id = "extract_salts"
-			
-			var widget = pages["gathering"].get_widget_by_aid(target_id)
-			if widget and not (gm.is_active and gm.current_action_id == target_id):
+			var widget = pages["gathering"].get_widget_by_aid("collect_water")
+			if widget and not (GameState.gathering_manager.is_active and GameState.gathering_manager.current_action_id == "collect_water"):
 				target_to_pulse = widget.btn
 				
 	elif "m005" in mm.active_missions:
-		# Processing: Si, Fe, Li
+		# Processing: Si, Fe (Mineral Washing)
 		if current_page_name != "processing": target_to_pulse = processing_btn
 		else:
 			var pm = GameState.processing_manager
-			var target_id = "centrifuge_dirt" # For Si/Fe
-			# If already mineral washing, guide to Lithium
-			if pm.is_active and pm.current_recipe_id == "centrifuge_dirt":
-				target_id = "refine_lithium"
-				
 			var page = pages["processing"]
-			page.focus_tab(target_id)
-			var widget = page.get_widget_by_aid(target_id)
-			if widget and not (pm.is_active and pm.current_recipe_id == target_id):
+			page.focus_tab("centrifuge_dirt")
+			var widget = page.get_widget_by_aid("centrifuge_dirt")
+			if widget and not (pm.is_active and pm.current_recipe_id == "centrifuge_dirt"):
 				target_to_pulse = widget.btn
 				
 	elif "m006" in mm.active_missions:
+		# Research: Applied Physics Hub
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("applied_physics")
+			if widget: target_to_pulse = widget
+			
+	elif "m007" in mm.active_missions:
 		# Shipyard: Ion Thrusters
 		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
 		else:
@@ -209,30 +205,66 @@ func _update_navigation_hints():
 			page.focus_module_tab("basic_thruster")
 			target_to_pulse = page.get_module_widget("basic_thruster")
 		
-	elif "m007" in mm.active_missions:
-		# Research: Energy Shields
+	elif "m008" in mm.active_missions:
+		# Research: Materials Science Hub
 		if current_page_name != "research": target_to_pulse = research_btn
 		else:
-			var widget = pages["research"].get_node_widget("energy_shields")
+			var widget = pages["research"].get_node_widget("materials_science")
+			if widget: target_to_pulse = widget
+
+	elif "m009" in mm.active_missions:
+		# Gather Wood
+		if current_page_name != "gathering": target_to_pulse = gathering_btn
+		else:
+			var widget = pages["gathering"].get_widget_by_aid("gather_wood")
+			if widget and not (GameState.gathering_manager.is_active and GameState.gathering_manager.current_action_id == "gather_wood"):
+				target_to_pulse = widget.btn
+
+	elif "m010" in mm.active_missions:
+		# Research: Combustion
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("combustion")
 			if widget: target_to_pulse = widget
 			
-	elif "m008" in mm.active_missions:
-		# Shipyard: Deflector Shield
-		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
+	elif "m011" in mm.active_missions:
+		# Processing: Carbon (Kiln)
+		if current_page_name != "processing": target_to_pulse = processing_btn
 		else:
-			var page = pages["shipyard"]
-			page.focus_module_tab("basic_shield")
-			target_to_pulse = page.get_module_widget("basic_shield")
-		
-	elif "m009" in mm.active_missions:
-		# Shipyard: Battery
-		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
+			var pm = GameState.processing_manager
+			var page = pages["processing"]
+			page.focus_tab("charcoal_burning") # Updated to exact recipe ID
+			var widget = page.get_widget_by_aid("charcoal_burning")
+			if widget and not (pm.is_active and pm.current_recipe_id == "charcoal_burning"):
+				target_to_pulse = widget.btn
+				
+	elif "m012" in mm.active_missions:
+		# Gather Spodumene
+		if current_page_name != "gathering": target_to_pulse = gathering_btn
 		else:
-			var page = pages["shipyard"]
-			page.focus_module_tab("battery_t1")
-			target_to_pulse = page.get_module_widget("battery_t1")
-		
-	elif "m010" in mm.active_missions:
+			var widget = pages["gathering"].get_widget_by_aid("extract_salts")
+			if widget and not (GameState.gathering_manager.is_active and GameState.gathering_manager.current_action_id == "extract_salts"):
+				target_to_pulse = widget.btn
+				
+	elif "m013" in mm.active_missions:
+		# Processing: Refine Lithium
+		if current_page_name != "processing": target_to_pulse = processing_btn
+		else:
+			var pm = GameState.processing_manager
+			var page = pages["processing"]
+			page.focus_tab("refine_lithium")
+			var widget = page.get_widget_by_aid("refine_lithium")
+			if widget and not (pm.is_active and pm.current_recipe_id == "refine_lithium"):
+				target_to_pulse = widget.btn
+
+	elif "m014" in mm.active_missions:
+		# Research: Kinetics 101
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("kinetics_101")
+			if widget: target_to_pulse = widget
+				
+	elif "m015" in mm.active_missions:
 		# Shipyard: Mass Driver
 		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
 		else:
@@ -240,7 +272,7 @@ func _update_navigation_hints():
 			page.focus_module_tab("railgun_mk1")
 			target_to_pulse = page.get_module_widget("railgun_mk1")
 		
-	elif "m011" in mm.active_missions:
+	elif "m016" in mm.active_missions:
 		# Processing: Ferrite Rounds
 		if current_page_name != "processing": target_to_pulse = processing_btn
 		else:
@@ -251,13 +283,131 @@ func _update_navigation_hints():
 			if widget and not (pm.is_active and pm.current_recipe_id == "craft_slug_t1"):
 				target_to_pulse = widget.btn
 				
-	elif "m012" in mm.active_missions:
-		# Combat: Lunar Drone
+	elif "m017" in mm.active_missions:
+		# Combat: Lunar Orbit Target
 		if current_page_name != "combat": target_to_pulse = combat_btn
 		else:
 			var page = pages["combat"]
 			page.focus_zone("lunar_orbit")
 			target_to_pulse = page.get_enemy_card("lunar_drone")
+
+	elif "m018" in mm.active_missions:
+		# Research: Industrial Logistics Hub
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("industrial_logistics")
+			if widget: target_to_pulse = widget
+
+	elif "m018b" in mm.active_missions:
+		# Research: Automated Logistics Hub
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("automated_logistics")
+			if widget: target_to_pulse = widget
+			
+	elif "m019" in mm.active_missions:
+		# Processing: Circuits
+		if current_page_name != "processing": target_to_pulse = processing_btn
+		else:
+			var pm = GameState.processing_manager
+			var page = pages["processing"]
+			page.focus_tab("craft_circuit")
+			var widget = page.get_widget_by_aid("craft_circuit")
+			if widget and not (pm.is_active and pm.current_recipe_id == "craft_circuit"):
+				target_to_pulse = widget.btn
+
+	elif "m020" in mm.active_missions:
+		# Research: Power Systems
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("power_systems")
+			if widget: target_to_pulse = widget
+				
+	elif "m021" in mm.active_missions:
+		# Processing: Batteries
+		if current_page_name != "processing": target_to_pulse = processing_btn
+		else:
+			var pm = GameState.processing_manager
+			var page = pages["processing"]
+			page.focus_tab("craft_battery_t1")
+			var widget = page.get_widget_by_aid("craft_battery_t1")
+			if widget and not (pm.is_active and pm.current_recipe_id == "craft_battery_t1"):
+				target_to_pulse = widget.btn
+				
+	elif "m022" in mm.active_missions:
+		# Shipyard: Battery Module
+		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
+		else:
+			var page = pages["shipyard"]
+			page.focus_module_tab("battery_t1")
+			target_to_pulse = page.get_module_widget("battery_t1")
+
+	elif "m023" in mm.active_missions:
+		# Research: Energy Shields
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("energy_shields")
+			if widget: target_to_pulse = widget
+			
+	elif "m024" in mm.active_missions:
+		# Shipyard: Deflector Shield
+		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
+		else:
+			var page = pages["shipyard"]
+			page.focus_module_tab("basic_shield")
+			target_to_pulse = page.get_module_widget("basic_shield")
+
+	elif "m025" in mm.active_missions:
+		# Research: Smelting
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("smelting")
+			if widget: target_to_pulse = widget
+
+	elif "m026" in mm.active_missions:
+		# Research: Shipwright I
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("shipwright_1")
+			if widget: target_to_pulse = widget
+
+	elif "m027" in mm.active_missions:
+		# Research: Sector Alpha Case
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("sector_alpha_decryption")
+			if widget: target_to_pulse = widget
+
+	elif "m028" in mm.active_missions:
+		# Gathering: Sector Alpha (Cassiterite)
+		if current_page_name != "gathering": target_to_pulse = gathering_btn
+		else:
+			var widget = pages["gathering"].get_widget_by_aid("mine_cassiterite")
+			if widget and not (GameState.gathering_manager.is_active and GameState.gathering_manager.current_action_id == "mine_cassiterite"):
+				target_to_pulse = widget.btn
+
+	elif "m029" in mm.active_missions:
+		# Shipyard: Titanium Plating
+		if current_page_name != "shipyard": target_to_pulse = shipyard_btn
+		else:
+			var page = pages["shipyard"]
+			page.focus_module_tab("titanium_armor")
+			target_to_pulse = page.get_module_widget("titanium_armor")
+
+	elif "m030" in mm.active_missions:
+		# Combat: Gathering NavData
+		if current_page_name != "combat": target_to_pulse = combat_btn
+		else:
+			var page = pages["combat"]
+			page.focus_zone("lunar_orbit")
+			target_to_pulse = page.get_enemy_card("lunar_drone")
+
+	elif "m031" in mm.active_missions:
+		# Research: Warp Drive
+		if current_page_name != "research": target_to_pulse = research_btn
+		else:
+			var widget = pages["research"].get_node_widget("warp_drive")
+			if widget: target_to_pulse = widget
 
 	# Apply final decision
 	if target_to_pulse:
