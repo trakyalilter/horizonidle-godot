@@ -1,0 +1,9 @@
+{
+    "prompt": "Pixel art icon of a sci-fi weapon module called {item_name} for a 2D idle sci-fi fantasy game. The weapon is {weapon_type}, featuring a compact modular design. Made of {material_description}. Strong silhouette, aggressive shape, visible barrel or emitter. Dominant colors are {color_hint}. Energy weapons may include glow or light effects, kinetic weapons are solid and mechanical. Front-facing or slight side view. No characters holding it. Transparent background.",
+    "style": "pixel_art",
+    "resolution": "256x256",
+    "aspect_ratio": "1:1",
+    "detail_level": "medium_to_high",
+    "color_palette": "high contrast",
+    "negative_prompt": "realistic gun, human hands, photorealism, excessive detail, blur, text, UI frame, watermark"
+}

@@ -30,35 +30,40 @@ var hulls: Dictionary = {
 		"name": "Mining Corvette",
 		"stats": {"hp": 100, "atk": 5},
 		"cost": {"credits": 50, "Fe": 10, "Wood": 10},
-		"slots": ["weapon", "shield", "engine", "battery"] 
+		"slots": ["weapon", "shield", "engine", "battery"],
+		"visual": "res://assets/ships/1.png"
 	},
 	"frigate_hull": {
 		"name": "Industrial Frigate",
 		"stats": {"hp": 800, "atk": 15},
 		"cost": {"credits": 50000, "Steel": 2000, "Bronze": 50, "Circuit": 100, "Chip": 10},
 		"slots": ["weapon", "weapon", "shield", "shield", "engine", "battery", "battery"],
-		"research_req": "shipwright_1"
+		"research_req": "shipwright_1",
+		"visual": "res://assets/ships/2.png"
 	},
 	"destroyer_hull": {
 		"name": "Escort Destroyer",
 		"stats": {"hp": 3000, "atk": 40, "energy_capacity": 600},
 		"cost": {"credits": 500000, "Steel": 25000, "Ti": 250, "Circuit": 500, "Chip": 100, "Superalloy": 10, "AdvCircuit": 10},
 		"slots": ["weapon", "weapon", "weapon", "shield", "shield", "engine", "engine", "battery", "battery", "battery"],
-		"research_req": "shipwright_2"
+		"research_req": "shipwright_2",
+		"visual": "res://assets/ships/3.png"
 	},
 	"battlecruiser_hull": {
 		"name": "Battlecruiser",
 		"stats": {"hp": 9000, "atk": 100, "energy_capacity": 1500},
 		"cost": {"credits": 5000000, "Steel": 100000, "Ti": 1500, "Circuit": 1000, "Chip": 250, "Superalloy": 50, "AdvCircuit": 50, "VoidArtifact": 10},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery"],
-		"research_req": "capital_ship_engineering"
+		"research_req": "capital_ship_engineering",
+		"visual": "res://assets/ships/4.png"
 	},
 	"dreadnought_hull": {
 		"name": "Dreadnought",
 		"stats": {"hp": 20000, "atk": 250, "energy_capacity": 4000},
 		"cost": {"credits": 25000000, "Steel": 500000, "Ti": 5000, "Circuit": 2500, "Chip": 500, "Superalloy": 200, "AdvCircuit": 200, "QuantumCore": 20, "VoidArtifact": 50},
 		"slots": ["weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "weapon", "shield", "shield", "shield", "shield", "shield", "shield", "shield", "engine", "battery", "battery", "battery", "battery", "battery", "battery"],
-		"research_req": "quantum_dynamics"
+		"research_req": "quantum_dynamics",
+		"visual": "res://assets/ships/5.png"
 	}
 }
 

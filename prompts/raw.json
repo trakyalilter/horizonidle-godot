@@ -1,0 +1,23 @@
+{
+    "prompt": "Pixel art icon of a raw resource called {Copper Ore} for a 2D idle sci-fi fantasy game. The resource is unrefined and natural, made of {Copper Ore}. Organic shape with rough edges or fluid form. Dominant colors must be chosen ONLY from the locked 32-color palette listed below. No glow or only minimal natural shimmer. Clean silhouette, readable at small sizes. Front-facing view. White background. Flat colors only, no gradients.",
+    "style": "pixel_art",
+    "resolution": "256x256",
+    "aspect_ratio": "1:1",
+    "color_palette_rule": "Use ONLY the fixed 32-color global palette. No new colors allowed.",
+    "palette_hex": [ #0B0F14 #1E2633 #2F3A4F #4A5568 #7A869A #C0C8D1
+
+#3B2F2F #5A3E2B #7C5A3A #9E7C4A #4A6B5F
+
+#8B8E8D #B87333 #D4AF37 #A8B0B8 #5F6A72
+
+#1B3B6F #2F6FFF #00CFFF #6BE6FF #7BFFF2
+
+#5B2D8B #8E44AD #FF4FD8
+
+#FF3B30 #FF8C00 #FFD166
+
+#FFFFFF #BFFFFF
+    ],
+    "detail_level": "low_to_medium",
+    "negative_prompt": "refined, polished, futuristic machinery, gradients, smooth shading, photorealistic, 3D render, blur, text, watermark, border, colors outside palette"
+}

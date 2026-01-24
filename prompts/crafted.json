@@ -1,0 +1,23 @@
+{
+    "prompt": "Pixel art icon of a refined or crafted material named {item_name} used in a 2D idle sci-fi fantasy game. The material is processed and industrial, made of {material_description}. Clean geometric form with sharper edges. Dominant colors must be selected ONLY from the locked 32-color palette listed below. Subtle highlights allowed but flat pixel colors only. Clear silhouette, front-facing. White background.",
+    "style": "pixel_art",
+    "resolution": "256x256",
+    "aspect_ratio": "1:1",
+    "color_palette_rule": "Use ONLY the fixed 32-color global palette. Flat colors only.",
+    "palette_hex": [ #0B0F14 #1E2633 #2F3A4F #4A5568 #7A869A #C0C8D1
+
+#3B2F2F #5A3E2B #7C5A3A #9E7C4A #4A6B5F
+
+#8B8E8D #B87333 #D4AF37 #A8B0B8 #5F6A72
+
+#1B3B6F #2F6FFF #00CFFF #6BE6FF #7BFFF2
+
+#5B2D8B #8E44AD #FF4FD8
+
+#FF3B30 #FF8C00 #FFD166
+
+#FFFFFF #BFFFFF
+    ],
+    "detail_level": "medium",
+    "negative_prompt": "organic, raw dirt, gradients, smooth lighting, photorealistic, blur, anti-aliasing, text, logo, border, colors outside palette"
+}

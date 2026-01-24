@@ -1,0 +1,9 @@
+{
+    "prompt": "Pixel art icon of a power or battery module named {item_name} for a 2D idle sci-fi fantasy game. The module stores or generates energy and is made of {material_description}. Compact technological design with visible cells, cores, or energy indicators. Dominant colors are {color_hint}. Subtle glow or energy lines allowed. Strong silhouette, readable at small sizes. Front-facing view. Transparent background.",
+    "style": "pixel_art",
+    "resolution": "256x256",
+    "aspect_ratio": "1:1",
+    "detail_level": "medium",
+    "color_palette": "limited high-contrast",
+    "negative_prompt": "real-life battery photo, photorealism, blur, text, symbols, watermark, border"
+}

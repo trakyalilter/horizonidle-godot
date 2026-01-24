@@ -24,11 +24,11 @@ text = "Hull Name"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="IconLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="ShipIcon" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🚀"
-horizontal_alignment = 1
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SlotsLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

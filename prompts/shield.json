@@ -1,0 +1,9 @@
+{
+    "prompt": "Pixel art icon of a defensive shield or armor module named {item_name} for a 2D idle sci-fi fantasy game. The design represents {shield_type}. Made of {material_description}. Protective, sturdy appearance with layered or plated structure. Energy-based shields may include subtle glow or hex patterns. Dominant colors are {color_hint}. Clear defensive silhouette, front-facing. No text or UI elements. Transparent background.",
+    "style": "pixel_art",
+    "resolution": "256x256",
+    "aspect_ratio": "1:1",
+    "detail_level": "medium",
+    "color_palette": "limited defensive tones",
+    "negative_prompt": "character armor, worn by humans, photorealistic, blur, smooth gradients, text, logo, border"
+}
