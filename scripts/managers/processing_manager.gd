@@ -1,4 +1,4 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
 
 var is_active: bool = false
 var current_recipe: Dictionary = {}
@@ -662,8 +662,8 @@ func stop_action():
 	current_recipe_id = ""
 	action_progress = 0.0
 
-func reset():
-	super.reset()
+func reset(decay_factor: float = 1.0) -> void:
+	super.reset(decay_factor)
 	stop_action()
 	print("Processing Reset.")
 

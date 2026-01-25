@@ -11,8 +11,12 @@ extends Control
 @onready var mission_btn = $HBoxContainer/Sidebar/VBoxContainer/MissionBtn
 @onready var designer_btn = $HBoxContainer/Sidebar/VBoxContainer/DesignerBtn
 @onready var inventory_btn = $HBoxContainer/Sidebar/VBoxContainer/InventoryBtn
+@onready var atlas_btn = $HBoxContainer/Sidebar/VBoxContainer/AtlasBtn
 @onready var options_btn = $HBoxContainer/Sidebar/VBoxContainer/OptionsBtn
+@onready var fleet_btn = $HBoxContainer/Sidebar/VBoxContainer/FleetBtn
+@onready var warp_btn = $HBoxContainer/Sidebar/VBoxContainer/WarpBtn
 @onready var sidebar_list = $HBoxContainer/Sidebar/VBoxContainer
+
 @onready var modal_layer = $ModalLayer
 var offline_modal
 
@@ -89,8 +93,23 @@ func _init_pages():
 	p_options.visible = false
 	pages["options"] = p_options
 
+	var p_atlas = preload("res://scenes/ui/atlas_page.tscn").instantiate()
+	page_container.add_child(p_atlas)
+	p_atlas.visible = false
+	pages["atlas"] = p_atlas
+
+	var p_fleet = preload("res://scenes/ui/fleet_page.tscn").instantiate()
+	page_container.add_child(p_fleet)
+	p_fleet.visible = false
+	pages["fleet"] = p_fleet
+	
+	var p_warp = preload("res://scenes/ui/warp_page.tscn").instantiate()
+	page_container.add_child(p_warp)
+	p_warp.visible = false
+	pages["warp"] = p_warp
+
 	if modal_layer:
-		offline_modal = preload("res://scenes/ui/offline_modal.tscn").instantiate()
+		offline_modal = preload("res://scenes/ui/offline_boot_modal.tscn").instantiate()
 		modal_layer.add_child(offline_modal)
 		offline_modal.visible = false
 		offline_modal.check_and_show()
@@ -109,6 +128,9 @@ func switch_to(page_name):
 	if page_name in pages:
 		current_page_name = page_name
 		_update_sidebar_styling()
+		
+		# INTERACTION: Tactile feedback on switch
+		UITheme.trigger_ui_thud(sidebar_list, 2.0)
 
 func _update_sidebar_styling():
 	UITheme.apply_sidebar_button_style(gathering_btn, current_page_name == "gathering")
@@ -120,16 +142,40 @@ func _update_sidebar_styling():
 	UITheme.apply_sidebar_button_style(mission_btn, current_page_name == "mission")
 	UITheme.apply_sidebar_button_style(designer_btn, current_page_name == "designer")
 	UITheme.apply_sidebar_button_style(inventory_btn, current_page_name == "inventory")
+	UITheme.apply_sidebar_button_style(atlas_btn, current_page_name == "atlas")
 	UITheme.apply_sidebar_button_style(options_btn, current_page_name == "options")
+	UITheme.apply_sidebar_button_style(fleet_btn, current_page_name == "fleet")
 	
-	UITheme.apply_sidebar_button_style(options_btn, current_page_name == "options")
+	# THEMATIC: Progressive Disclosure (Early & Mid-Game Gates)
+	var has_basic_eng = GameState.research_manager.is_tech_unlocked("applied_physics")
+	var has_shipwright = GameState.research_manager.is_tech_unlocked("shipwright_1")
+	
+	# Early Game: Ship management becomes available at Applied Physics
+	shipyard_btn.visible = has_basic_eng
+	designer_btn.visible = has_basic_eng
+	$HBoxContainer/Sidebar/VBoxContainer/EngHeader.visible = true # Engineering is core
+	
+	# Mid Game: Fleet Command unlocks at Shipwright 1
+	fleet_btn.visible = has_shipwright
+	
+	# Command Cluster Header: Always visible (Missions are day 1)
+	$HBoxContainer/Sidebar/VBoxContainer/CmdHeader.visible = true
+	
+	# Apply Physical Switch Styling
+	for child in sidebar_list.get_children():
+		if child is Button:
+			UITheme.apply_instrument_style(child)
+		elif child is Label:
+			child.add_theme_font_size_override("font_size", 10)
+			child.modulate = Color(0.4, 0.4, 0.6, 0.5) # Dim, terminal navy
 
 func _process(delta):
-	# 1. Tutorial Navigation Guidance
+	# 1. Navigation Logic & Disclosure Check (Once per second is enough)
+	if Engine.get_frames_drawn() % 60 == 0:
+		_update_sidebar_styling()
+		
+	# 2. Tutorial Navigation Guidance
 	_update_navigation_hints()
-	
-	# 2. Sidebar/Background Automation
-	# ... (existing or inherited)
 
 func _update_navigation_hints():
 	var mm = GameState.mission_manager
@@ -456,7 +502,13 @@ func _on_combat_btn_pressed(): switch_to("combat")
 func _on_mission_btn_pressed(): switch_to("mission")
 func _on_designer_btn_pressed(): switch_to("designer")
 func _on_inventory_btn_pressed(): switch_to("inventory")
+func _on_atlas_btn_pressed():
+	switch_to("atlas")
+
+func _on_warp_btn_pressed():
+	switch_to("warp")
 func _on_options_btn_pressed(): switch_to("options")
+func _on_fleet_btn_pressed(): switch_to("fleet")
 
 func _on_game_resetted():
 	switch_to("mission")

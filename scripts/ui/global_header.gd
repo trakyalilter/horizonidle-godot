@@ -1,18 +1,78 @@
 extends PanelContainer
 
 @onready var credits_lbl = $MarginContainer/HBoxContainer/CreditsLabel
+@onready var mission_lbl = $MarginContainer/HBoxContainer/MissionLabel
 @onready var task_lbl = $MarginContainer/HBoxContainer/TaskLabel
+
+@onready var infra_led = $MarginContainer/HBoxContainer/StatusCluster/InfraLed
+@onready var fleet_led = $MarginContainer/HBoxContainer/StatusCluster/FleetLed
+@onready var research_led = $MarginContainer/HBoxContainer/StatusCluster/ResearchLed
 
 func _ready():
 	UITheme.apply_panel_style(self)
 	
+	# Premium Glassmorphism Feel
+	self.modulate.a = 0.9
+	UITheme.add_hover_scale(task_lbl, 1.02)
+	UITheme.apply_segmented_font(credits_lbl, UITheme.COLORS["warning"])
+	UITheme.apply_segmented_font(mission_lbl, Color(0.2, 0.8, 1.0)) # Cyan
+	UITheme.apply_segmented_font(task_lbl, UITheme.COLORS["text_main"])
+	
+	UITheme.packet_landed.connect(_on_packet_landed)
+	
+	# Initial LED setup
+	_setup_leds()
+	
 	# Initial sync
 	update_hud()
 	
-	# Connect signals for real-time updates
+	# Connect signals for real-time updates and activity blips
 	if GameState.resources:
 		GameState.resources.currency_added.connect(func(t, a): update_credits())
 		GameState.resources.currency_removed.connect(func(t, a): update_credits())
+	
+	if GameState.mission_manager:
+		GameState.mission_manager.mission_updated.connect(_update_mission_display)
+		_update_mission_display()
+	
+	if GameState.infrastructure_manager:
+		GameState.infrastructure_manager.activity_occurred.connect(func(): flash_led(infra_led, UITheme.CATEGORY_COLORS["infrastructure"]))
+	if GameState.fleet_manager:
+		GameState.fleet_manager.activity_occurred.connect(func(): flash_led(fleet_led, UITheme.CATEGORY_COLORS["mission"]))
+	if GameState.research_manager:
+		GameState.research_manager.activity_occurred.connect(func(): flash_led(research_led, UITheme.CATEGORY_COLORS["research"]))
+
+func _update_mission_display():
+	if not GameState.mission_manager: return
+	
+	var mm = GameState.mission_manager
+	if mm.active_missions.is_empty():
+		mission_lbl.text = "MISSION: NONE"
+		return
+		
+	var mid = mm.active_missions[0]
+	var m = mm.missions[mid]
+	var prog_pct = (m["current_qty"] / float(max(1, m["target_qty"]))) * 100.0
+	
+	# Compact representation for the header
+	mission_lbl.text = "OBJ: %s (%d%%)" % [m["name"].to_upper(), int(prog_pct)]
+	
+	if m["completed"]:
+		mission_lbl.add_theme_color_override("font_color", Color.GOLD)
+		mission_lbl.text = "OBJ: [ %s READY ]" % m["name"].to_upper()
+	else:
+		mission_lbl.add_theme_color_override("font_color", Color(0.2, 0.8, 1.0))
+
+func _setup_leds():
+	# Make them circular (or rounded squares for mechanical look)
+	for led in [infra_led, fleet_led, research_led]:
+		led.custom_minimum_size = Vector2(6, 6)
+		led.color = Color(0.1, 0.1, 0.1)
+
+func flash_led(led: ColorRect, color: Color):
+	var tween = create_tween()
+	tween.tween_property(led, "color", color.lightened(0.5), 0.1)
+	tween.tween_property(led, "color", Color(0.1, 0.1, 0.1), 0.5).set_delay(0.1)
 
 func _process(_delta):
 	# Poll for task status
@@ -53,5 +113,18 @@ func update_task_status():
 		var tech_name = rm.tech_tree[rm.active_tech_id]["name"]
 		var prog = (rm.action_progress / rm.calculate_effective_duration(rm.active_tech_id)) * 100.0
 		status_text = "Researching: %s (%d%%)" % [tech_name, int(prog)]
-		
-	task_lbl.text = status_text
+	
+	task_lbl.text = "System Action: %s" % status_text
+	if status_text == "Idle":
+		task_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	else:
+		task_lbl.add_theme_color_override("font_color", Color.WHITE)
+
+func _on_packet_landed(_color: Color):
+	# TACTILE: Subtle thud on arrival
+	UITheme.trigger_ui_thud(credits_lbl, 1.5)
+	
+	# Visual "Overheat" pulse
+	var tween = create_tween()
+	credits_lbl.modulate = Color(2, 1.5, 1) # White-ish orange flash
+	tween.tween_property(credits_lbl, "modulate", Color.WHITE.lightened(0.3), 0.2)

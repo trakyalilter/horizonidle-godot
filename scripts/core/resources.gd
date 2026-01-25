@@ -10,6 +10,7 @@ var elements: Dictionary = {}
 var currencies: Dictionary = {}
 var energy: float = 0.0
 var max_energy: float = 0.0
+var lifetime_credits: float = 0.0
 
 func _ready():
 	pass
@@ -38,6 +39,8 @@ func add_currency(currency_type: String, amount: float):
 	if not currencies.has(currency_type):
 		currencies[currency_type] = 0.0
 	currencies[currency_type] += amount
+	if currency_type == "credits" and amount > 0:
+		lifetime_credits += amount
 	currency_added.emit(currency_type, amount)
 
 func remove_currency(currency_type: String, amount: float) -> bool:
@@ -74,7 +77,8 @@ func get_save_data() -> Dictionary:
 		"elements": elements,
 		"currencies": currencies,
 		"energy": energy,
-		"max_energy": max_energy
+		"max_energy": max_energy,
+		"lifetime_credits": lifetime_credits
 	}
 
 func load_save_data(data: Dictionary):
@@ -83,6 +87,7 @@ func load_save_data(data: Dictionary):
 	currencies = data.get("currencies", {})
 	energy = data.get("energy", 0.0)
 	max_energy = data.get("max_energy", 0.0)
+	lifetime_credits = data.get("lifetime_credits", 0.0)
 	
 	# Fix types if JSON loaded ints
 	for k in elements: elements[k] = float(elements[k])

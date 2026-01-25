@@ -1,9 +1,13 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
+
+signal activity_occurred
 
 var buildings: Dictionary = {}
 var generation: float = 0.0
 var consumption: float = 0.0
 var net_energy: float = 0.0
+var overclocked_buildings: Array = [] # List of building IDs enabled for overclocking
+
 
 var building_db: Dictionary = {
 	"solar_panel": {
@@ -12,7 +16,7 @@ var building_db: Dictionary = {
 		"cost": {"credits": 50, "Si": 5}, 
 		"energy_gen": 10.0, 
 		"energy_cons": 0.0,
-		"max": 10
+		"category": "power"
 	},
 	"coal_burner": {
 		"name": "Carbon Generator",
@@ -20,8 +24,8 @@ var building_db: Dictionary = {
 		"cost": {"credits": 150, "Fe": 10},
 		"energy_gen": 50.0, 
 		"energy_cons": 0.0,
-		"max": 5,
-		"research_req": "combustion"
+		"research_req": "combustion",
+		"category": "power"
 	},
 	"auto_excavator": {
 		"name": "Auto-Excavator (XL)",
@@ -31,7 +35,7 @@ var building_db: Dictionary = {
 		"energy_cons": 20.0,
 		"yield": {"Dirt": 10},
 		"interval": 5.0,
-		"max": 3
+		"category": "extraction"
 	},
 	"industrial_pump": {
 		"name": "Industrial Pump",
@@ -41,7 +45,7 @@ var building_db: Dictionary = {
 		"energy_cons": 25.0,
 		"yield": {"Water": 10},
 		"interval": 5.0,
-		"max": 3
+		"category": "extraction"
 	},
 	"drone_bay": {
 		"name": "Drone Recovery Bay",
@@ -51,7 +55,8 @@ var building_db: Dictionary = {
 		"energy_cons": 50.0,
 		"max": 1,
 		"research_req": "automated_logistics",
-		"special": "passive_gather"
+		"special": "passive_gather",
+		"category": "logistics"
 	},
 	"fabricator": {
 		"name": "Molecular Fabricator",
@@ -61,7 +66,8 @@ var building_db: Dictionary = {
 		"energy_cons": 100.0,
 		"max": 1,
 		"research_req": "molecular_printing",
-		"special": "craft_buff"
+		"special": "craft_buff",
+		"category": "industry"
 	},
 	"auto_smelter": {
 		"name": "Automated Smelter",
@@ -72,8 +78,8 @@ var building_db: Dictionary = {
 		"yield": {"Steel": 2},
 		"input": {"Fe": 2, "C": 1, "O": 2},
 		"interval": 4.0,
-		"max": 3,
-		"research_req": "automated_smelting"
+		"research_req": "automated_smelting",
+		"category": "industry"
 	},
 	"hydro_plant": {
 		"name": "Industrial Electrolysis Plant",
@@ -84,8 +90,30 @@ var building_db: Dictionary = {
 		"yield": {"H": 2, "O": 1},
 		"input": {"Water": 1},
 		"interval": 2.0,
-		"max": 5,
-		"research_req": "industrial_electrolysis"
+		"research_req": "industrial_electrolysis",
+		"category": "industry"
+	},
+	"nitrogen_tank": {
+		"name": "Cryo-Storage Array",
+		"description": "Pressurizes stored Nitrogen, increasing recovery efficiency (+10% Yield).",
+		"cost": {"credits": 5000, "Ti": 100, "Circuit": 25},
+		"energy_gen": 0.0,
+		"energy_cons": 20.0,
+		"yield_bonus": {"N": 0.10},
+		"research_req": "cryogenic_storage",
+		"category": "logistics"
+	},
+	"matter_deconstructor": {
+		"name": "Matter De-constructor",
+		"description": "Mass-converts Scrap into advanced components via molecular restructuring.",
+		"cost": {"credits": 100000, "Ti": 1000, "AdvCircuit": 50},
+		"energy_gen": 0.0,
+		"energy_cons": 250.0,
+		"input": {"Scrap": 100000},
+		"yield": {"Circuit": 5, "Superalloy": 1},
+		"interval": 10.0,
+		"research_req": "molecular_recycling",
+		"category": "industry"
 	},
 	"auto_press": {
 		"name": "Automated Carbon Press",
@@ -96,20 +124,30 @@ var building_db: Dictionary = {
 		"yield": {"Graphite": 1},
 		"input": {"C": 5},
 		"interval": 6.0,
-		"max": 2,
-		"research_req": "molecular_compression"
+		"research_req": "molecular_compression",
+		"category": "industry"
 	},
 	"munitions_factory": {
 		"name": "Munitions Factory",
-		"description": "Mass produces basic ammunition.",
+		"description": "Mass produces basic ammunition. Yield scales with Engineering Level.",
 		"cost": {"credits": 75000, "Circuit": 20, "Steel": 20},
 		"energy_gen": 0.0,
 		"energy_cons": 80.0,
 		"yield": {"SlugT1": 10, "CellT1": 10},
 		"input": {"Fe": 2, "Si": 2},
 		"interval": 5.0,
-		"max": 2,
-		"research_req": "mass_production_tactics"
+		"research_req": "mass_production_tactics",
+		"category": "industry"
+	},
+	"repair_docks": {
+		"name": "Fleet Repair Docks",
+		"description": "Automated maintenance for the fleet. Reduces mission repair costs by 10% per level.",
+		"cost": {"credits": 100000, "AdvCircuit": 20, "Steel": 100},
+		"energy_gen": 0.0,
+		"energy_cons": 60.0,
+		"max": 10, # Cap at 10 for 100% reduction potential? Or additive/multiplicative check later.
+		"research_req": "fleet_logistics_1",
+		"category": "logistics"
 	},
 	"catalyst_chamber": {
 		"name": "Platinum Catalyst Chamber",
@@ -119,7 +157,8 @@ var building_db: Dictionary = {
 		"energy_cons": 150.0,
 		"max": 1,
 		"research_req": "industrial_catalysis",
-		"special": "global_catalyst"
+		"special": "global_catalyst",
+		"category": "logistics"
 	},
 	"palladium_generator": {
 		"name": "Palladium Fuel Cell Generator",
@@ -129,8 +168,8 @@ var building_db: Dictionary = {
 		"energy_cons": 0.0,
 		"input": {"H": 1},  # Consumes 1 H per cycle
 		"interval": 10.0,
-		"max": 3,
-		"research_req": "fuel_cell_tech"
+		"research_req": "fuel_cell_tech",
+		"category": "power"
 	},
 	"hydrogen_reactor": {
 		"name": "Hydrogen Reactor",
@@ -140,8 +179,8 @@ var building_db: Dictionary = {
 		"energy_cons": 0.0,
 		"input": {"H": 5},
 		"interval": 10.0,
-		"max": 5,
-		"research_req": "energy_metrics"
+		"research_req": "energy_metrics",
+		"category": "power"
 	},
 	"industrial_centrifuge": {
 		"name": "Industrial Centrifuge",
@@ -152,20 +191,83 @@ var building_db: Dictionary = {
 		"yield": {"Fe": 3, "Si": 1},
 		"input": {"Dirt": 5, "Water": 5},
 		"interval": 3.0,
-		"max": 3,
-		"research_req": "automated_logistics"
+		"research_req": "automated_logistics",
+		"category": "extraction"
 	},
 	"electronics_assembler": {
 		"name": "Electronics Assembler",
 		"description": "Automated production of Circuitry and Advanced Circuitry.",
-		"cost": {"credits": 100000, "Ti": 50, "Circuit": 100, "SalvageData": 20},
+		"cost": {"credits": 25000, "Ti": 50, "Circuit": 100, "SalvageData": 20},
 		"energy_gen": 0.0,
 		"energy_cons": 120.0,
 		"yield": {"Circuit": 2},
 		"input": {"Si": 4, "DroneCore": 2},
 		"interval": 8.0,
 		"max": 1,
-		"research_req": "industrial_automation"
+		"research_req": "industrial_automation",
+		"category": "industry"
+	},
+	# ITER2 P1: Dead Resource Sinks
+	"hydroponics_bay": {
+		"name": "Hydroponics Bay",
+		"description": "Converts Water into Oxygen and Food. Excellent sink for Water surplus.",
+		"cost": {"credits": 10000, "Steel": 50, "Si": 30, "Resin": 10},
+		"energy_gen": 0.0,
+		"energy_cons": 30.0,
+		"yield": {"O": 3, "Food": 1},
+		"input": {"Water": 10},
+		"interval": 5.0,
+		"research_req": "fluid_dynamics",
+		"category": "extraction"
+	},
+	"terraforming_processor": {
+		"name": "Terraforming Processor",
+		"description": "Processes Dirt into fertile soil. Increases all Gathering speed by 5% per unit.",
+		"cost": {"credits": 20000, "Steel": 100, "Circuit": 20},
+		"energy_gen": 0.0,
+		"energy_cons": 50.0,
+		"yield": {"FertileSoil": 1},
+		"input": {"Dirt": 25, "Water": 5},
+		"interval": 10.0,
+		"research_req": "industrial_logistics",
+		"category": "logistics"
+	},
+	"composite_loom": {
+		"name": "Composite Loom",
+		"description": "Weaves Carbon Fiber into Composite Weave for advanced armor.",
+		"cost": {"credits": 15000, "Steel": 75, "Fiber": 20},
+		"energy_gen": 0.0,
+		"energy_cons": 40.0,
+		"yield": {"CompositeWeave": 1},
+		"input": {"Fiber": 10, "Resin": 2},
+		"interval": 8.0,
+		"research_req": "adv_materials",
+		"category": "industry"
+	},
+	# ITER5 FIX: Food/FertileSoil uses
+	"crew_quarters": {
+		"name": "Crew Quarters",
+		"description": "Houses crew. Consumes Food for +10% XP gain while active.",
+		"cost": {"credits": 25000, "Steel": 100, "Circuit": 20},
+		"energy_gen": 0.0,
+		"energy_cons": 20.0,
+		"input": {"Food": 1},
+		"interval": 30.0,
+		"max": 3,
+		"research_req": "industrial_logistics",
+		"special": "xp_buff",
+		"category": "logistics"
+	},
+	"biosphere_dome": {
+		"name": "Biosphere Dome",
+		"description": "Uses Fertile Soil to boost all Gathering speed by 5% per dome.",
+		"cost": {"credits": 30000, "Steel": 150, "Si": 50, "FertileSoil": 10},
+		"energy_gen": 0.0,
+		"energy_cons": 15.0,
+		"max": 5,
+		"research_req": "industrial_logistics",
+		"special": "gather_speed_buff",
+		"category": "logistics"
 	}
 }
 
@@ -176,6 +278,20 @@ func _init():
 
 func get_building_count(building_id: String) -> int:
 	return buildings.get(building_id, 0)
+
+func get_building_cost(building_id: String) -> Dictionary:
+	"""Calculates exponential cost scaling: Base * (1.15 ^ current_count)"""
+	if not building_id in building_db: return {}
+	
+	var data = building_db[building_id]
+	var count = get_building_count(building_id)
+	var multiplier = pow(1.15, float(count))
+	
+	var scaled_cost = {}
+	for res in data["cost"]:
+		scaled_cost[res] = int(data["cost"][res] * multiplier)
+		
+	return scaled_cost
 
 func can_afford(building_id: String) -> bool:
 	if not building_id in building_db: return false
@@ -188,11 +304,13 @@ func can_afford(building_id: String) -> bool:
 		if not GameState.research_manager.is_tech_unlocked(data["research_req"]):
 			return false
 	
-	if count >= data.get("max", 999):
+	# Hard caps now only apply to unique logic buildings
+	if data.has("max") and count >= data["max"]:
 		return false
 		
-	for res in data["cost"]:
-		var qty = data["cost"][res]
+	var costs = get_building_cost(building_id)
+	for res in costs:
+		var qty = costs[res]
 		if res == "credits":
 			if GameState.resources.get_currency("credits") < qty:
 				return false
@@ -204,11 +322,11 @@ func can_afford(building_id: String) -> bool:
 
 func build(building_id: String) -> bool:
 	if can_afford(building_id):
-		var data = building_db[building_id]
+		var costs = get_building_cost(building_id)
 		
 		# Spend
-		for res in data["cost"]:
-			var qty = data["cost"][res]
+		for res in costs:
+			var qty = costs[res]
 			if res == "credits":
 				GameState.resources.remove_currency("credits", qty)
 			else:
@@ -300,9 +418,18 @@ func process_tick(delta: float):
 			var data = building_db.get(bid)
 			if not data: continue
 			
+			# NITROGEN OVERCLOCKING (Audit Phase v4.0 - Logarithmic Scaling)
+			var speed_multiplier = 1.0
+			if bid in overclocked_buildings and count > 0:
+				var n_cost = log(count + 1) * 5.0 * delta
+				if GameState.resources.get_element_amount("N") >= n_cost:
+					GameState.resources.remove_element("N", n_cost)
+					speed_multiplier = 2.0
+			
 			if "yield" in data:
 				if not bid in production_timers: production_timers[bid] = 0.0
-				production_timers[bid] += delta * energy_efficiency
+				var warp_mult = GameState.warp_manager.get_production_multiplier()
+				production_timers[bid] += delta * energy_efficiency * speed_multiplier * warp_mult
 				
 				var interval = data.get("interval", 5.0)
 				if production_timers[bid] >= interval:
@@ -322,26 +449,40 @@ func process_tick(delta: float):
 								var qty = data["input"][res] * count
 								GameState.resources.remove_element(res, qty)
 						
-						# Produce outputs
+						# Production complete
+						activity_occurred.emit()
 						for res in data["yield"]:
 							var qty = data["yield"][res]
-							GameState.resources.add_element(res, qty * count)
+							
+							# ITER8: Munitions Factory Scaling - Logarithmic Yield Curve
+							if bid == "munitions_factory":
+								var eng_lvl = GameState.processing_manager.get_level()
+								qty = int(qty * (1.0 + (log(1.0 + eng_lvl) / log(10.0)) * 5.0))
+							
+							# Audit v4.0: Global Yield Bonuses (e.g., Nitrogen Pressurization)
+							var yield_mult = 1.0
+							for other_bid in buildings:
+								var other_data = building_db.get(other_bid)
+								if other_data and other_data.has("yield_bonus"):
+									if res in other_data["yield_bonus"]:
+										yield_mult += other_data["yield_bonus"][res] * buildings[other_bid]
+							
+							GameState.resources.add_element(res, qty * count * yield_mult)
 						
-						# Logic Polish: Nitrogen Automation Bridge
+						# Statistical expectation (Audit v5.0 - O(1) Performance Foundation)
 						if bid == "hydro_plant":
 							if GameState.research_manager and GameState.research_manager.is_tech_unlocked("fluid_dynamics"):
-								# 20% chance per cycle per plant to extract trace Nitrogen
-								for i in range(count):
-									if randf() < 0.2:
-										GameState.resources.add_element("N", 1)
+								var expected = count * 0.2
+								var floor_exp = floor(expected)
+								var extra = 1 if randf() < (expected - floor_exp) else 0
+								GameState.resources.add_element("N", floor_exp + extra)
 					
-						# Special Upgrade: Industrial Centrifuge Titanium Extraction
 						if bid == "industrial_centrifuge":
 							if GameState.research_manager and GameState.research_manager.is_tech_unlocked("advanced_mineralogy"):
-								# 20% chance per cycle per centrifuge to find Titanium
-								for i in range(count):
-									if randf() < 0.2:
-										GameState.resources.add_element("Ti", 1)
+								var expected = count * 0.2
+								var floor_exp = floor(expected)
+								var extra = 1 if randf() < (expected - floor_exp) else 0
+								GameState.resources.add_element("Ti", floor_exp + extra)
 					
 					production_timers[bid] = 0.0
 			
@@ -350,7 +491,7 @@ func process_tick(delta: float):
 				production_timers[bid] += delta * energy_efficiency
 				
 				if production_timers[bid] >= 10.0:
-					# Passive Gather from unlocked gathering actions at 10% efficiency
+					# Passive Gather from unlocked gathering actions at 25% efficiency
 					var gm = GameState.gathering_manager
 					if gm and gm.actions:
 						for action_id in gm.actions:
@@ -365,8 +506,8 @@ func process_tick(delta: float):
 							if res_req and not GameState.research_manager.is_tech_unlocked(res_req):
 								continue
 							
-							# 10% chance to trigger this action per 10s tick
-							if randf() < 0.1:
+							# 25% chance to trigger this action per 10s tick
+							if randf() < 0.25:
 								var loot_table = action.get("loot_table", [])
 								for entry in loot_table:
 									var element = entry[0]
@@ -391,7 +532,38 @@ func calculate_offline(delta: float) -> String:
 	var report = ""
 	var loot_summary = {}
 	
+	# Offline Industry: Two-Pass 'Jump-Start' Logic
+	# Pass 1: Fuel & Energy Priority (Ensures consumers have inputs ready)
+	var fuel_buildings = ["solar_panel", "coal_burner", "hydro_plant", "palladium_generator", "hydrogen_reactor"]
+	
+	for bid in fuel_buildings:
+		if not bid in buildings: continue
+		var count = buildings[bid]
+		var data = building_db.get(bid)
+		if "yield" in data:
+			var interval = data.get("interval", 5.0)
+			var cycles = int(delta / interval)
+			if "input" in data:
+				var max_cycles = cycles
+				for res in data["input"]:
+					var qty_per_cycle = data["input"][res] * count
+					var available = GameState.resources.get_element_amount(res)
+					var possible = int(available / qty_per_cycle)
+					max_cycles = min(max_cycles, possible)
+				cycles = max_cycles
+			
+			if cycles > 0:
+				if "input" in data:
+					for res in data["input"]:
+						GameState.resources.remove_element(res, data["input"][res] * count * cycles)
+				for res in data["yield"]:
+					var total = data["yield"][res] * count * cycles
+					GameState.resources.add_element(res, total)
+					loot_summary[res] = loot_summary.get(res, 0) + total
+
+	# Pass 2: General Production
 	for bid in buildings:
+		if bid in fuel_buildings: continue # Already handled
 		var count = buildings[bid]
 		if count <= 0: continue
 		var data = building_db.get(bid)
@@ -419,6 +591,12 @@ func calculate_offline(delta: float) -> String:
 				# Produce outputs
 				for res in data["yield"]:
 					var qty = data["yield"][res]
+					
+					# Re-apply scaling for Munitions in offline too
+					if bid == "munitions_factory":
+						var eng_lvl = GameState.processing_manager.get_level()
+						qty = int(qty * (1.0 + (log(1.0 + eng_lvl) / log(10.0)) * 5.0))
+						
 					var total = qty * count * cycles
 					GameState.resources.add_element(res, total)
 					loot_summary[res] = loot_summary.get(res, 0) + total
@@ -434,6 +612,7 @@ func calculate_offline(delta: float) -> String:
 func get_save_data_manager() -> Dictionary:
 	var data = get_save_data()
 	data["buildings"] = buildings
+	data["overclocked_buildings"] = overclocked_buildings
 	return data
 
 func load_save_data_manager(data: Dictionary):
@@ -441,7 +620,28 @@ func load_save_data_manager(data: Dictionary):
 	if data.is_empty(): return
 	
 	buildings = data.get("buildings", {})
+	overclocked_buildings = data.get("overclocked_buildings", [])
 	# Fix types if json loaded strings
 	for k in buildings: buildings[k] = int(buildings[k])
 	
 	recalc_energy()
+
+func reset(decay_factor: float = 1.0) -> void:
+	super.reset(decay_factor)
+	buildings.clear()
+	overclocked_buildings.clear()
+	generation = 0.0
+	consumption = 0.0
+	net_energy = 0.0
+	production_timers.clear()
+	recalc_energy()
+
+func toggle_overclock(building_id: String, enabled: bool):
+	if enabled:
+		if not building_id in overclocked_buildings:
+			overclocked_buildings.append(building_id)
+	else:
+		overclocked_buildings.erase(building_id)
+
+func is_overclocked(building_id: String) -> bool:
+	return building_id in overclocked_buildings

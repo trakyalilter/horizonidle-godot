@@ -80,7 +80,8 @@ func load_save_data(data: Dictionary):
 	xp = float(data.get("xp", 0.0))
 	check_level_up()
 
-func reset():
-	xp = 0.0
+func reset(decay_factor: float = 1.0) -> void:
+	xp *= (1.0 - decay_factor)
+	# Level will be recalculated by check_level_up
 	level = 1
 	check_level_up()

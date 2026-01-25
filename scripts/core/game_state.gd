@@ -14,6 +14,8 @@ var shipyard_manager : RefCounted
 var research_manager : RefCounted
 var combat_manager : RefCounted
 var mission_manager : RefCounted
+var fleet_manager : RefCounted
+var warp_manager : RefCounted
 # var processing_manager
 # var mission_manager
 # var combat_manager
@@ -46,14 +48,17 @@ func _ready():
 	research_manager = load("res://scripts/managers/research_manager.gd").new()
 	combat_manager = load("res://scripts/managers/combat_manager.gd").new()
 	mission_manager = load("res://scripts/managers/mission_manager.gd").new()
+	fleet_manager = load("res://scripts/managers/fleet_manager.gd").new()
+	warp_manager = load("res://scripts/managers/warp_manager.gd").new()
 	
 	mission_manager.connect_signals()
 	
 	load_game()
 
 func _process(delta):
-	# 1. Background Automation (Infrastructure)
+	# 1. Background Automation (Infrastructure & Fleet)
 	if infrastructure_manager: infrastructure_manager.process_tick(delta)
+	if fleet_manager: fleet_manager.process_tick(delta)
 	
 	# 2. Active Foreground Task
 	# In Python it was one active manager. 
@@ -87,6 +92,8 @@ func save_game():
 		"research": research_manager.get_save_data_manager(),
 		"combat": combat_manager.get_save_data_manager(),
 		"mission": mission_manager.get_save_data_manager(),
+		"fleet": fleet_manager.get_save_data_manager(),
+		"prestige": warp_manager.get_save_data_manager(),
 		"last_save_time": Time.get_unix_time_from_system()
 	}
 	
@@ -116,6 +123,8 @@ func load_game():
 		research_manager.load_save_data_manager(data.get("research", {}))
 		combat_manager.load_save_data_manager(data.get("combat", {}))
 		mission_manager.load_save_data_manager(data.get("mission", {}))
+		fleet_manager.load_save_data_manager(data.get("fleet", {}))
+		warp_manager.load_save_data_manager(data.get("prestige", {}))
 		
 		# Restore Active Manager
 		if gathering_manager.is_active:
@@ -155,6 +164,9 @@ func process_offline_progress(delta: float):
 	var r_report = research_manager.calculate_offline(delta)
 	if r_report: reports.append(r_report)
 	
+	var fl_report = fleet_manager.calculate_offline(delta)
+	if fl_report: reports.append(fl_report)
+	
 	if not reports.is_empty():
 		offline_report = "\n\n".join(reports)
 	else:
@@ -169,6 +181,7 @@ func hard_reset():
 	research_manager.reset()
 	combat_manager.reset()
 	mission_manager.reset()
+	fleet_manager.reset()
 	# ... others
 	
 	was_resetted = true

@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://scripts/ui/module_card.gd" id="1_script"]
 
 [node name="ModuleCard" type="PanelContainer"]
-custom_minimum_size = Vector2(0, 60)
-offset_right = 240.0
-offset_bottom = 60.0
+custom_minimum_size = Vector2(0, 100)
+offset_right = 100.0
+offset_bottom = 100.0
 script = ExtResource("1_script")
 
 [node name="Margin" type="MarginContainer" parent="."]

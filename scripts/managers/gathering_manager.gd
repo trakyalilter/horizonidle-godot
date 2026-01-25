@@ -1,4 +1,4 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
 
 # We assume GameState is a global Autoload or accessible static
 # If not, we might need to pass it, but RefCounted doesn't support convenient dependency injection 
@@ -17,68 +17,78 @@ var actions: Dictionary = {
 		"name": "Excavate Soil",
 		"loot_table": [["Dirt", 1.0, 8, 10]],
 		"xp": 5,
-		"level_req": 1
+		"level_req": 1,
+		"category": "terrestrial"
 	},
 	"collect_water": {
 		"name": "Pump Water",
 		"loot_table": [["Water", 1.0, 8, 10]],
 		"xp": 8,
 		"level_req": 3,
-		"research_req": "fluid_dynamics"
+		"research_req": "fluid_dynamics",
+		"category": "terrestrial"
 	},
 	"mine_cassiterite": {
 		"name": "Mine Cassiterite (Tin Ore)",
 		"loot_table": [["Cassiterite", 1.0, 1, 2]],
 		"xp": 12,
 		"level_req": 8,
-		"research_req": "basic_engineering"
+		"research_req": "basic_engineering",
+		"category": "terrestrial"
 	},
 	"gather_wood": {
 		"name": "Deforest Zone",
 		"loot_table": [["Wood", 1.0, 8, 10]],
 		"xp": 10,
-		"level_req": 5
+		"level_req": 5,
+		"category": "terrestrial"
 	},
 	"mine_dolomite": {
 		"name": "Quarry Dolomite",
 		"loot_table": [["Dolomite", 1.0, 1, 3], ["Dirt", 0.5, 1, 2]],
 		"xp": 18,
 		"level_req": 15,
-		"research_req": "adv_materials"
+		"research_req": "adv_materials",
+		"category": "terrestrial"
 	},
 	"mine_bauxite": {
 		"name": "Strip Mine Bauxite",
 		"loot_table": [["Bauxite", 1.0, 2, 4], ["Fe", 0.3, 1, 2]],
 		"xp": 20,
 		"level_req": 18,
-		"research_req": "adv_materials"
+		"research_req": "adv_materials",
+		"category": "terrestrial"
 	},
 	"extract_salts": {
 		"name": "Extract Lithium Salt",
 		"loot_table": [["Spodumene", 1.0, 1, 3]],
 		"xp": 10,
 		"level_req": 4,
-		"research_req": "basic_engineering"
+		"research_req": "basic_engineering",
+		"category": "terrestrial"
 	},
 	"mine_zinc_ore": {
 		"name": "Extract Zinc Ore",
 		"loot_table": [["ZincOre", 1.0, 1, 3], ["Si", 0.4, 1, 1]],
 		"xp": 25,
 		"level_req": 25,
-		"research_req": "smelting"
+		"research_req": "smelting",
+		"category": "terrestrial"
 	},
 	"mine_malachite": {
 		"name": "Extract Malachite (Copper Ore)",
 		"loot_table": [["Malachite", 1.0, 1, 2]],
 		"xp": 14,
 		"level_req": 10,
-		"research_req": "basic_engineering"
+		"research_req": "basic_engineering",
+		"category": "terrestrial"
 	},
 	"mine_quartz": {
 		"name": "Collect Quartz Clusters",
 		"loot_table": [["Quartz", 1.0, 1, 3]],
 		"xp": 22,
-		"level_req": 22
+		"level_req": 22,
+		"category": "terrestrial"
 	},
 	"harvest_nebula": {
 		"name": "Harvest Nebula (Orbital)",
@@ -86,30 +96,34 @@ var actions: Dictionary = {
 			["H", 0.7, 1, 2],
 			["He", 0.3, 1, 1]
 		],
-		"xp": 60,
+		"xp": 15,  # ITER3 FIX: Reduced from 60 (was 4x higher than intended)
 		"level_req": 40,
-		"research_req": "energy_metrics"
+		"research_req": "energy_metrics",
+		"category": "orbital"
 	},
 	"extract_platinum": {
 		"name": "Extract Platinum samples",
 		"loot_table": [["PtOre", 1.0, 1, 3], ["Ti", 0.2, 1, 2]],
 		"xp": 80,
 		"level_req": 45,
-		"research_req": "precious_metal_refining"
+		"research_req": "precious_metal_refining",
+		"category": "orbital"
 	},
 	"mine_iridium": {
 		"name": "Mine Iridium Crystals",
 		"loot_table": [["Ir", 1.0, 1, 2], ["PtOre", 0.3, 1, 1]],
 		"xp": 150,
 		"level_req": 60,
-		"research_req": "iridium_metallurgy"
+		"research_req": "iridium_metallurgy",
+		"category": "void"
 	},
 	"harvest_osmium": {
 		"name": "Condense Osmium Vapor",
 		"loot_table": [["Os", 1.0, 1, 1], ["Ir", 0.2, 1, 1]],
 		"xp": 300,
 		"level_req": 75,
-		"research_req": "exotic_metallurgy"
+		"research_req": "exotic_metallurgy",
+		"category": "void"
 	}
 }
 
@@ -176,8 +190,8 @@ func stop_action():
 	current_action_id = ""
 	action_progress = 0.0
 
-func reset():
-	super.reset()
+func reset(decay_factor: float = 1.0) -> void:
+	super.reset(decay_factor)
 	stop_action()
 	print("Gathering Reset.")
 

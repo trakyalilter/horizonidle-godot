@@ -1,0 +1,163 @@
+[gd_scene load_steps=2 format=3 uid="uid://atlas_page_unique"]
+
+[ext_resource type="Script" uid="uid://atlas_page_script" path="res://scripts/ui/atlas_page.gd" id="1_script"]
+
+[node name="AtlasPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "📖 Material Atlas"
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="SearchBox" type="LineEdit" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "🔍 Search materials..."
+
+[node name="CategoryFilter" type="HBoxContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="AllBtn" type="Button" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter"]
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+text = "All"
+
+[node name="GatherBtn" type="Button" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter"]
+layout_mode = 2
+toggle_mode = true
+text = "Gathering"
+
+[node name="ProcessBtn" type="Button" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter"]
+layout_mode = 2
+toggle_mode = true
+text = "Processing"
+
+[node name="CombatBtn" type="Button" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter"]
+layout_mode = 2
+toggle_mode = true
+text = "Combat"
+
+[node name="BuildingBtn" type="Button" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter"]
+layout_mode = 2
+toggle_mode = true
+text = "Buildings"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ItemList" type="VBoxContainer" parent="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="RightPanel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/RightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="NameLabel" type="Label" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 22
+text = "Select a Material"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Details" type="VBoxContainer" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="DescLabel" type="Label" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Select a material from the list to view its sources and uses."
+autowrap_mode = 2
+
+[node name="SourcesTitle" type="Label" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "📥 Sources"
+
+[node name="SourcesList" type="VBoxContainer" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer/Details"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="UsesTitle" type="Label" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer/Details"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
+theme_override_font_sizes/font_size = 16
+text = "📤 Uses"
+
+[node name="UsesList" type="VBoxContainer" parent="HBoxContainer/RightPanel/MarginContainer/VBoxContainer/ScrollContainer/Details"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="text_changed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/SearchBox" to="." method="_on_search_changed"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter/AllBtn" to="." method="_on_filter_all"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter/GatherBtn" to="." method="_on_filter_gather"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter/ProcessBtn" to="." method="_on_filter_process"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter/CombatBtn" to="." method="_on_filter_combat"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/MarginContainer/VBoxContainer/CategoryFilter/BuildingBtn" to="." method="_on_filter_building"]

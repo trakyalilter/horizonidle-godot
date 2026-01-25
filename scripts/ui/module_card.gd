@@ -13,19 +13,15 @@ func setup(p_mid: String, p_data: Dictionary, p_count: int):
 	mid = p_mid
 	data = p_data
 	count = p_count
-	
-	if is_inside_tree():
-		_update_ui()
-
-func _ready():
 	_update_ui()
-
+	
 func _update_ui():
 	if not data or not is_inside_tree(): return
 	if not name_lbl or not stats_lbl or not count_lbl: return
 	
 	name_lbl.text = data.get("name", "Unknown")
 	name_lbl.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS.get("shipyard", Color.WHITE))
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.text = "x%d" % count
 	
 	UITheme.apply_card_style(self, "shipyard")
@@ -33,11 +29,16 @@ func _update_ui():
 	var s_txt = ""
 	var stats = data.get("stats", {})
 	for k in stats:
-		if k == "energy_load":
-			s_txt += "Energy: %d | " % stats[k]
-		else:
-			s_txt += "%s: %s | " % [k.substr(0,3).to_upper(), str(stats[k])]
-	stats_lbl.text = s_txt.trim_suffix(" | ")
+		var label = FormatUtils.format_stat_label(k)
+		var val = stats[k]
+		s_txt += "%s: %s\n" % [label, FormatUtils.format_stat_value(k, val)]
+			
+	stats_lbl.text = s_txt.strip_edges()
+	stats_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+func _ready():
+	_update_ui()
 
 func _get_drag_data(_at_position):
 	if not data or not mid: return null
@@ -54,7 +55,7 @@ func _get_drag_data(_at_position):
 	preview.setup(mid, data, count)
 	# Scale down slightly and make semi-transparent
 	preview.modulate.a = 0.7
-	preview.custom_minimum_size = Vector2(200, 60) # Smaller than full width
+	preview.custom_minimum_size = Vector2(100, 100)
 	
 	set_drag_preview(preview)
 	return drag_data

@@ -68,14 +68,14 @@ func update_state():
 	for item in inputs:
 		var req_qty = inputs[item]
 		var avail_qty = GameState.resources.get_element_amount(item)
-		var color_hex = "#ff5555" # Red
+		var color = "gray" 
 		
 		if avail_qty >= req_qty:
-			color_hex = "#55ff55" # Green
+			color = "lime"
 		else:
 			missing_any = true
 			
-		in_str += "[color=%s]%s %s[/color]\n" % [color_hex, FormatUtils.format_number(req_qty), ElementDB.get_display_name(item)]
+		in_str += "[color=%s]%s %s[/color]\n" % [color, FormatUtils.format_number(req_qty), ElementDB.get_display_name(item)]
 	
 	in_str += "[/center]"
 	in_lbl.text = in_str

@@ -1,4 +1,4 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
 
 signal module_crafted(module_id)
 
@@ -120,17 +120,17 @@ var modules: Dictionary = {
 	"battery_t2": {
 		"name": "Graphene Matrix",
 		"slot_type": "battery",
-		"stats": {"energy_capacity": 150},
+		"stats": {"energy_capacity": 150, "atk_speed_mult": 0.10},  # ITER4: +10% attack speed
 		"cost": {"BatteryT2": 10},
-		"desc": "High-density Storage.",
+		"desc": "High-density Storage. +10% Attack Speed.",
 		"research_req": "adv_materials"
 	},
 	"battery_t3": {
 		"name": "Zero-Point Module",
 		"slot_type": "battery",
-		"stats": {"energy_capacity": 500},
+		"stats": {"energy_capacity": 500, "shield_regen_mult": 0.20},  # ITER4: +20% shield regen
 		"cost": {"BatteryT3": 10},
-		"desc": "Infinite Void Energy.",
+		"desc": "Infinite Void Energy. +20% Shield Regen.",
 		"research_req": "warp_drive"
 	},
 	# Shields
@@ -290,6 +290,15 @@ var modules: Dictionary = {
 		"desc": "Heat-resistant alloy engine. High performance between Plasma and Antimatter.",
 		"research_req": "superalloy_engineering"
 	},
+	# ITER5 FIX: CompositeWeave use
+	"composite_armor_mk2": {
+		"name": "Composite Armor Mk.II",
+		"slot_type": "shield",
+		"stats": {"hp": 300, "def": 40, "eva": 15},
+		"cost": {"credits": 8000, "CompositeWeave": 15, "Ti": 20},
+		"desc": "Advanced woven armor. Balanced HP, DEF, and evasion.",
+		"research_req": "adv_materials"
+	},
 	# Late-Game Rare Metal Modules
 	"iridium_armor": {
 		"name": "Iridium Armor Plating",
@@ -376,6 +385,41 @@ var modules: Dictionary = {
 		"desc": "(Unique) Automated burst fire system. Deals 300% Total Kinetic DPS every 20s.",
 		"research_req": "broadside_tactics",
 		"unique_id": "broadside_burst_effect"
+	},
+	# === SECTOR EPSILON ENDGAME MODULES ===
+	"void_engine": {
+		"name": "Void Phase Engine",
+		"slot_type": "engine",
+		"stats": {"eva": 180, "energy_load": 50}, # ITER7: 180 = ~55% dodge on new formula
+		"cost": {"credits": 5000000, "VoidEssence": 10, "VoidCrystal": 30, "AdvCircuit": 50},
+		"desc": "(Endgame) Phase through reality. High Evasion potential.",
+		"research_req": "void_navigation"
+	},
+	"chrono_stabilizer": {
+		"name": "Chrono Stabilizer",
+		"slot_type": "shield",
+		"stats": {"max_shield": 800, "shield_regen": 20},
+		"cost": {"credits": 8000000, "ChronoCore": 5, "QuantumCore": 15, "AdvCircuit": 30},
+		"desc": "(Endgame) Temporal field. Slows enemy attack speed by 20%.",
+		"research_req": "void_navigation",
+		"unique_id": "chrono_slow_effect"
+	},
+	"omega_armor": {
+		"name": "Omega Plating Array",
+		"slot_type": "shield",
+		"stats": {"def": 450, "hp": 3000}, # ITER7: 450 = ~47% mitigation in Sector Epsilon
+		"cost": {"credits": 10000000, "OmegaPlating": 10, "Ir": 50, "Superalloy": 100},
+		"desc": "(Endgame) Ultimate defensive module. +450 DEF, +3000 HP.",
+		"research_req": "void_navigation"
+	},
+	"primordial_core": {
+		"name": "★ Primordial Core ★",
+		"slot_type": "battery",
+		"stats": {"energy_capacity": 2000, "atk_speed_mult": 0.25, "shield_regen_mult": 0.25},
+		"cost": {"credits": 25000000, "PrimordialShard": 5, "ChronoCore": 3, "VoidEssence": 10},
+		"desc": "(Legendary) Heart of the Titan. +2000 Energy, +25% ATK Speed, +25% Shield Regen.",
+		"research_req": "void_navigation",
+		"unique_id": "primordial_power"
 	}
 }
 
@@ -639,7 +683,7 @@ func repair_hull() -> bool:
 	print("[Repair] Success! New HP: %d" % current_hp)
 	return true
 	
-func reset():
+func reset(decay_factor: float = 1.0) -> void:
 	active_hull = "corvette_hull"
 	module_inventory = {}
 	loadout = {}
@@ -648,4 +692,4 @@ func reset():
 		for i in range(hulls[active_hull]["slots"].size()):
 			loadout[i] = null
 	recalc_stats()
-	super.reset()
+	super.reset(decay_factor)

@@ -1,12 +1,12 @@
-extends Panel
+extends PanelContainer
 
 var nid: String
 var data: Dictionary
 var manager: RefCounted
 var parent_graph: Node
 
-@onready var name_lbl = $VBoxContainer/NameLabel
-@onready var cost_lbl = $VBoxContainer/CostLabel
+@onready var name_lbl = $MarginContainer/VBoxContainer/NameLabel
+@onready var cost_lbl = $MarginContainer/VBoxContainer/CostLabel
 @onready var desc_tip = $TooltipPanel
 @onready var desc_lbl = $TooltipPanel/MarginContainer/Label
 
@@ -46,31 +46,35 @@ func update_state():
 	if is_unlocked:
 		style.bg_color = COL_UNLOCKED
 		style.border_color = BORDER_UNLOCKED
-		cost_lbl.text = "Researched"
-		cost_lbl.add_theme_color_override("font_color", Color.GREEN)
+		cost_lbl.text = "[center][color=LIME]RESEARCHED[/color][/center]"
 	else:
-		# Build cost string with credits + items
+		# Build cost string with met/unmet color coding
 		var cost_parts = []
-		cost_parts.append(FormatUtils.format_number(data.get("cost", 0)) + " Cr")
+		var total_credits = GameState.resources.get_currency("credits")
+		var credit_cost = data.get("cost", 0)
 		
+		# Credits check
+		if credit_cost > 0:
+			var color = "lime" if total_credits >= credit_cost else "gray"
+			cost_parts.append("[color=%s]%s Cr[/color]" % [color, FormatUtils.format_number(credit_cost)])
+		
+		# Items check
 		if "cost_items" in data:
 			for item in data["cost_items"]:
-				var qty = data["cost_items"][item]
+				var req_qty = data["cost_items"][item]
+				var inv_qty = GameState.resources.get_element_amount(item)
+				var color = "lime" if inv_qty >= req_qty else "gray"
 				var display_name = ElementDB.get_display_name(item)
-				cost_parts.append("%s %s" % [FormatUtils.format_number(qty), display_name])
+				cost_parts.append("[color=%s]%s %s[/color]" % [color, FormatUtils.format_number(req_qty), display_name])
 		
-		# More compact layout: itemized costs use smaller font
-		cost_lbl.text = "\n".join(cost_parts)
-		cost_lbl.add_theme_font_size_override("font_size", 10)
+		cost_lbl.text = "[center]" + "\n".join(cost_parts) + "[/center]"
 		
 		if can_unlock:
 			style.bg_color = COL_AVAILABLE
 			style.border_color = BORDER_AVAILABLE
-			cost_lbl.add_theme_color_override("font_color", Color.GOLD)
 		else:
 			style.bg_color = COL_LOCKED
 			style.border_color = BORDER_LOCKED
-			cost_lbl.add_theme_color_override("font_color", Color.GRAY)
 		
 	add_theme_stylebox_override("panel", style)
 

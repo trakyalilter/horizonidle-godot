@@ -116,7 +116,19 @@ var ELEMENT_NAMES = {
 	# New Research Artifacts
 	"Res1": "Common Artifact",
 	"Res2": "Rare Artifact",
-	"Res3": "Exotic Artifact"
+	"Res3": "Exotic Artifact",
+	
+	# Iter2 Dead Resource Sink Outputs
+	"Food": "Hydroponic Food",
+	"FertileSoil": "Fertile Soil",
+	"CompositeWeave": "Composite Weave",
+	"N": "Nitrogen",
+	
+	# Sector Epsilon Endgame Resources
+	"VoidEssence": "Void Essence",
+	"ChronoCore": "Chrono Core",
+	"OmegaPlating": "Omega Plating",
+	"PrimordialShard": "Primordial Shard"
 }
 
 ## Category mappings for inventory filtering

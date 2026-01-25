@@ -25,8 +25,11 @@ func setup(p_mid: String, p_data: Dictionary, p_manager, p_parent):
 	UITheme.apply_premium_button_style(btn, "shipyard")
 	
 	var s_txt = ""
-	for k in data["stats"]:
-		s_txt += "%s: %s\n" % [k.to_upper(), str(data["stats"][k])]
+	var stats = data.get("stats", {})
+	for k in stats:
+		var label = FormatUtils.format_stat_label(k)
+		var val = stats[k]
+		s_txt += "%s: %s\n" % [label, FormatUtils.format_stat_value(k, val)]
 	stats_lbl.text = s_txt.strip_edges()
 	
 	# Cost text handled dynamically in update_state
@@ -61,16 +64,16 @@ func update_state():
 	for res in data["cost"]:
 		var qty = data["cost"][res]
 		var can_afford = false
-		var color = "#ff5555" # Red
+		var color = "gray" 
 		
 		if res == "credits":
 			if GameState.resources.get_currency("credits") >= qty: 
 				can_afford = true
-				color = "#55ff55" # Green
+				color = "lime"
 		else:
 			if GameState.resources.get_element_amount(res) >= qty: 
 				can_afford = true
-				color = "#55ff55"
+				color = "lime"
 		
 		if not can_afford:
 			affordable = false
@@ -83,4 +86,5 @@ func update_state():
 	btn.disabled = not affordable
 
 func _on_button_pressed():
-	manager.craft_module(mid)
+	if manager.craft_module(mid):
+		UITheme.trigger_ui_thud(self, 8.0) # Manufacturing Thud

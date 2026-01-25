@@ -2,20 +2,25 @@ extends Control
 
 @onready var ship_name_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/ShipNameLabel
 @onready var stats_lbl = $VBoxContainer/MainLayout/LeftPanel/InfoPanel/Margin/VBox/StatsLabel
-@onready var w_box = $VBoxContainer/MainLayout/DesignerTabs/Weapons/Slots/Scroll/WeaponBox
-@onready var s_box = $VBoxContainer/MainLayout/DesignerTabs/Shields/Slots/Scroll/ShieldBox
-@onready var e_box = $VBoxContainer/MainLayout/DesignerTabs/Engines/Slots/Scroll/EngineBox
-@onready var b_box = $VBoxContainer/MainLayout/DesignerTabs/Batteries/Slots/Scroll/BatteryBox
-@onready var ammo_slot_box = $VBoxContainer/MainLayout/DesignerTabs/Ammunition/Slots/Scroll/AmmoSlotBox
 
-# Storage Grids
-@onready var weapon_grid = $VBoxContainer/MainLayout/DesignerTabs/Weapons/Storage/Scroll/WeaponGrid
-@onready var shield_grid = $VBoxContainer/MainLayout/DesignerTabs/Shields/Storage/Scroll/ShieldGrid
-@onready var engine_grid = $VBoxContainer/MainLayout/DesignerTabs/Engines/Storage/Scroll/EngineGrid
-@onready var battery_grid = $VBoxContainer/MainLayout/DesignerTabs/Batteries/Storage/Scroll/BatteryGrid
-@onready var ammo_grid = $VBoxContainer/MainLayout/DesignerTabs/Ammunition/Storage/Scroll/AmmoGrid
+# Spatial Boxes
+@onready var w_box = $VBoxContainer/MainLayout/SchematicArea/SlotMap/WeaponBox
+@onready var util_box = $VBoxContainer/MainLayout/SchematicArea/SlotMap/UtilityBox
+@onready var ammo_slot_box = $VBoxContainer/MainLayout/SchematicArea/SlotMap/AmmoSlotBox
+
+# Storage
+@onready var storage_grid = $VBoxContainer/MainLayout/RightPanel/Scroll/UnifiedStorageGrid
+@onready var silhouette = $VBoxContainer/MainLayout/SchematicArea/Silhouette
+@onready var circuit_bg = $VBoxContainer/MainLayout/SchematicArea/CircuitBackground
+
+# Filter Buttons
+@onready var f_all = $VBoxContainer/MainLayout/RightPanel/FilterConsole/FilterStrip/AllBtn
+@onready var f_wpn = $VBoxContainer/MainLayout/RightPanel/FilterConsole/FilterStrip/WpnBtn
+@onready var f_sys = $VBoxContainer/MainLayout/RightPanel/FilterConsole/FilterStrip/SysBtn
+@onready var f_ord = $VBoxContainer/MainLayout/RightPanel/FilterConsole/FilterStrip/OrdBtn
 
 var manager: RefCounted
+var active_filter = "all"
 var slot_widget_scene = preload("res://scenes/ui/designer_slot_widget.tscn")
 var ammo_slot_scene = preload("res://scenes/ui/designer_ammo_slot_widget.tscn")
 var draggable_icon_scene = preload("res://scenes/ui/module_card.tscn") 
@@ -27,9 +32,16 @@ func _ready():
 	
 	# Premium Styling
 	UITheme.apply_card_style($VBoxContainer/MainLayout/LeftPanel/InfoPanel, "shipyard")
-	UITheme.apply_tab_style($VBoxContainer/MainLayout/DesignerTabs, "shipyard")
+	UITheme.apply_card_style($VBoxContainer/MainLayout/RightPanel, "engineering")
 	
 	$VBoxContainer/Label.add_theme_color_override("font_color", UITheme.CATEGORY_COLORS["shipyard"])
+	
+	f_all.pressed.connect(func(): _on_filter_changed("all"))
+	f_wpn.pressed.connect(func(): _on_filter_changed("wpn"))
+	f_sys.pressed.connect(func(): _on_filter_changed("sys"))
+	f_ord.pressed.connect(func(): _on_filter_changed("ord"))
+	
+	circuit_bg.draw.connect(_on_circuit_draw)
 	
 	trigger_refresh()
 
@@ -39,10 +51,11 @@ func _on_visibility_changed():
 
 func trigger_refresh():
 	update_header()
+	sync_silhouette()
 	rebuild_slots()
 	rebuild_ammo_slots()
 	rebuild_storage()
-	rebuild_ammo_storage()
+	# rebuild_ammo_storage() -> Consolidated into rebuild_storage
 
 func update_header():
 	if manager.active_hull and manager.active_hull in manager.hulls:
@@ -57,7 +70,7 @@ func update_header():
 		stats_lbl.text = "Escape Pod Active"
 
 func rebuild_slots():
-	for box in [w_box, s_box, e_box, b_box]:
+	for box in [w_box, util_box]:
 		if box:
 			for child in box.get_children(): child.queue_free()
 			
@@ -68,16 +81,21 @@ func rebuild_slots():
 	for i in range(slots.size()):
 		var s_type = slots[i]
 		var w = slot_widget_scene.instantiate()
-		var target = w_box
-		match s_type:
-			"weapon": target = w_box
-			"shield": target = s_box
-			"engine": target = e_box
-			"battery": target = b_box
+		var target = util_box # Default to utility
+		
+		# Spatially route weapons to the top-box
+		if s_type == "weapon":
+			target = w_box
 		
 		if target:
 			target.add_child(w)
 			w.setup(i, s_type, self, manager)
+
+func sync_silhouette():
+	if not manager.active_hull: return
+	var h = manager.hulls.get(manager.active_hull)
+	if h and h.has("visual"):
+		silhouette.texture = load(h["visual"])
 
 func rebuild_ammo_slots():
 	for child in ammo_slot_box.get_children(): child.queue_free()
@@ -94,66 +112,84 @@ func rebuild_ammo_slots():
 			slot.setup(i, self, manager)
 
 func rebuild_storage():
-	for grid in [weapon_grid, shield_grid, engine_grid, battery_grid]:
-		for child in grid.get_children(): child.queue_free()
+	for child in storage_grid.get_children(): child.queue_free()
 	
+	# Modules
 	var inv = manager.module_inventory
 	for mid in inv:
 		var count = inv[mid]
 		if count > 0 and mid in manager.modules:
 			var data = manager.modules[mid]
 			var type = data.get("slot_type", "weapon")
-			var target = weapon_grid
-			match type:
-				"weapon": target = weapon_grid
-				"shield": target = shield_grid
-				"engine": target = engine_grid
-				"battery": target = battery_grid
 			
-			if target:
+			var show = false
+			if active_filter == "all": show = true
+			elif active_filter == "wpn" and type == "weapon": show = true
+			elif active_filter == "sys" and type in ["shield", "engine", "battery"]: show = true
+			
+			if show:
 				var item = draggable_icon_scene.instantiate()
-				target.add_child(item)
+				storage_grid.add_child(item)
 				item.setup(mid, data, count)
+			
+	# Ammo
+	if active_filter in ["all", "ord"]:
+		var ammo_list = [
+			{"name": "Ferrite Rounds", "id": "SlugT1"},
+			{"name": "Tungsten Sabot", "id": "SlugT2"},
+			{"name": "Focus Crystal", "id": "CellT1"},
+			{"name": "Plasma Cell", "id": "CellT2"}
+		]
+		for ammo in ammo_list:
+			var qty = GameState.resources.get_element_amount(ammo["id"])
+			if qty > 0:
+				var card = draggable_icon_scene.instantiate()
+				storage_grid.add_child(card)
+				var fake_data = {"name": ammo["name"], "slot_type": "ammo", "stats": {}}
+				card.setup(ammo["id"], fake_data, qty)
 
 func rebuild_ammo_storage():
-	for child in ammo_grid.get_children(): child.queue_free()
-	
-	var ammo_list = [
-		{"name": "Ferrite Rounds", "id": "SlugT1"},
-		{"name": "Tungsten Sabot", "id": "SlugT2"},
-		{"name": "Focus Crystal", "id": "CellT1"},
-		{"name": "Plasma Cell", "id": "CellT2"}
-	]
-	
-	for ammo in ammo_list:
-		var qty = GameState.resources.get_element_amount(ammo["id"])
-		if qty > 0:
-			var card = draggable_icon_scene.instantiate()
-			ammo_grid.add_child(card)
-			var fake_data = {
-				"name": ammo["name"],
-				"slot_type": "ammo",
-				"stats": {}
-			}
-			card.setup(ammo["id"], fake_data, qty)
+	pass # Unified into rebuild_storage
 
-func focus_module_tab(module_id: String):
-	if not module_id in manager.modules: return
-	var data = manager.modules[module_id]
-	var type = data.get("slot_type", "weapon")
+func _on_filter_changed(filter_id: String):
+	active_filter = filter_id
+	# Sync buttons
+	f_all.button_pressed = (filter_id == "all")
+	f_wpn.button_pressed = (filter_id == "wpn")
+	f_sys.button_pressed = (filter_id == "sys")
+	f_ord.button_pressed = (filter_id == "ord")
 	
-	var tabs = $VBoxContainer/MainLayout/DesignerTabs
-	match type:
-		"weapon": tabs.current_tab = 0
-		"shield": tabs.current_tab = 1
-		"engine": tabs.current_tab = 2
-		"ammo": tabs.current_tab = 3
-		"battery": tabs.current_tab = 4
+	rebuild_storage()
 
 func get_module_widget(module_id: String) -> Control:
-	# Search through all storage grids for the item
-	for grid in [weapon_grid, shield_grid, engine_grid, battery_grid, ammo_grid]:
-		for child in grid.get_children():
-			if child.get("mid") == module_id:
-				return child
+	for child in storage_grid.get_children():
+		if child.get("mid") == module_id:
+			return child
 	return null
+
+func _on_circuit_draw():
+	# Draw glowing lines between slots that are next to each other
+	var accent = UITheme.COLORS["accent_bright"]
+	var boxes = [w_box, util_box]
+	
+	for box in boxes:
+		var children = box.get_children()
+		if children.size() < 2: continue
+		
+		for i in range(children.size() - 1):
+			var s1 = children[i]
+			var s2 = children[i+1]
+			
+			# Only draw if BOTH are occupied
+			if s1.get("is_occupied") and s2.get("is_occupied"):
+				var p1 = s1.global_position + (s1.size / 2.0) - circuit_bg.global_position
+				var p2 = s2.global_position + (s2.size / 2.0) - circuit_bg.global_position
+				
+				# Glow line (thick blurred behind)
+				circuit_bg.draw_line(p1, p2, Color(accent, 0.3), 6.0, true)
+				# Core line (thin bright)
+				circuit_bg.draw_line(p1, p2, accent, 1.5, true)
+
+func _process(_delta):
+	# Refresh circuit lines
+	circuit_bg.queue_redraw()

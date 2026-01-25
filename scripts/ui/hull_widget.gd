@@ -59,23 +59,22 @@ func update_state():
 			research_lbl.hide()
 			cost_lbl.show()
 
-		# Check afford
 		var affordable = true
 		var cost_str = "[center]"
 		
 		for res in data["cost"]:
 			var qty = data["cost"][res]
 			var can_afford = false
-			var color = "#ff5555" # Red
+			var color = "gray" 
 			
 			if res == "credits":
 				if GameState.resources.get_currency("credits") >= qty: 
 					can_afford = true
-					color = "#55ff55" # Green
+					color = "lime"
 			else:
 				if GameState.resources.get_element_amount(res) >= qty: 
 					can_afford = true
-					color = "#55ff55"
+					color = "lime"
 			
 			if not can_afford:
 				affordable = false
@@ -89,4 +88,11 @@ func update_state():
 		modulate = Color(1, 1, 1)
 
 func _on_button_pressed():
-	manager.construct_hull(hid)
+	if manager.construct_hull(hid):
+		# TACTILE: Heavy industrial thud
+		UITheme.trigger_mechanical_bash(self, 12.0)
+		
+		# Optional: Screen flash or pulse
+		var tween = create_tween()
+		tween.tween_property(self, "modulate", Color(2, 2, 2), 0.1)
+		tween.tween_property(self, "modulate", Color(1, 1, 1), 0.3)

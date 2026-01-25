@@ -67,27 +67,46 @@ func init_missions():
 		["m027", "Scanning Horizon", "Unlock 'Sector Alpha' via decryption.", "research", "sector_alpha_decryption", 1, 5000, 500, "m028"],
 		["m028", "Deep Field Mining", "Mine 1000 Cassiterite in Sector Alpha.", "gather", "Cassiterite", 1000, 10000, 2000, "m029"],
 		["m029", "Hardened Shell", "Craft 'Titanium Plating' in the Shipyard.", "craft", "titanium_armor", 1, 15000, 5000, "m030"],
-		["m030", "Flight Data", "Defeat Lunar Drones to gather 10 NavData.", "gather", "NavData", 10, 20000, 8000, "m031"],
-		["m031", "Belt Bound", "Research 'Warp Drive Theory' to reach the Belt.", "research", "warp_drive", 1, 50000, 10000, ""]
+		["m030", "Deep Space Comms", "Build a 'Fabricator' to prepare for the long journey.", "build", "fabricator", 1, 30000, 5000, "m031"],
+		["m031", "Belt Bound", "Research 'Warp Drive Theory' to reach the Belt (Ends Tutorial).", "research", "warp_drive", 1, 50000, 10000, ""],
+		["goal_001", "THE GREAT EXPEDITION", "Reach Sector Epsilon and discover the Primordial Core.", "discover", "sector_epsilon", 1, 0, 1000000, ""]
 	]
 	
-	for entry in m_list:
+	for i in range(m_list.size()):
+		var entry = m_list[i]
 		var mid = entry[0]
+		var stage = i + 1 # missions index for scaling
+		
+		# Use hand-tuned base reward from mission definition
+		# Apply gentle linear scaling: Base * (1 + 0.05 * stage)
+		# This gives ~50% more at stage 10, ~150% more at stage 30
+		# Much gentler than the old 1.15^stage which was causing hyperinflation
+		var base_reward = entry[6]
+		var scaled_reward = int(float(base_reward) * (1.0 + 0.05 * float(stage)))
+		
+		# Cutoff Enforcement: No mission follows the final tutorial step
+		var next_id = entry[8]
+		if mid == "m031": next_id = "" 
+		
+		var m_name = entry[1]
+		if mid.begins_with("m"): m_name = "[TUTORIAL] " + m_name
+		else: m_name = "[CORE GOAL] " + m_name
+		
 		missions[mid] = {
 			"id": mid,
-			"name": entry[1],
+			"name": m_name,
 			"description": entry[2],
 			"type": entry[3],
 			"target": entry[4],
 			"target_qty": entry[5],
-			"reward_cr": entry[6],
+			"reward_cr": scaled_reward,
 			"reward_xp": entry[7],
-			"next_mission": entry[8],
+			"next_mission": next_id,
 			"current_qty": 0.0,
 			"multi_progress": {}, # For gather_multi
 			"completed": false,
 			"claimed": false,
-			"active": (mid == "m001") # Only the first one is active initially
+			"active": (mid == "m001" or mid.begins_with("goal")) # Tutorial starts at m001, Core Goals always active
 		}
 		if missions[mid]["active"]:
 			active_missions.append(mid)
@@ -198,21 +217,22 @@ func sync_progress():
 		
 		if m["type"] == "gather":
 			var inv_qty = GameState.resources.get_element_amount(m["target"])
-			m["current_qty"] = min(inv_qty, m["target_qty"])
+			# Persistence: Only update if it helps progression or if we haven't hit completion yet
+			m["current_qty"] = max(m["current_qty"], min(inv_qty, m["target_qty"]))
 		
 		elif m["type"] == "gather_multi":
-			var total_p = 0.0
-			var all_done = true
 			for s in m["target"]:
 				var inv_qty = GameState.resources.get_element_amount(s)
 				var req = m["target"][s]
 				var prog = min(inv_qty, req)
-				m["multi_progress"][s] = prog
-				total_p += prog
-				if prog < req: all_done = false
+				m["multi_progress"][s] = max(m["multi_progress"].get(s, 0.0), prog)
+			
+			# Recalculate total current_qty from locked-in sub-progress
+			var total_p = 0.0
+			for s in m["multi_progress"]:
+				total_p += m["multi_progress"][s]
 			m["current_qty"] = total_p
 		
-			
 		elif m["type"] == "research":
 			if GameState.research_manager.is_tech_unlocked(m["target"]):
 				m["current_qty"] = 1
@@ -223,7 +243,7 @@ func sync_progress():
 			for slot in GameState.shipyard_manager.loadout:
 				if GameState.shipyard_manager.loadout[slot] == m["target"]:
 					inv_count += 1
-			m["current_qty"] = min(inv_count, m["target_qty"])
+			m["current_qty"] = max(m["current_qty"], min(inv_count, m["target_qty"]))
 
 		if m["current_qty"] != old_qty:
 			changed = true

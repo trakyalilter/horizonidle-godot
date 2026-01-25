@@ -117,12 +117,54 @@ var graphs = {
 func _ready():
 	manager = GameState.research_manager
 	
+	# Premium Styling
+	UITheme.apply_tab_style($VBoxContainer/TabContainer, "research")
+	
+	# Mission & Resource Integration
+	GameState.mission_manager.mission_updated.connect(_on_mission_updated)
+	if GameState.resources:
+		GameState.resources.element_added.connect(_on_resource_changed)
+		GameState.resources.currency_added.connect(_on_resource_changed)
+	
 	# Graphs are Panels inside TabContainer
 	graphs["Operations"]["container"] = $VBoxContainer/TabContainer/Operations/ScrollContainer/GraphArea
 	graphs["Engineering"]["container"] = $VBoxContainer/TabContainer/Engineering/ScrollContainer/GraphArea
 	graphs["Ships"]["container"] = $VBoxContainer/TabContainer/Ships/ScrollContainer/GraphArea
 	
 	call_deferred("build_graphs")
+	call_deferred("_on_mission_updated") # Initial check
+
+func _on_resource_changed(_a=null, _b=null):
+	refresh_all()
+
+func _on_mission_updated():
+	_update_tab_alerts()
+
+func _update_tab_alerts():
+	var mm = GameState.mission_manager
+	if not mm: return
+	
+	# Reset all first (Standardizing UI logic)
+	for i in range(tabs.get_tab_count()):
+		UITheme.trigger_tab_alert(tabs, i, false)
+		
+	# Check active missions for research targets
+	for mid in mm.active_missions:
+		var m = mm.missions[mid]
+		if m["type"] == "research":
+			var tech_id = m["target"]
+			# Find which tab this tech belongs to
+			for tab_name in graphs:
+				if tech_id in graphs[tab_name]["nodes"]:
+					var tab_idx = -1
+					# Manual index search for TabContainer
+					for i in range(tabs.get_tab_count()):
+						if tabs.get_tab_title(i) == tab_name:
+							tab_idx = i
+							break
+					
+					if tab_idx != -1:
+						UITheme.trigger_tab_alert(tabs, tab_idx, true)
 
 func build_graphs():
 	for tab_name in graphs:
@@ -154,7 +196,7 @@ func build_graphs():
 			
 			# Approx size of scaled node (w=180, h=80 roughly)
 			max_pos.x = max(max_pos.x, pos.x + 200.0)
-			max_pos.y = max(max_pos.y, pos.y + 100.0)
+			max_pos.y = max(max_pos.y, pos.y + 140.0)
 			
 		# Update container size for scrolling
 		container.custom_minimum_size = max_pos + Vector2(50, 50) # Padding
@@ -188,7 +230,7 @@ func calculate_layout(nodes_list: Array) -> Dictionary:
 	# 2. Layout Recursively
 	var current_y = 40.0
 	var level_x = 200.0 # Increased X spacing
-	var node_height = 100.0 # Increased slot size for safety
+	var node_height = 140.0 # Increased slot size for dynamic vertical growth
 	
 	# Helper to calculate subtree sizes and assign Y
 	var _layout_recursive = func(f_self, node_id: String, depth: int, start_y: float) -> float:
@@ -229,7 +271,7 @@ func calculate_layout(nodes_list: Array) -> Dictionary:
 	# 3. Execute Layout
 	for root in roots:
 		var h = _layout_recursive.call(_layout_recursive, root, 0, current_y)
-		current_y += h + 20.0 # Spacing between trees
+		current_y += h + 40.0 # Spacing between trees
 		
 	return final_pos
 

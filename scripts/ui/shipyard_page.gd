@@ -3,25 +3,26 @@ extends Control
 @onready var hp_lbl = $VBoxContainer/StatsPanel/HBoxContainer/HPLabel
 @onready var atk_lbl = $VBoxContainer/StatsPanel/HBoxContainer/AtkLabel
 @onready var def_lbl = $VBoxContainer/StatsPanel/HBoxContainer/DefLabel
-@onready var hull_grid = $VBoxContainer/TabContainer/Hulls/HullGrid
-@onready var kinetic_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer/KineticGrid
-@onready var energy_grid = $VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer/EnergyGrid
-@onready var shield_grid = $VBoxContainer/TabContainer/Modules/Shields/ShieldGrid
-@onready var engine_grid = $VBoxContainer/TabContainer/Modules/Engines/EngineGrid
-@onready var battery_grid = $VBoxContainer/TabContainer/Modules/Batteries/BatteryGrid
+@onready var eva_lbl = $VBoxContainer/StatsPanel/HBoxContainer/EvaLabel
+@onready var energy_lbl = $VBoxContainer/StatsPanel/HBoxContainer/EnergyLabel
+@onready var silhouette = $VBoxContainer/FocalHull/Silhouette
+@onready var rack_container = $VBoxContainer/ScrollContainer/RackContainer
 
 var repair_btn: Button
 var manager: RefCounted
 var hull_widget_scene = preload("res://scenes/ui/hull_widget.tscn")
 var module_widget_scene = preload("res://scenes/ui/module_widget.tscn")
 var widgets = []
+var racks = {} # {category_id: GridContainer/HBoxContainer}
 
 func _ready():
 	manager = GameState.shipyard_manager
 	
-	# Premium Styling
-	UITheme.apply_tab_style($VBoxContainer/TabContainer, "shipyard")
-	UITheme.apply_card_style($VBoxContainer/TabContainer, "shipyard")
+	# Mission & Resource Integration
+	GameState.mission_manager.mission_updated.connect(_on_mission_updated)
+	if GameState.resources:
+		GameState.resources.element_added.connect(_on_resource_changed)
+		GameState.resources.currency_added.connect(_on_resource_changed)
 	
 	# UI Robustness: Ensure parent containers don't block mouse events
 	$VBoxContainer/StatsPanel.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -41,7 +42,30 @@ func _ready():
 
 func _process(_delta):
 	_update_repair_button()
-	_update_hp_display()
+	_update_stats_display()
+	sync_silhouette()
+
+func _on_mission_updated():
+	pass # No tab alerts needed with blade architecture
+
+func _on_resource_changed(_a=null, _b=null):
+	for w in widgets:
+		if w.has_method("update_state"):
+			w.update_state()
+
+func sync_silhouette():
+	if not manager.active_hull: return
+	if not silhouette: return
+	
+	var hdata = manager.hulls.get(manager.active_hull)
+	if hdata and hdata.has("visual"):
+		var tex = load(hdata["visual"])
+		if silhouette.texture != tex:
+			silhouette.texture = tex
+			# Visual "Birth" pulse
+			var tween = create_tween()
+			silhouette.modulate.a = 0
+			tween.tween_property(silhouette, "modulate:a", 0.2, 0.5)
 
 func _update_repair_button():
 	if not repair_btn: return
@@ -53,27 +77,44 @@ func _update_repair_button():
 		repair_btn.text = "Repair (%d Cr)" % cost
 		repair_btn.disabled = not manager.can_repair()
 
-func _update_hp_display():
+func _update_stats_display():
 	if hp_lbl:
 		hp_lbl.text = "HP: %d / %d" % [manager.current_hp, manager.max_hp]
+	if atk_lbl:
+		atk_lbl.text = "Atk: %s" % UITheme.format_num(manager.attack)
+	if def_lbl:
+		def_lbl.text = "Shield: %s" % UITheme.format_num(manager.max_shield)
+	if eva_lbl:
+		eva_lbl.text = "Eva: %.1f%%" % manager.evasion
+	if energy_lbl:
+		var e_max = GameState.resources.max_energy
+		var e_used = manager.energy_used
+		energy_lbl.text = "Energy: %d/%d" % [e_used, e_max]
+		energy_lbl.modulate = Color(1, 0.3, 0.3) if e_used > e_max else Color.WHITE
 
 func _on_repair_pressed():
 	print("[UI] Repair button pressed!")
 	if manager.repair_hull():
 		print("[UI] Repair successful, refreshing UI...")
-		# We don't need a full refresh_list, but let's ensure labels update immediately
-		_update_hp_display()
+		_update_stats_display()
 		_update_repair_button()
 
 
 func refresh_list():
-	for child in hull_grid.get_children(): child.queue_free()
-	for child in kinetic_grid.get_children(): child.queue_free()
-	for child in energy_grid.get_children(): child.queue_free()
-	for child in shield_grid.get_children(): child.queue_free()
-	for child in engine_grid.get_children(): child.queue_free()
-	for child in battery_grid.get_children(): child.queue_free()
+	# Clear previous racks
+	for child in rack_container.get_children():
+		child.queue_free()
 	widgets.clear()
+	racks.clear()
+	
+	# Create racks - Hulls use HBoxContainer for horizontal slider feel
+	_create_rack("hulls", "Capital Hulls", Color(0.4, 0.9, 0.6, 0.5), rack_container, true)
+	_create_rack("kinetic", "Kinetic Weapons", Color(1.0, 0.32, 0.32, 0.5), rack_container)
+	_create_rack("energy", "Energy Weapons", Color(0.0, 0.9, 1.0, 0.5), rack_container)
+	_create_rack("shield", "Shield Generators", Color(0.4, 0.6, 1.0, 0.5), rack_container)
+	_create_rack("engine", "Engine Systems", Color(0.8, 1.0, 0.2, 0.5), rack_container)
+	_create_rack("battery", "Power Cores", Color(1.0, 1.0, 0.2, 0.5), rack_container)
+	_create_rack("ammo", "Ordnance", Color(1.0, 0.6, 0.3, 0.5), rack_container)
 	
 	# Hulls
 	var sorted_hulls = manager.hulls.keys()
@@ -81,9 +122,15 @@ func refresh_list():
 	
 	for hid in sorted_hulls:
 		var w = hull_widget_scene.instantiate()
-		hull_grid.add_child(w)
+		racks["hulls"].add_child(w)
 		w.setup(hid, manager.hulls[hid], manager, self)
 		widgets.append(w)
+		
+		# Sync Silhouette with current active ship
+		if manager.active_hull == hid:
+			var hdata = manager.hulls[hid]
+			if hdata.has("visual"):
+				silhouette.texture = load(hdata["visual"])
 		
 	# Modules Categorization
 	var sorted_mods = manager.modules.keys()
@@ -92,26 +139,64 @@ func refresh_list():
 	for mid in sorted_mods:
 		var data = manager.modules[mid]
 		var type = data.get("slot_type", "weapon")
-		var target_grid = null
+		var cat = "kinetic"
 		
 		match type:
 			"weapon":
 				var stats = data.get("stats", {})
 				if stats.get("atk_kinetic", 0) > stats.get("atk_energy", 0):
-					target_grid = kinetic_grid
+					cat = "kinetic"
 				else:
-					target_grid = energy_grid
-			"shield": target_grid = shield_grid
-			"engine": target_grid = engine_grid
-			"battery": target_grid = battery_grid
-			_: target_grid = energy_grid # Default
+					cat = "energy"
+			"shield": cat = "shield"
+			"engine": cat = "engine"
+			"battery": cat = "battery"
+			"ammo", "slug": cat = "ammo"
+			_: cat = "energy" # Default
 		
-		if target_grid == null: continue
+		if cat not in racks: continue
 		
 		var w = module_widget_scene.instantiate()
-		target_grid.add_child(w)
+		racks[cat].add_child(w)
 		w.setup(mid, data, manager, self)
 		widgets.append(w)
+
+func _create_rack(id: String, title: String, color: Color, parent: Node, horizontal: bool = false):
+	var rack_vbox = VBoxContainer.new()
+	rack_vbox.name = id + "_rack"
+	rack_vbox.add_theme_constant_override("separation", 10)
+	parent.add_child(rack_vbox)
+	
+	var header = Label.new()
+	header.text = "[ %s ]" % title.to_upper()
+	header.add_theme_font_size_override("font_size", 12)
+	header.add_theme_color_override("font_color", color)
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	rack_vbox.add_child(header)
+	
+	var rack_grid: Control
+	if horizontal:
+		# Create a horizontal scroll for hulls
+		var scroll = ScrollContainer.new()
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.custom_minimum_size.y = 180
+		rack_vbox.add_child(scroll)
+		
+		rack_grid = HBoxContainer.new()
+		rack_grid.add_theme_constant_override("separation", 20)
+		scroll.add_child(rack_grid)
+	else:
+		rack_grid = GridContainer.new()
+		rack_grid.columns = 5
+		rack_grid.add_theme_constant_override("h_separation", 10)
+		rack_grid.add_theme_constant_override("v_separation", 10)
+		rack_vbox.add_child(rack_grid)
+	
+	var sep = HSeparator.new()
+	sep.modulate = Color(1, 1, 1, 0.1)
+	rack_vbox.add_child(sep)
+	
+	racks[id] = rack_grid
 
 func get_module_widget(module_id: String) -> Control:
 	for w in widgets:
@@ -119,18 +204,5 @@ func get_module_widget(module_id: String) -> Control:
 			return w
 	return null
 
-func focus_module_tab(module_id: String):
-	if not module_id in manager.modules: return
-	var data = manager.modules[module_id]
-	var type = data.get("slot_type", "weapon")
-	
-	# Main Tab to Modules
-	$VBoxContainer/TabContainer.current_tab = 1
-	
-	# Sub Tab
-	var sub_tabs = $VBoxContainer/TabContainer/Modules
-	match type:
-		"weapon": sub_tabs.current_tab = 0
-		"shield": sub_tabs.current_tab = 1
-		"engine": sub_tabs.current_tab = 2
-		"battery": sub_tabs.current_tab = 3
+func focus_module_tab(_module_id: String):
+	pass # No longer using tabs

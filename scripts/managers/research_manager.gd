@@ -1,4 +1,6 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
+
+signal activity_occurred
 
 var action_duration = 5.0
 var current_action = ""
@@ -8,6 +10,9 @@ var action_progress = 0.0
 var unlocked_techs = []
 
 signal tech_unlocked(tech_id)
+
+func _on_research_completed(active_tech_id):
+	activity_occurred.emit()
 
 var tech_tree = {
 	"basic_engineering": {
@@ -56,7 +61,7 @@ var tech_tree = {
 		"name": "Efficient Smelting",
 		"description": "Unlocks:\n• Steel Foundry\n• Bronze Alloy",
 		"cost": 3000,
-		"cost_items": {"Res1": 5, "Bronze": 50, "Circuit": 20},
+		"cost_items": {"Res1": 7, "Circuit": 15},
 		"type": "technology",
 		"parent": "combustion"
 	},
@@ -104,8 +109,8 @@ var tech_tree = {
 	"sector_alpha_decryption": {
 		"name": "Sector Scanning (Alpha)",
 		"description": "Unlocks:\n• Sector Alpha (Titanium)",
-		"cost": 500,
-		"cost_items": {"NavData": 10, "PirateManifest": 10},  # Requires Pirate Skiff kills
+		"cost": 15000,  # ITER2 FIX: Credit gate to slow NavData rush
+		"cost_items": {"NavData": 10, "PirateManifest": 10},
 		"type": "discovery",
 		"parent": "shipwright_1"
 	},
@@ -412,6 +417,31 @@ var tech_tree = {
 		"type": "technology",
 		"parent": "automated_logistics"
 	},
+	# --- FLEET COMMAND TECHS (New) ---
+	"fleet_logistics_1": {
+		"name": "Fleet Logistics I",
+		"description": "Unlocks:\n• Secondary Fleet Slot\n• Basic Expeditionary Command",
+		"cost": 25000,
+		"cost_items": {"Circuit": 100, "Ti": 100},
+		"type": "technology",
+		"parent": "automated_logistics"
+	},
+	"fleet_logistics_2": {
+		"name": "Fleet Logistics II",
+		"description": "Unlocks:\n• Tertiary Fleet Slot\n• Advanced Fleet Coordination",
+		"cost": 250000,
+		"cost_items": {"AdvCircuit": 50, "Gold": 20},
+		"type": "technology",
+		"parent": "fleet_logistics_1"
+	},
+	"automated_expeditions": {
+		"name": "Predictive Route Planning",
+		"description": "Bonus:\n• -25% Fleet Mission Interval",
+		"cost": 50000,
+		"cost_items": {"NavData": 50, "Circuit": 200},
+		"type": "technology",
+		"parent": "fleet_logistics_1"
+	},
 	# --- END-GAME SHIPS (NEW) ---
 	"capital_ship_engineering": {
 		"name": "Capital Ship Doctrine",
@@ -553,6 +583,32 @@ var tech_tree = {
 		"type": "technology",
 		"parent": "exotic_matter_analysis"
 	},
+	# ENDGAME - Sector Epsilon unlock
+	"void_navigation": {
+		"name": "Void Navigation",
+		"description": "Unlocks:\n• Sector Epsilon - The Void\n• Endgame enemies and materials",
+		"cost": 50000000,
+		"cost_items": {"QuantumCore": 30, "VoidCrystal": 50, "ExoticMatter": 20, "AncientTech": 5},
+		"type": "technology",
+		"parent": "singularity_engine"
+	},
+	# ENDGAME SINKS - Iteration 7
+	"void_weaponry_1": {
+		"name": "Void Weaponry Optimization",
+		"description": "Bonus:\n• +20% Total Ship Damage",
+		"cost": 100000000,
+		"cost_items": {"VoidEssence": 50, "ChronoCore": 20, "PrimordialShard": 5},
+		"type": "technology",
+		"parent": "void_navigation"
+	},
+	"void_shielding_1": {
+		"name": "Void Shielding Optimization",
+		"description": "Bonus:\n• +20% Total Ship Shields",
+		"cost": 100000000,
+		"cost_items": {"OmegaPlating": 50, "VoidEssence": 20, "PrimordialShard": 5},
+		"type": "technology",
+		"parent": "void_navigation"
+	},
 	"perfect_automation": {
 		"name": "Omni-Fabrication",
 		"description": "Bonus:\n• -30% All action durations (Global)",
@@ -641,6 +697,22 @@ var tech_tree = {
 		"cost_items": {"Circuit": 50, "Steel": 200},
 		"type": "technology",
 		"parent": "automated_smelting"
+	},
+	"molecular_recycling": {
+		"name": "Molecular Recycling",
+		"description": "Unlocks:\n• Matter De-constructor",
+		"cost": 50000,
+		"cost_items": {"Res2": 50, "AdvCircuit": 25},
+		"type": "technology",
+		"parent": "industrial_automation"
+	},
+	"cryogenic_storage": {
+		"name": "Cryogenic Storage",
+		"description": "Unlocks:\n• Cryo-Storage Array",
+		"cost": 30000,
+		"cost_items": {"Ti": 100, "Si": 200},
+		"type": "technology",
+		"parent": "cryogenic_systems"
 	}
 }
 
@@ -718,6 +790,13 @@ func get_efficiency_bonus(bonus_type: String) -> float:
 			if "data_clustering" in unlocked_techs: r_speed += 0.20
 			if "perfect_automation" in unlocked_techs: r_speed += 0.30
 			return r_speed
+		"fleet_slots":
+			var slots = 1
+			if "fleet_logistics_1" in unlocked_techs: slots += 1
+			if "fleet_logistics_2" in unlocked_techs: slots += 1
+			return float(slots)
+		"fleet_speed":
+			return 0.25 if "automated_expeditions" in unlocked_techs else 0.0
 	return 0.0
 
 func get_available_researches_count() -> int:
@@ -736,8 +815,8 @@ func get_affordable_researches_count() -> int:
 			count += 1
 	return count
 
-func reset():
-	super.reset()
+func reset(decay_factor: float = 1.0) -> void:
+	super.reset(decay_factor)
 	unlocked_techs = []
 	stop_action()
 

@@ -1,42 +1,43 @@
 extends Control
 
-@onready var zone_list = $Dashboard/TopRow/SectorPanel/VBox/ZoneList
-@onready var enemy_container = $Dashboard/TopRow/TargetingPanel/VBox/Scroll/EnemyList
-@onready var log_list = $Dashboard/BottomPanel/VBox/LogList
+@onready var zone_list = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/ZoneList
+@onready var enemy_container = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/Scroll/EnemyList
+@onready var log_list = $Dashboard/Visualizer/HUD/Overlays/BottomRegion/LogOverlay/VBox/LogList
 
 # Arena Refs
-# Visualizer Path: Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer
-@onready var visualizer = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer
-@onready var radar_lines = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/Background/RadarLines
-@onready var threat_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/CenterInfo/SectorThreat
-@onready var scan_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/CenterInfo/ScanningStatus
+@onready var visualizer = $Dashboard/Visualizer
+@onready var radar_lines = $Dashboard/Visualizer/Background/RadarLines
+@onready var radar_display = $Dashboard/Visualizer/RadarDisplay
+@onready var threat_lbl = $Dashboard/Visualizer/HUD/CenterInfo/SectorThreat
+@onready var scan_lbl = $Dashboard/Visualizer/HUD/CenterInfo/ScanningStatus
+@onready var scan_line = $Dashboard/Visualizer/ScanLine
 
-@onready var p_hp_bar = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/HPBar
-@onready var p_shield_bar = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/ShieldBar
-@onready var p_name_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/NameLabel
-@onready var p_stat_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/StatsLabel
-@onready var weapon_battery = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/WeaponBattery
-@onready var p_buff_container = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats/BuffContainer
+@onready var p_name_lbl = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/NameLabel
+@onready var p_stat_lbl = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/StatsLabel
+@onready var p_hp_lbl = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/HealthLabel
+@onready var p_sh_lbl = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/ShieldLabel
+@onready var weapon_battery = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/WeaponBattery
+@onready var p_buff_container = $Dashboard/Visualizer/HUD/Overlays/SectorOverlay/VBox/PlayerStats/BuffContainer
 
 var player_weapon_bars = []
 
-@onready var e_hp_bar = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats/HPBar
-@onready var e_shield_bar = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats/ShieldBar
-@onready var e_name_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats/NameLabel
-@onready var e_stat_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats/StatsLabel
-@onready var e_attack_pb = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats/E_AttackBar
+@onready var e_name_lbl = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/EnemyStats/NameLabel
+@onready var e_stat_lbl = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/EnemyStats/StatsLabel
+@onready var e_hp_lbl = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/EnemyStats/HealthLabel
+@onready var e_sh_lbl = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/EnemyStats/ShieldLabel
+@onready var e_attack_pb = $Dashboard/Visualizer/HUD/Overlays/TargetingOverlay/VBox/EnemyStats/E_AttackBar
 
-@onready var scanner_overlay = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/ScannerOverlay
-@onready var loot_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/ScannerOverlay/VBox/LootText
+@onready var scanner_overlay = $Dashboard/Visualizer/HUD/Overlays/BottomRegion/StatusRow/ScannerOverlay
+@onready var loot_lbl = $Dashboard/Visualizer/HUD/Overlays/BottomRegion/StatusRow/ScannerOverlay/VBox/LootText
 
-@onready var ammo_overlay = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/AmmoOverlay
-@onready var ammo_lbl = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/AmmoOverlay/VBox/AmmoText
+@onready var ammo_overlay = $Dashboard/Visualizer/HUD/Overlays/BottomRegion/StatusRow/AmmoOverlay
+@onready var ammo_vbox = $Dashboard/Visualizer/HUD/Overlays/BottomRegion/StatusRow/AmmoOverlay/VBox/AmmoGroupVBox
 
 # Controls
-@onready var btn_retreat = $Dashboard/TopRow/LiveFeedPanel/VBox/ViewportFooter/Margin/HBox/RetreatBtn
-@onready var cons_opt = $Dashboard/TopRow/LiveFeedPanel/VBox/ViewportFooter/Margin/HBox/ConsumableBay/OptionButton
-@onready var cons_btn = $Dashboard/TopRow/LiveFeedPanel/VBox/ViewportFooter/Margin/HBox/ConsumableBay/UseBtn
-@onready var auto_btn = $Dashboard/TopRow/LiveFeedPanel/VBox/ViewportFooter/Margin/HBox/ConsumableBay/AutoToggle
+@onready var btn_retreat = $Dashboard/ViewportFooter/Margin/HBox/RetreatBtn
+@onready var cons_opt = $Dashboard/ViewportFooter/Margin/HBox/ConsumableBay/OptionButton
+@onready var cons_btn = $Dashboard/ViewportFooter/Margin/HBox/ConsumableBay/UseBtn
+@onready var auto_btn = $Dashboard/ViewportFooter/Margin/HBox/ConsumableBay/AutoToggle
 
 var manager: RefCounted
 
@@ -51,26 +52,33 @@ func _ready():
 	call_deferred("refresh_zones")
 	GameState.game_loaded.connect(refresh_zones)
 	
-	# Premium Styling
-	UITheme.apply_card_style($Dashboard/TopRow/SectorPanel, "shipyard") # Map is high-tech
-	UITheme.apply_card_style($Dashboard/TopRow/TargetingPanel, "combat")
-	UITheme.apply_card_style($Dashboard/TopRow/LiveFeedPanel, "combat")
-	UITheme.apply_card_style($Dashboard/BottomPanel, "engineering") # System log is tech-heavy
+	# HUD Stress & Console Interaction
+	$Dashboard/Visualizer/HUD/Overlays/SectorOverlay.mouse_entered.connect(func(): p_hp_lbl.visible = true; p_sh_lbl.visible = true)
+	$Dashboard/Visualizer/HUD/Overlays/SectorOverlay.mouse_exited.connect(func(): p_hp_lbl.visible = false; p_sh_lbl.visible = false)
+	$Dashboard/Visualizer/HUD/Overlays/TargetingOverlay.mouse_entered.connect(func(): e_hp_lbl.visible = true; e_sh_lbl.visible = true)
+	$Dashboard/Visualizer/HUD/Overlays/TargetingOverlay.mouse_exited.connect(func(): e_hp_lbl.visible = false; e_sh_lbl.visible = false)
 	
-	UITheme.apply_panel_style($Dashboard/TopRow/LiveFeedPanel/VBox/ViewportHeader)
-	UITheme.apply_panel_style($Dashboard/TopRow/LiveFeedPanel/VBox/ViewportFooter)
-	UITheme.apply_modal_style(scanner_overlay) # Use modal style for the scanner
+	# Initial Suppression
+	p_hp_lbl.visible = false
+	p_sh_lbl.visible = false
+	e_hp_lbl.visible = false
+	e_sh_lbl.visible = false
 	
 	UITheme.apply_premium_button_style(btn_retreat, "combat")
 	UITheme.apply_premium_button_style(cons_btn, "engineering")
 	
-	UITheme.apply_progress_bar_style(p_hp_bar, "combat")
-	UITheme.apply_progress_bar_style(p_shield_bar, "engineering")
-	UITheme.apply_progress_bar_style(e_hp_bar, "combat")
-	UITheme.apply_progress_bar_style(e_shield_bar, "engineering")
 	UITheme.apply_progress_bar_style(e_attack_pb, "combat")
 	
-	$Dashboard/BottomPanel/VBox/Label.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4)) # Terminal Green
+	# PHASE 47: DIEGETIC DE-BOXING
+	UITheme.apply_holographic_projection($Dashboard/Visualizer/HUD/Overlays/SectorOverlay, "shipyard")
+	UITheme.apply_holographic_projection($Dashboard/Visualizer/HUD/Overlays/TargetingOverlay, "combat")
+	UITheme.apply_holographic_projection($Dashboard/Visualizer/HUD/Overlays/BottomRegion/LogOverlay, "ops")
+	UITheme.apply_holographic_projection(ammo_overlay, "inventory")
+	UITheme.apply_holographic_projection(scanner_overlay, "research")
+	
+	radar_display.draw.connect(_on_radar_draw)
+	
+	$Dashboard/Visualizer/HUD/Overlays/BottomRegion/LogOverlay/VBox/Header.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4)) # Terminal Green
 	
 	cons_opt.clear()
 	cons_opt.add_item("Select Item...", 0)
@@ -167,31 +175,28 @@ func _process(delta):
 	_update_atmosphere(delta)
 
 func update_ui():
+	# Update Haptics & Visualizer
+	radar_display.queue_redraw()
+	
 	# Player Stats
 	var sm = GameState.shipyard_manager
-	# Player Stats
-	p_hp_bar.max_value = sm.max_hp
-	p_hp_bar.value = sm.current_hp
-	p_shield_bar.max_value = max(1, manager.player_max_shield)
-	p_shield_bar.value = manager.player_shield
-	
 	p_stat_lbl.text = "ATK: %s | DEF: %s | EVA: %.1f%%" % [UITheme.format_num(sm.attack), UITheme.format_num(sm.defense), sm.evasion]
+	p_hp_lbl.text = "HULL: %s / %s" % [UITheme.format_num(sm.current_hp), UITheme.format_num(sm.max_hp)]
+	p_sh_lbl.text = "SHD: %s / %s" % [UITheme.format_num(manager.player_shield), UITheme.format_num(manager.player_max_shield)]
 	
 	# Enemy Stats
 	if manager.in_combat and manager.current_enemy:
-		e_name_lbl.text = manager.current_enemy["name"]
-		e_hp_bar.max_value = manager.enemy_max_hp
-		e_hp_bar.value = manager.enemy_hp
-		e_shield_bar.max_value = max(1, manager.enemy_max_shield)
-		e_shield_bar.value = manager.enemy_shield
-		e_stat_lbl.text = "ATK: %s | DEF: %s" % [UITheme.format_num(manager.current_enemy.get("atk",0)), UITheme.format_num(manager.current_enemy.get("def",0))]
+		var enemy = manager.current_enemy
+		e_name_lbl.text = enemy["name"]
+		e_stat_lbl.text = "ATK: %s | DEF: %s" % [UITheme.format_num(enemy.get("atk",0)), UITheme.format_num(enemy.get("def",0))]
+		e_hp_lbl.text = "HULL: %s / %s" % [UITheme.format_num(manager.enemy_hp), UITheme.format_num(manager.enemy_max_hp)]
+		e_sh_lbl.text = "SHD: %s / %s" % [UITheme.format_num(manager.enemy_shield), UITheme.format_num(manager.enemy_max_shield)]
 		btn_retreat.disabled = false
 	else:
 		e_name_lbl.text = "No Target"
-		e_hp_bar.max_value = 100
-		e_hp_bar.value = 0
-		e_shield_bar.value = 0
 		e_stat_lbl.text = "ATK: - | DEF: -"
+		e_hp_lbl.text = "HULL: - / -"
+		e_sh_lbl.text = "SHD: - / -"
 		btn_retreat.disabled = true
 	
 	# Attack Timers
@@ -207,6 +212,18 @@ func update_ui():
 			pb.max_value = w["interval"]
 			pb.value = w["timer"]
 			pb.visible = true
+			
+			# AMMO STATUS FEEDBACK
+			var ammo_id = sm.ammo_loadout.get(w["slot_idx"])
+			var has_ammo = false
+			if ammo_id and ammo_id != "":
+				has_ammo = GameState.resources.get_element_amount(ammo_id) > 0
+				
+			if not has_ammo:
+				pb.modulate = Color(0.5, 0.5, 0.5, 0.5) # Dimmed offline look
+				pb.value = 0 # Forced to 0 when offline
+			else:
+				pb.modulate = Color.WHITE # Normal online status
 		
 		if manager.current_enemy:
 			e_attack_pb.visible = true
@@ -258,10 +275,27 @@ func update_ui():
 		auto_btn.text = "AUTO [OFF]"
 		auto_btn.modulate = Color(0.5, 0.5, 0.5) # Dim grey
 
-	# Process Combat Events (Floating Text)
+	# Process Combat Events (Floating Text + Haptics)
 	while manager.combat_events.size() > 0:
 		var ev = manager.combat_events.pop_front()
 		spawn_floating_text(ev)
+		
+		# TACTILE: Damage-induced System Glitch
+		if ev.get("side") == "player" and ev.get("type", "") == "damage":
+			_apply_hud_stress()
+			if manager.haptics_enabled:
+				Input.vibrate_handheld(100)
+		
+		# PARRY: Special feedback for successful reflection
+		if ev.get("type") == "parry":
+			UITheme.trigger_system_glitch(visualizer, 5.0)
+			UITheme.trigger_ui_thud(self, 4.0)
+
+func _apply_hud_stress():
+	var hud = $Dashboard/Visualizer/HUD
+	# PHASE 47: Visceral System Glitch
+	UITheme.trigger_system_glitch(hud, 12.0)
+	UITheme.trigger_ui_thud(self, 8.0)
 
 func show_enemy_info(data):
 	var dlg = enemy_info_scene.instantiate()
@@ -271,27 +305,78 @@ func show_enemy_info(data):
 func spawn_floating_text(ev):
 	var txt = floating_text_scene.instantiate()
 	# Parent to Visualizer to keep it contained in the middle area
-	var visualizer = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer
 	visualizer.add_child(txt)
 	
 	var local_pos = Vector2.ZERO
 	if ev["side"] == "player":
-		# Position relative to visualizer: PlayerStats is top-left in HUD
-		local_pos = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/PlayerStats.position 
-		local_pos += p_hp_bar.position + Vector2(p_hp_bar.size.x / 2, 0)
+		# Centralized Radar focus
+		local_pos = visualizer.size / 2.0 + Vector2(-60, 20)
 	else:
-		if manager.current_enemy:
-			# Position relative to visualizer: EnemyStats is top-right in HUD
-			local_pos = $Dashboard/TopRow/LiveFeedPanel/VBox/Visualizer/HUD/StatsHBox/EnemyStats.position
-			local_pos += e_hp_bar.position + Vector2(e_hp_bar.size.x / 2, 0)
+		if manager.in_combat:
+			local_pos = visualizer.size / 2.0 + Vector2(60, -20)
 		else:
 			local_pos = Vector2(visualizer.size.x / 2, visualizer.size.y / 2)
-			
+	
 	# Randomize slightly
 	local_pos += Vector2(randf_range(-20, 20), randf_range(-20, 20))
 	
 	txt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	txt.setup(ev["text"], ev["color"], local_pos)
+
+func _on_radar_draw():
+	var center = Vector2.ZERO # Local space of RadarDisplay (it's centered)
+	var sm = GameState.shipyard_manager
+	
+	# --- PLAYER ARCS (Left) ---
+	var p_hp_pct = float(sm.current_hp) / max(1.0, sm.max_hp)
+	var p_sh_pct = float(manager.player_shield) / max(1.0, manager.player_max_shield)
+	
+	# HP Arc (Reddish)
+	radar_display.draw_arc(center, 120, deg_to_rad(110), deg_to_rad(110 + (250-110)*p_hp_pct), 32, Color(1, 0.3, 0.3, 0.8), 5.0, true)
+	# Shield Arc (Cyan)
+	radar_display.draw_arc(center, 135, deg_to_rad(110), deg_to_rad(110 + (250-110)*p_sh_pct), 32, Color(0, 0.8, 1, 0.6), 4.0, true)
+
+	# --- ENEMY ARCS (Right) ---
+	if manager.in_combat and manager.current_enemy:
+		var e_hp_pct = float(manager.enemy_hp) / max(1.0, manager.enemy_max_hp)
+		var e_sh_pct = float(manager.enemy_shield) / max(1.0, manager.enemy_max_shield)
+		
+		# Enemy HP Arc
+		_draw_arc_poly(center, 120, 130, -70, 70, Color(1, 0, 0, 0.2), Color(1, 0, 0, 0.8), e_hp_pct)
+		# Enemy Shield Arc
+		_draw_arc_poly(center, 135, 140, -70, 70, Color(0, 0.8, 1, 0.1), Color(0, 0.8, 1, 0.6), e_sh_pct)
+		
+	# --- RETICLE & DECORATION ---
+	radar_display.draw_circle(center, 5, Color(1, 1, 1, 0.1)) # Center dot
+	radar_display.draw_arc(center, 100, 0, TAU, 64, Color(1, 1, 1, 0.05), 1.0) # Inner guide ring
+
+func _draw_arc_poly(center: Vector2, inner_radius: float, outer_radius: float, start_deg: float, end_deg: float, bg_color: Color, fill_color: Color, percent: float):
+	var segments = 32
+	var start_rad = deg_to_rad(start_deg)
+	var end_rad = deg_to_rad(end_deg)
+	
+	# Draw Background
+	_draw_arc_section(center, inner_radius, outer_radius, start_rad, end_rad, segments, bg_color)
+	
+	# Draw Fill
+	var fill_end_rad = start_rad + (end_rad - start_rad) * percent
+	_draw_arc_section(center, inner_radius, outer_radius, start_rad, fill_end_rad, segments, fill_color)
+
+func _draw_arc_section(center: Vector2, r_inner: float, r_outer: float, angle_start: float, angle_end: float, segments: int, color: Color):
+	var points = PackedVector2Array()
+	var angle_delta = (angle_end - angle_start) / segments
+	
+	# Outer circumference
+	for i in range(segments + 1):
+		var a = angle_start + i * angle_delta
+		points.append(center + Vector2(cos(a), sin(a)) * r_outer)
+	
+	# Inner circumference (reverse to close loop)
+	for i in range(segments, -1, -1):
+		var a = angle_start + i * angle_delta
+		points.append(center + Vector2(cos(a), sin(a)) * r_inner)
+		
+	radar_display.draw_polygon(points, PackedColorArray([color]))
 
 func _update_session_loot():
 	var tt = "[center]"
@@ -309,29 +394,99 @@ func _update_session_loot():
 
 func _update_ammo_display():
 	var sm = GameState.shipyard_manager
-	var tt = "[center]"
+	# Clear existing
+	for child in ammo_vbox.get_children(): child.queue_free()
 	
-	var ammos = []
-	for slot in sm.ammo_loadout:
-		var aid = sm.ammo_loadout[slot]
-		if aid and aid != "" and not aid in ammos:
-			ammos.append(aid)
+	# THEMATIC STYLEBOXES (Internalized for performance/isolation)
+	var sb_ghost = StyleBoxFlat.new()
+	sb_ghost.bg_color = Color(0.1, 0.1, 0.1, 0.6)
+	sb_ghost.border_width_left = 1
+	sb_ghost.border_width_top = 1
+	sb_ghost.border_color = Color(0,0,0)
+	sb_ghost.corner_radius_top_left = 2
+	sb_ghost.corner_radius_bottom_right = 2
 	
-	if ammos.is_empty():
-		tt += "[color=#666666]NO AMMO LOADED[/color]"
-	else:
-		for active in ammos:
-			var qty = GameState.resources.get_element_amount(active)
-			var item_name = ElementDB.get_display_name(active)
-			
-			var color = "#00ccff" # Cyan normal
-			if qty == 0: color = "#ff4444" # Red empty
-			elif qty < 20: color = "#ffcc00" # Yellow low
-			
-			tt += "[color=%s]%s[/color]: %s\n" % [color, item_name, UITheme.format_num(qty)]
+	var ammo_list = [
+		{"name": "Slug", "id": "SlugT1", "col": Color("#ffcc00"), "type": "kinetic"},
+		{"name": "Sabot", "id": "SlugT2", "col": Color("#ffaa00"), "type": "kinetic"},
+		{"name": "Focus", "id": "CellT1", "col": Color("#00ccff"), "type": "energy"},
+		{"name": "Plasma", "id": "CellT2", "col": Color("#0099ff"), "type": "energy"}
+	]
+	
+	var has_any = false
+	for ammo in ammo_list:
+		var qty = GameState.resources.get_element_amount(ammo["id"])
+		var is_equipped = false
+		for slot in sm.ammo_loadout:
+			if sm.ammo_loadout[slot] == ammo["id"]:
+				is_equipped = true
+				break
 		
-	tt += "[/center]"
-	ammo_lbl.text = tt
+		# We show if equipped OR has quantity (Stock)
+		if is_equipped or qty > 0:
+			has_any = true
+			var group = VBoxContainer.new()
+			group.add_theme_constant_override("separation", 1)
+			group.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+			ammo_vbox.add_child(group)
+			
+			var lbl = Label.new()
+			lbl.add_theme_font_size_override("font_size", 8)
+			lbl.text = ammo["name"].to_upper()
+			lbl.modulate = Color(0.6,0.6,0.6)
+			group.add_child(lbl)
+			
+			var flow = HFlowContainer.new()
+			flow.add_theme_constant_override("h_separation", 2)
+			flow.add_theme_constant_override("v_separation", 2)
+			group.add_child(flow)
+			
+			# Physical Profile Styles
+			var sb_pip = StyleBoxFlat.new()
+			sb_pip.bg_color = ammo["col"]
+			if ammo["type"] == "kinetic":
+				# SLUGS: Sharp and mechanical
+				sb_pip.corner_radius_top_left = 1
+				sb_pip.corner_radius_bottom_right = 3
+			else:
+				# CELLS: Rounded energy capsules
+				sb_pip.corner_radius_top_left = 3
+				sb_pip.corner_radius_top_right = 3
+				sb_pip.corner_radius_bottom_left = 3
+				sb_pip.corner_radius_bottom_right = 3
+			
+			# Draw pips (Max 24 for a single row visual feel)
+			var display_count = min(qty, 24)
+			var capacity = 24 # Capacity of the "Rack" shown
+			
+			for i in range(capacity):
+				var pip = Panel.new()
+				pip.custom_minimum_size = Vector2(4, 9)
+				if i < display_count:
+					var p_style = sb_pip.duplicate()
+					# Low ammo color shifts
+					if qty < 10: p_style.bg_color = Color.RED
+					elif qty < 30: p_style.bg_color = Color.YELLOW
+					pip.add_theme_stylebox_override("panel", p_style)
+					pip.name = "PIP_ACTIVE"
+				else:
+					pip.add_theme_stylebox_override("panel", sb_ghost)
+				flow.add_child(pip)
+			
+			if qty > capacity:
+				var more = Label.new()
+				more.add_theme_font_size_override("font_size", 7)
+				more.text = "+%d" % (qty - capacity)
+				more.modulate.a = 0.5
+				flow.add_child(more)
+	
+	if not has_any:
+		var lbl = Label.new()
+		lbl.text = "MAGAZINES EMPTY"
+		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.modulate = Color(1.0, 0.3, 0.3)
+		ammo_vbox.add_child(lbl)
 
 func _rebuild_weapon_battery(w_states):
 	for child in weapon_battery.get_children(): child.queue_free()
@@ -359,17 +514,51 @@ func _rebuild_weapon_battery(w_states):
 
 func _update_atmosphere(delta):
 	# Pulse scanning label
-	var pulse = (sin(Time.get_ticks_msec() * 0.005) + 1.0) * 0.5
+	var time_ms = Time.get_ticks_msec()
+	var pulse = (sin(time_ms * 0.005) + 1.0) * 0.5
 	scan_lbl.modulate.a = 0.2 + (pulse * 0.4)
 	
+	# AMMO PULSE (OFFLINE/LOW)
+	var fast_pulse = (sin(time_ms * 0.012) + 1.0) * 0.5 # Faster for danger
+	for group in ammo_vbox.get_children():
+		var flow = group.get_child(1) if group.get_child_count() > 1 else null
+		if flow:
+			for pip in flow.get_children():
+				if pip.name == "PIP_ACTIVE":
+					var style = pip.get_theme_stylebox("panel")
+					if style:
+						if style.bg_color == Color.RED:
+							pip.modulate.a = 0.3 + (fast_pulse * 0.7)
+						elif style.bg_color == Color.YELLOW:
+							pip.modulate.a = 0.6 + (pulse * 0.4)
+						else:
+							pip.modulate.a = 1.0
+						
 	if manager.in_combat:
 		scan_lbl.text = "TARGET LOCK CONFIRMED"
 		threat_lbl.text = "SECTOR THREAT: ENGAGED"
 		threat_lbl.modulate = Color(1, 0.3, 0.3, 0.8) # Red alert
+		
+		# Gearing Tip: Warn if Accuracy is making Evasion useless
+		var sm = GameState.shipyard_manager
+		var e_acc = manager.current_enemy.get("accuracy", 0)
+		if e_acc > 10: # Only warn outside Tier 1
+			var dodge_chance = float(sm.evasion) / (float(sm.evasion) + 150.0 * (1.0 + float(e_acc) / 100.0))
+			if dodge_chance < 0.2 and sm.max_shield < 100:
+				scan_lbl.text = "CAUTION: EVASION COMPROMISED - SHIELDS REQUIRED"
+				scan_lbl.modulate = Color(1.0, 0.5, 0.0) # Warning Orange
+		
+		# TACTICAL: ScanLine Sweep
+		var view_h = visualizer.size.y
+		scan_line.visible = true
+		scan_line.position.y += delta * 600.0 # High speed sweep
+		if scan_line.position.y > view_h:
+			scan_line.position.y = 0
 	else:
 		threat_lbl.text = "SCANNING SECTOR..."
 		threat_lbl.text = "SECTOR THREAT: NOMINAL"
 		threat_lbl.modulate = Color(1, 0.8, 0, 0.5) # Yellow cautious
+		scan_line.visible = false
 
 func _on_retreat_btn_pressed():
 	manager.retreat()

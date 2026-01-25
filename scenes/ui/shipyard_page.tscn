@@ -72,111 +72,43 @@ text = "Firepower: 0"
 [node name="DefLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.8, 1, 1)
-text = "Shield: 0 | Eva: 0%"
+text = "Shield: 0"
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+[node name="EvaLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 1, 0.2, 1)
+text = "Evasion: 0%"
+
+[node name="EnergyLabel" type="Label" parent="VBoxContainer/StatsPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0.2, 1)
+text = "Energy: 0/0"
+
+[node name="FocalHull" type="PanelContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="Silhouette" type="TextureRect" parent="VBoxContainer/FocalHull"]
+modulate = Color(0, 1, 1, 0.2)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="Label" parent="VBoxContainer/FocalHull"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0, 0.8, 1, 0.5)
+theme_override_font_sizes/font_size = 12
+text = " [ READY FOR DEPLOYMENT ]"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
-theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")
-theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
-current_tab = 0
-
-[node name="Hulls" type="ScrollContainer" parent="VBoxContainer/TabContainer"]
-layout_mode = 2
 horizontal_scroll_mode = 0
-metadata/_tab_index = 0
 
-[node name="HullGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Hulls"]
+[node name="RackContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="Modules" type="TabContainer" parent="VBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
-theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")
-theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
-current_tab = 0
-metadata/_tab_index = 1
-
-[node name="Weapons" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
-layout_mode = 2
-horizontal_scroll_mode = 0
-metadata/_tab_index = 0
-
-[node name="WeaponCategorizer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Modules/Weapons"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 15
-
-[node name="KineticHeader" type="Label" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.321569, 0.321569, 1)
-theme_override_font_sizes/font_size = 16
-text = "KINETIC WEAPONS"
-
-[node name="KineticGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
-layout_mode = 2
-
-[node name="EnergyHeader" type="Label" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0.898039, 1, 1)
-theme_override_font_sizes/font_size = 16
-text = "ENERGY WEAPONS"
-
-[node name="EnergyGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Weapons/WeaponCategorizer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="Shields" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
-metadata/_tab_index = 1
-
-[node name="ShieldGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Shields"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="Engines" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
-metadata/_tab_index = 2
-
-[node name="EngineGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Engines"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="Batteries" type="ScrollContainer" parent="VBoxContainer/TabContainer/Modules"]
-visible = false
-layout_mode = 2
-horizontal_scroll_mode = 0
-metadata/_tab_index = 3
-
-[node name="BatteryGrid" type="GridContainer" parent="VBoxContainer/TabContainer/Modules/Batteries"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
+size_flags_vertical = 3
+theme_override_constants/separation = 20

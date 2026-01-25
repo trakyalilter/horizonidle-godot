@@ -1,4 +1,4 @@
-extends "res://scripts/core/skill.gd"
+extends Skill
 
 var in_combat = false
 
@@ -98,6 +98,14 @@ var zones = {
 		"difficulty": 8,
 		"enemies": ["crystal_golem", "energy_wraith", "sentinel_prime"],
 		"research_req": "exotic_matter_analysis"
+	},
+	# ENDGAME ZONE - Added to address retention cliff after Dreadnought
+	"sector_epsilon": {
+		"name": "Sector Epsilon - The Void",
+		"desc": "Beyond known space. Primordial entities and temporal anomalies. Requires Dreadnought-class vessel.",
+		"difficulty": 10,
+		"enemies": ["void_stalker", "temporal_phantom", "omega_sentinel", "primordial_titan"],
+		"research_req": "void_navigation"
 	}
 }
 
@@ -105,42 +113,44 @@ var enemy_db = {
 	# === ZONE 1: LUNAR ORBIT ===
 	"dust_mite": {
 		"name": "Space Dust Mite",
-		"stats": {"hp": 50, "max_shield": 0, "atk": 3, "def": 0, "atk_interval": 2.5},
+		"stats": {"hp": 50, "max_shield": 0, "atk": 3, "def": 0, "atk_interval": 2.5, "accuracy": 0},
 		"loot": [["Scrap", 1, 2]],  # Primary scrap source for recycling
 		"xp": 8
 	},
 	"lunar_drone": {
 		"name": "Lunar Drone",
-		"stats": {"hp": 75, "max_shield": 0, "atk": 5, "def": 3, "atk_interval": 2.5},
+		"stats": {"hp": 75, "max_shield": 0, "atk": 5, "def": 3, "atk_interval": 2.5, "accuracy": 5},
 		"loot": [["Scrap", 2, 3], ["Fe", 4, 10], ["DroneCore", 1, 1]],  # EXCLUSIVE: DroneCore
-		"rare_loot": [["Cu", 0.5, 1, 2], ["Chip", 0.08, 1, 1], ["SalvageData", 0.20, 1, 1]],  # 20% safety net
+		"rare_loot": [["Cu", 0.3, 1, 2], ["Chip", 0.08, 1, 1], ["SalvageData", 0.20, 1, 1]], 
 		"xp": 12
 	},
 	"scrap_collector": {
 		"name": "Scrap Collector",
-		"stats": {"hp": 350, "max_shield": 0, "atk": 20, "def": 5, "atk_interval": 2.2},
-		"loot": [["Scrap", 7, 12], ["Res1", 2, 5]],  # BEST scrap farm + Guaranteed Artifacts
-		"rare_loot": [],
+		"stats": {"hp": 350, "max_shield": 0, "atk": 20, "def": 5, "atk_interval": 2.2, "accuracy": 10},
+		"loot": [["Scrap", 7, 12], ["Res1", 2, 5]],
+		"rare_loot": [["DroneCore", 0.30, 1, 2]],
 		"xp": 10
 	},
+
 	"survey_probe": {
 		"name": "Derelict Survey Probe",
-		"stats": {"hp": 600, "max_shield": 50, "atk": 35, "def": 18, "atk_interval": 2.5},
-		"loot": [["Si", 5, 8], ["Cu", 1, 2], ["SalvageData", 1, 1]],  # EXCLUSIVE: SalvageData
-		"rare_loot": [["Chip", 0.15, 2, 3], ["NavData", 0.10, 1, 1]],
-		"xp": 20
+		"stats": {"hp": 600, "max_shield": 50, "atk": 35, "def": 18, "atk_interval": 2.5, "accuracy": 15},
+		"loot": [["Si", 5, 8], ["Cu", 1, 2], ["SalvageData", 1, 1], ["NavData", 1, 1]],  # P0 FIX: Guaranteed NavData
+		"rare_loot": [["Chip", 0.15, 2, 3]],
+		"xp": 25
 	},
+
 	# New Asteroid Belt Enemies
 	"claim_jumper": {
 		"name": "Claim Jumper",
-		"stats": {"hp": 2500, "max_shield": 100, "atk": 45, "def": 25, "atk_interval": 2.2},
-		"loot": [["credits", 250, 450]],  # Yield buffed to match difficulty
-		"rare_loot": [["Cu", 0.45, 15, 30], ["NavData", 0.15, 2, 5]],
+		"stats": {"hp": 2500, "max_shield": 100, "atk": 45, "def": 25, "atk_interval": 2.2, "accuracy": 20},
+		"loot": [["credits", 250, 450], ["Cu", 15, 30]],
+		"rare_loot": [["NavData", 0.15, 2, 5]],
 		"xp": 50
 	},
 	"ore_hauler": {
 		"name": "Ore Hauler Wreck",
-		"stats": {"hp": 4500, "max_shield": 0, "atk": 80, "def": 40, "atk_interval": 5.0},
+		"stats": {"hp": 4500, "max_shield": 0, "atk": 80, "def": 40, "atk_interval": 5.0, "accuracy": 25},
 		"loot": [["Fe", 150, 300], ["C", 200, 500], ["Scrap", 10, 20]],
 		"rare_loot": [["W", 0.35, 15, 30], ["U", 0.10, 2, 5]], 
 		"xp": 80
@@ -148,14 +158,14 @@ var enemy_db = {
 	# New Mars Debris Enemies
 	"derelict_frigate": {
 		"name": "Derelict Frigate",
-		"stats": {"hp": 12000, "max_shield": 500, "atk": 150, "def": 65, "atk_interval": 4.0},
-		"loot": [["Steel", 5, 12], ["Scrap", 20, 40]],
-		"rare_loot": [["Circuit", 0.35, 2, 4], ["Chip", 0.20, 2, 2], ["Res2", 0.80, 5, 10]],
+		"stats": {"hp": 12000, "max_shield": 500, "atk": 150, "def": 65, "atk_interval": 4.0, "accuracy": 30},
+		"loot": [["Steel", 5, 12], ["Scrap", 20, 40], ["Res2", 5, 10]],
+		"rare_loot": [["Circuit", 0.35, 2, 4], ["Chip", 0.20, 2, 2]],
 		"xp": 250
 	},
 	"salvage_swarm": {
 		"name": "Salvage Swarm",
-		"stats": {"hp": 2500, "max_shield": 0, "atk": 60, "def": 10, "atk_interval": 0.6},
+		"stats": {"hp": 2500, "max_shield": 0, "atk": 60, "def": 10, "atk_interval": 0.6, "accuracy": 35},
 		"loot": [["Scrap", 10, 20]],  # Glass cannon, massive Scrap
 		"rare_loot": [["Resin", 0.3, 1, 2], ["Cu", 0.2, 1, 2]],
 		"xp": 35
@@ -163,150 +173,181 @@ var enemy_db = {
 	# New Titan's Halo Enemies
 	"frozen_hulk": {
 		"name": "Frozen Hulk",
-		"stats": {"hp": 6500, "max_shield": 250, "atk": 18, "def": 70, "atk_interval": 6.0},
+		"stats": {"hp": 6500, "max_shield": 250, "atk": 18, "def": 70, "atk_interval": 6.0, "accuracy": 40},
 		"loot": [["C", 10, 20]],  # Best Carbon farm
 		"rare_loot": [["Graphite", 0.35, 1, 3], ["W", 0.15, 1, 2]],
 		"xp": 75
 	},
 	"smuggler_cutter": {
 		"name": "Smuggler Cutter",
-		"stats": {"hp": 450, "max_shield": 180, "atk": 32, "def": 25},
+		"stats": {"hp": 450, "max_shield": 180, "atk": 32, "def": 25, "accuracy": 45},
 		"loot": [["credits", 100, 200]],  # Best credits in D4
 		"rare_loot": [["Li", 0.25, 1, 3], ["Ti", 0.2, 1, 2]],  # Rare Li/Ti
 		"xp": 95
 	},
 	"pirate_skiff": {
 		"name": "Pirate Skiff",
-		"stats": {"hp": 3000, "max_shield": 200, "atk": 50, "def": 30, "atk_interval": 1.75},
-		"loot": [["credits", 2000, 6000], ["Scrap", 3, 6], ["PirateManifest", 1, 1]],  # EXCLUSIVE: PirateManifest
-		"rare_loot": [["Cu", 0.75, 100, 200],
-					  ["W", 0.40, 10, 20],
-					  ["Ti", 0.30, 40, 50],
-					  ["NavData", 0.20, 1, 2]
-					  ],
-		"xp": 25
+		"stats": {"hp": 3000, "max_shield": 200, "atk": 50, "def": 30, "atk_interval": 1.75, "accuracy": 50},
+		"loot": [["credits", 2000, 6000], ["Scrap", 3, 6], ["PirateManifest", 1, 1], ["NavData", 1, 2], ["Cu", 100, 200]],
+		"rare_loot": [["W", 0.40, 10, 20], ["Ti", 0.30, 40, 50]],
+		"xp": 30
 	},
+
 	"rock_golem": {
 		"name": "Silicate Golem",
-		"stats": {"hp": 1500, "max_shield": 0, "atk": 8, "def": 12},
+		"stats": {"hp": 1500, "max_shield": 0, "atk": 8, "def": 12, "accuracy": 20},
 		"loot": [["Si", 100, 200]],
 		"rare_loot": [["Ti", 0.3, 10, 20]],
 		"xp": 30
 	},
 	"scavenger_mech": {
 		"name": "Scavenger Mech",
-		"stats": {"hp": 4000, "max_shield": 100, "atk": 25, "def": 60},
+		"stats": {"hp": 4000, "max_shield": 100, "atk": 25, "def": 60, "accuracy": 40},
 		"loot": [["Cu", 5, 10], ["Scrap", 5, 10]],
 		"rare_loot": [["W", 0.3, 5, 10], ["Res2", 0.20, 1, 1]],
 		"xp": 55
 	},
 	"martian_sentry": {
 		"name": "Martian Sentry",
-		"stats": {"hp": 250, "max_shield": 250, "atk": 30, "def": 10},
+		"stats": {"hp": 250, "max_shield": 250, "atk": 30, "def": 10, "accuracy": 50},
 		"loot": [["C", 5, 10]],
-		"rare_loot": [["Resin", 0.1, 1, 2], ["Chip", 0.5, 1, 2]],
+		"rare_loot": [["Resin", 0.1, 1, 2], ["Chip", 0.25, 1, 2]],
 		"xp": 60
 	},
 	"cryo_drone": {
 		"name": "Cryo Drone",
-		"stats": {"hp": 300, "max_shield": 400, "atk": 20, "def": 20},
+		"stats": {"hp": 300, "max_shield": 400, "atk": 20, "def": 20, "accuracy": 60},
 		"loot": [["H", 5, 15], ["Water", 5, 10]],
 		"rare_loot": [["Mesh", 0.05, 1, 1]],
 		"xp": 75
 	},
 	"pirate_gunship": {
 		"name": "Pirate Gunship",
-		"stats": {"hp": 800, "max_shield": 300, "atk": 45, "def": 40},
+		"stats": {"hp": 800, "max_shield": 300, "atk": 45, "def": 40, "accuracy": 65},
 		"loot": [["credits", 50, 150], ["Ti", 1, 3]],
 		"rare_loot": [["Seal", 0.05, 1, 1], ["NavData", 0.2, 1, 3], ["Res2", 0.30, 1, 2]],
 		"xp": 120
 	},
 	"alien_frigate": {
 		"name": "Xenon Patrol Frigate",
-		"stats": {"hp": 15000, "max_shield": 8000, "atk": 250, "def": 50, "atk_interval": 3.0},
+		"stats": {"hp": 15000, "max_shield": 8000, "atk": 250, "def": 50, "atk_interval": 3.0, "accuracy": 70},
 		"loot": [["Ti", 15, 30], ["Scrap", 30, 60]],
-		"rare_loot": [["NavData", 0.3, 2, 5], ["Chip", 0.3, 2, 5], ["VoidArtifact", 0.15, 1, 2], ["Res3", 0.50, 5, 10]],
+		"rare_loot": [["NavData", 0.3, 2, 5], ["Chip", 0.3, 2, 5], ["VoidArtifact", 0.15, 1, 2], ["Co", 0.15, 2, 4], ["Ni", 0.15, 2, 4], ["Res3", 0.30, 5, 10]], 
 		"xp": 500
 	},
 	"xenon_corvette": {
 		"name": "Xenon Corvette",
-		"stats": {"hp": 25000, "max_shield": 15000, "atk": 400, "def": 80, "atk_interval": 2.5},
+		"stats": {"hp": 25000, "max_shield": 15000, "atk": 400, "def": 80, "atk_interval": 2.5, "accuracy": 80},
 		"loot": [["Ti", 20, 50], ["U", 5, 15]],
-		"rare_loot": [["NavData", 0.4, 3, 7], ["VoidArtifact", 0.3, 2, 4], ["Res3", 0.25, 5, 8]],
+		"rare_loot": [["NavData", 0.4, 3, 7], ["VoidArtifact", 0.3, 2, 4], ["Cr", 0.10, 1, 3], ["Res3", 0.25, 5, 8]],  # TIER FIX: Cr for Superalloy
 		"xp": 800
 	},
 	"xenon_mothership": {
 		"name": "XENON MOTHERSHIP",
-		"stats": {"hp": 150000, "max_shield": 80000, "atk": 1200, "def": 250, "atk_interval": 6.0},
-		"loot": [["Ti", 200, 500], ["Chip", 25, 50], ["AdvCircuit", 10, 20]],
-		"rare_loot": [["QuantumCore", 1.0, 5, 10], ["VoidArtifact", 1.0, 10, 25], ["Res3", 1.0, 50, 100]],
+		"stats": {"hp": 150000, "max_shield": 80000, "atk": 1200, "def": 250, "atk_interval": 6.0, "accuracy": 100},
+		"loot": [["Ti", 200, 500], ["Chip", 25, 50], ["AdvCircuit", 10, 20], ["QuantumCore", 5, 10], ["VoidArtifact", 10, 25], ["Res3", 50, 100]],
+		"rare_loot": [],
 		"xp": 5000
 	},
 	# Sector Beta Enemies (Difficulty 6) - HP ~8k-15k
 	"mining_sentinel": {
 		"name": "Mining Sentinel MK-VII",
-		"stats": {"hp": 250000, "max_shield": 100000, "atk": 2500, "def": 400},
+		"stats": {"hp": 60000, "max_shield": 25000, "atk": 800, "def": 120, "atk_interval": 3.0, "accuracy": 90},
 		"loot": [["ColonySalvage", 10, 20], ["Steel", 50, 100]],
-		"rare_loot": [["Co", 0.5, 5, 15], ["Ni", 0.5, 5, 15], ["Circuit", 0.5, 10, 25]],
-		"xp": 20000
+		"rare_loot": [["Co", 0.3, 5, 15], ["Ni", 0.3, 5, 15], ["Circuit", 0.3, 10, 25]],
+		"xp": 8000
 	},
+
 	"defense_turret": {
 		"name": "Automated Defense Turret",
-		"stats": {"hp": 500000, "max_shield": 0, "atk": 5000, "def": 800},
+		"stats": {"hp": 100000, "max_shield": 0, "atk": 1500, "def": 250, "atk_interval": 2.5, "accuracy": 100},
 		"loot": [["ColonySalvage", 25, 50], ["Circuit", 20, 50], ["Hydraulics", 10, 20]],
-		"rare_loot": [["Cr", 0.5, 5, 10], ["AdvCircuit", 0.4, 5, 10]],
-		"xp": 45000
+		"rare_loot": [["Cr", 0.3, 5, 10], ["AdvCircuit", 0.4, 5, 10]],
+		"xp": 15000
 	},
+
 	"colony_overseer": {
 		"name": "Colony Overseer AI",
-		"stats": {"hp": 300000, "max_shield": 150000, "atk": 3500, "def": 500},
+		"stats": {"hp": 80000, "max_shield": 40000, "atk": 1000, "def": 150, "atk_interval": 3.5, "accuracy": 120},
 		"loot": [["AdvCircuit", 10, 20], ["ColonySalvage", 20, 40], ["ColonyDataCore", 1, 1]],
-		"rare_loot": [["Pd", 0.3, 2, 5], ["AICore", 0.5, 1, 1], ["Chip", 0.5, 5, 10]],
-		"xp": 60000
+		"rare_loot": [["Pd", 0.3, 2, 5], ["AICore", 0.25, 1, 1], ["Chip", 0.25, 5, 10]],
+		"xp": 20000
 	},
+
 	# Sector Gamma Enemies (Difficulty 7) - HP ~20k-80k
 	"radiation_beast": {
 		"name": "Gamma Radiation Beast",
-		"stats": {"hp": 20000, "max_shield": 12000, "atk": 150, "def": 70},
+		"stats": {"hp": 20000, "max_shield": 12000, "atk": 150, "def": 70, "accuracy": 90},
 		"loot": [["RadIsotope", 1, 3], ["U", 5, 10], ["Zn", 3, 6]],
 		"rare_loot": [["Pt", 0.15, 1, 2], ["ReactiveCore", 0.2, 1, 1]],
 		"xp": 500
 	},
 	"nebula_leviathan": {
 		"name": "Nebula Leviathan",
-		"stats": {"hp": 35000, "max_shield": 20000, "atk": 200, "def": 90},
+		"stats": {"hp": 35000, "max_shield": 20000, "atk": 200, "def": 90, "accuracy": 100},
 		"loot": [["RadIsotope", 3, 5], ["U", 10, 20], ["Graphite", 15, 25]],
 		"rare_loot": [["Pt", 0.25, 1, 3], ["Pd", 0.2, 1, 2], ["ExoticMatter", 0.1, 1, 1]],
 		"xp": 800
 	},
 	"gamma_colossus": {
 		"name": "GAMMA COLOSSUS",
-		"stats": {"hp": 2500000, "max_shield": 1000000, "atk": 15000, "def": 1500},
-		"loot": [["RadIsotope", 50, 100], ["Pt", 25, 50], ["QuantumCore", 5, 10]],
-		"rare_loot": [["Ir", 0.5, 5, 15], ["ExoticIsotope", 1.0, 1, 3]],
-		"xp": 500000
+		"stats": {"hp": 500000, "max_shield": 200000, "atk": 3000, "def": 400, "atk_interval": 5.0, "accuracy": 130},
+		"loot": [["RadIsotope", 50, 100], ["Pt", 25, 50], ["QuantumCore", 5, 10], ["ExoticIsotope", 1, 3]],
+		"rare_loot": [["Ir", 0.5, 5, 15]],
+		"xp": 30000  # ITER3 FIX: Reduced from 150k (was 5x higher than intended)
 	},
+
 	# Sector Delta Enemies (Difficulty 8) - HP ~50k-150k
 	"crystal_golem": {
 		"name": "Crystalline Golem",
-		"stats": {"hp": 50000, "max_shield": 0, "atk": 180, "def": 200},
+		"stats": {"hp": 50000, "max_shield": 0, "atk": 180, "def": 200, "accuracy": 120},
 		"loot": [["VoidCrystal", 1, 3], ["Si", 50, 100], ["Diamond", 1, 3]],
 		"rare_loot": [["Ir", 0.2, 1, 2], ["SyntheticCrystal", 0.15, 1, 1]],
 		"xp": 1500
 	},
 	"energy_wraith": {
 		"name": "Energy Wraith",
-		"stats": {"hp": 30000, "max_shield": 50000, "atk": 250, "def": 50},
+		"stats": {"hp": 30000, "max_shield": 50000, "atk": 250, "def": 50, "accuracy": 130},
 		"loot": [["ExoticMatter", 2, 5], ["VoidCrystal", 2, 4], ["H", 20, 40]],
 		"rare_loot": [["AntimatterParticle", 0.1, 1, 1], ["VoidCrystal", 0.25, 2, 3]],
 		"xp": 1800
 	},
 	"sentinel_prime": {
 		"name": "SENTINEL PRIME",
-		"stats": {"hp": 150000, "max_shield": 80000, "atk": 400, "def": 180},
+		"stats": {"hp": 150000, "max_shield": 80000, "atk": 400, "def": 180, "accuracy": 150},
 		"loot": [["VoidCrystal", 5, 10], ["Ir", 10, 20], ["QuantumCore", 2, 4]],
 		"rare_loot": [["Os", 0.25, 1, 3], ["AncientTech", 0.2, 1, 1]],
 		"xp": 5000
+	},
+	
+	# === SECTOR EPSILON: THE VOID (Endgame) === HP 200k-2M, 60% AP attacks
+	"void_stalker": {
+		"name": "Void Stalker",
+		"stats": {"hp": 200000, "max_shield": 150000, "atk": 600, "def": 300, "atk_interval": 2.0, "accuracy": 150},
+		"loot": [["credits", 100000, 200000], ["VoidCrystal", 10, 20], ["ExoticMatter", 5, 10]],
+		"rare_loot": [["VoidEssence", 0.30, 1, 2], ["QuantumCore", 0.5, 2, 4]],
+		"xp": 8000
+	},
+	"temporal_phantom": {
+		"name": "Temporal Phantom",
+		"stats": {"hp": 150000, "max_shield": 250000, "atk": 500, "def": 200, "atk_interval": 1.5, "accuracy": 160},
+		"loot": [["credits", 150000, 300000], ["ExoticMatter", 8, 15], ["VoidCrystal", 5, 10], ["AntimatterParticle", 1, 2]],
+		"rare_loot": [["ChronoCore", 0.25, 1, 1], ["VoidEssence", 0.2, 1, 2]],
+		"xp": 10000
+	},
+	"omega_sentinel": {
+		"name": "OMEGA SENTINEL",
+		"stats": {"hp": 500000, "max_shield": 300000, "atk": 1000, "def": 500, "atk_interval": 3.0, "accuracy": 180},
+		"loot": [["credits", 300000, 600000], ["VoidCrystal", 20, 40], ["QuantumCore", 5, 10], ["Ir", 20, 40]],
+		"rare_loot": [["OmegaPlating", 0.40, 1, 2], ["ChronoCore", 0.3, 1, 1], ["Os", 0.25, 2, 4]],
+		"xp": 25000
+	},
+	"primordial_titan": {
+		"name": "★ PRIMORDIAL TITAN ★",
+		"stats": {"hp": 2000000, "max_shield": 1000000, "atk": 2500, "def": 800, "atk_interval": 5.0, "accuracy": 200},
+		"loot": [["credits", 5000000, 15000000], ["VoidCrystal", 100, 200], ["QuantumCore", 20, 40], ["OmegaPlating", 5, 10], ["PrimordialShard", 1, 3], ["ChronoCore", 2, 4], ["VoidEssence", 5, 10]],
+		"rare_loot": [],
+		"xp": 100000
 	}
 }
 
@@ -372,6 +413,7 @@ func spawn_enemy():
 		"max_hp": e_data["stats"]["hp"],
 		"atk": e_data["stats"]["atk"],
 		"def": e_data["stats"]["def"],
+		"accuracy": e_data["stats"].get("accuracy", 0), # Load accuracy
 		"max_shield": e_data["stats"].get("max_shield", 0),
 		"loot": e_data["loot"],
 		"rare_loot": e_data.get("rare_loot", []),
@@ -451,6 +493,7 @@ func process_tick(delta: float):
 	
 	var rm = GameState.research_manager
 	var p_speed_mult = 1.0 + rm.get_efficiency_bonus("attack_speed")
+	p_speed_mult *= GameState.warp_manager.get_combat_multiplier()
 	
 	# Global Regen (Enemy)
 	if enemy_shield < enemy_max_shield:
@@ -558,23 +601,33 @@ func _execute_player_attack(weapon_idx: int = 0):
 	# Ammo Logic Check for this slot
 	var can_fire = true
 	var ammo_id = sm.ammo_loadout.get(w["slot_idx"])
+	var ammo_armor_bypass = 0.0
+	
 	if ammo_id and ammo_id != "":
 		var qty = GameState.resources.get_element_amount(ammo_id)
 		if qty > 0:
 			GameState.resources.remove_element(ammo_id, 1)
-			# Tiered ammo bonuses (Apply correctly to K/E)
-			if ammo_id == "SlugT1": p_atk_k += 5
-			elif ammo_id == "SlugT2": p_atk_k += 15
-			elif ammo_id == "SlugT3": p_atk_k += 30
-			elif ammo_id == "CellT1": p_atk_e += 5
-			elif ammo_id == "CellT2": p_atk_e += 15
-			elif ammo_id == "CellT3": p_atk_e += 30
+			# ITER3 FIX: Tiered ammo bonuses now use % scaling instead of flat
+			# T2 also grants 15% armor bypass as special effect
+			if ammo_id == "SlugT1": p_atk_k = int(p_atk_k * 1.10)  # +10%
+			elif ammo_id == "SlugT2": 
+				p_atk_k = int(p_atk_k * 1.25)  # +25%
+				ammo_armor_bypass = 0.15  # ITER3: T2 special - 15% armor bypass
+			elif ammo_id == "SlugT3": p_atk_k = int(p_atk_k * 1.50)  # +50%
+			elif ammo_id == "CellT1": p_atk_e = int(p_atk_e * 1.10)  # +10%
+			elif ammo_id == "CellT2": 
+				p_atk_e = int(p_atk_e * 1.25)  # +25%
+				ammo_armor_bypass = 0.15  # ITER3: T2 special - 15% armor bypass
+			elif ammo_id == "CellT3": p_atk_e = int(p_atk_e * 1.50)  # +50%
 		else:
+			log_msg("SLOT %d OFFLINE: Ammunition Depleted!" % w["slot_idx"])
 			can_fire = false
-			log_msg("Slot %d: Out of Ammo (%s)!" % [w["slot_idx"], ammo_id])
+	else:
+		log_msg("SLOT %d OFFLINE: No Ammunition Equipped!" % w["slot_idx"])
+		can_fire = false
 
-	
 	if not can_fire:
+		combat_events.append({"type": "miss", "text": "OFFLINE", "color": Color.GRAY, "side": "enemy"})
 		return
 		
 	# Buff Application (Global)
@@ -582,7 +635,12 @@ func _execute_player_attack(weapon_idx: int = 0):
 	p_atk_e += active_buffs.get("dmg_bonus_e", 0)
 	
 	var e_def = current_enemy.get("def", 0)
-	var res = resolve_damage(p_atk_k, p_atk_e, enemy_shield, e_def)
+	# ITER3: Apply ammo armor bypass to enemy defense
+	if ammo_armor_bypass > 0:
+		e_def = int(e_def * (1.0 - ammo_armor_bypass))
+		
+	var difficulty = current_zone.get("difficulty", 1)
+	var res = resolve_damage(p_atk_k, p_atk_e, enemy_shield, e_def, difficulty)
 	# res = [shield_dmg, hull_dmg, is_crit]
 	
 	# Targeting Computer Logic
@@ -628,12 +686,51 @@ func _execute_enemy_attack():
 		e_atk_k = 0
 		e_atk_e = e_atk
 		
-	# Dodge
-	if randf() * 100 < sm.evasion:
-		log_msg("Player Dodged!")
-		combat_events.append({"type": "miss", "text": "MISS", "color": Color.WHITE, "side": "player"})
+	# Dodge - ITER7: Diminishing Returns Formula with Enemy Accuracy Layer
+	var e_acc = current_enemy.get("accuracy", 0)
+	var dodge_chance = float(sm.evasion) / (float(sm.evasion) + 150.0 * (1.0 + float(e_acc) / 100.0))
+	
+	var roll = randf()
+	if roll < dodge_chance:
+		# PARRY MECHANIC: If roll is in the bottom 20% of the success range
+		if roll < dodge_chance * 0.2:
+			var p_atk = current_enemy["atk"]
+			var max_reflect = int(current_enemy["max_hp"] * 0.05) # Cap at 5% of max HP
+			var reflected = min(int(p_atk), max_reflect) # Reflect 100% up to the cap
+			
+			enemy_hp -= reflected
+			log_msg("PERFECT DODGE: Parried and reflected %d damage!" % reflected)
+			combat_events.append({"type": "parry", "text": "PARRY %d" % reflected, "color": Color.DEEP_SKY_BLUE, "side": "enemy"})
+			
+			# SHIELD BUFFER (Audit v6.0): Successful Parry restores 5% of MISSING shield
+			var missing_shield = player_max_shield - player_shield
+			var restore_amt = int(missing_shield * 0.05)
+			if restore_amt > 0:
+				player_shield = min(player_max_shield, player_shield + restore_amt)
+				combat_events.append({"type": "heal", "text": "+%d SHIELD" % restore_amt, "color": Color.CYAN, "side": "player"})
+			# Flash the screen/HUD?
+		else:
+			log_msg("Player Dodged!")
+			combat_events.append({"type": "miss", "text": "MISS", "color": Color.WHITE, "side": "player"})
 	else:
 		var p_def = sm.defense
+		
+		# ITER2 FIX: Armor Piercing - Late-game enemies bypass armor to counter Osmium stacking
+		var armor_piercing = 0.0
+		if current_enemy and current_enemy.get("id"):
+			var eid = current_enemy["id"]
+			# Sector Gamma enemies have 30% AP
+			if eid in ["radiation_beast", "nebula_leviathan", "gamma_colossus"]:
+				armor_piercing = 0.30
+			# Sector Delta enemies have 50% AP
+			elif eid in ["crystal_golem", "energy_wraith", "sentinel_prime"]:
+				armor_piercing = 0.50
+			# Sector Epsilon enemies have 60% AP (endgame)
+			elif eid in ["void_stalker", "temporal_phantom", "omega_sentinel", "primordial_titan"]:
+				armor_piercing = 0.60
+		
+		# Apply AP reduction to player defense
+		var effective_def = p_def * (1.0 - armor_piercing)
 		
 		# Reactive Armor Implementation
 		var hp_percent = float(sm.current_hp) / float(sm.max_hp)
@@ -647,7 +744,9 @@ func _execute_enemy_attack():
 					reactive_reduction = max(0.4, reactive_reduction) # Cap at 60% reduction
 					break
 
-		var eres = resolve_damage(e_atk_k * reactive_reduction, e_atk_e * reactive_reduction, player_shield, p_def)
+		# ITER7: Pass difficulty to resolve_damage for scaling mitigation
+		var difficulty = current_zone.get("difficulty", 1)
+		var eres = resolve_damage(e_atk_k * reactive_reduction, e_atk_e * reactive_reduction, player_shield, effective_def, difficulty)
 		
 		player_shield = max(0, player_shield - eres[0])
 		sm.current_hp -= eres[1]
@@ -673,7 +772,7 @@ func _execute_enemy_attack():
 	if sm.current_hp <= 0:
 		lose_fight()
 
-func resolve_damage(atk_k, atk_e, c_shield, c_armor):
+func resolve_damage(atk_k, atk_e, c_shield, c_armor, difficulty = 1):
 	var shield_dmg_pot = (atk_k * 0.5) + (atk_e * 1.5)
 	
 	var damage_to_shield = 0.0
@@ -694,15 +793,31 @@ func resolve_damage(atk_k, atk_e, c_shield, c_armor):
 			
 	var damage_to_hull = 0.0
 	if bleed_ratio > 0:
-		var hull_dmg_pot = (atk_k * 1.2) + (atk_e * 0.7) # Buffed Energy vs Hull (0.5 -> 0.7)
-		hull_dmg_pot *= bleed_ratio
-		var mitigation = float(c_armor) / (float(c_armor) + 20.0)
-		damage_to_hull = hull_dmg_pot * (1.0 - mitigation)
+		# P1 FIX: Energy Penetration - Energy ignores 30% of armor
+		var energy_armor_pen = 0.30
+		var armor_for_kinetic = c_armor
+		var armor_for_energy = c_armor * (1.0 - energy_armor_pen)
+		
+		# ITER7: Armor Divisor scales with difficulty to prevent high-tier paralysis
+		# k = 50 * Difficulty (min 20)
+		var k = max(20.0, float(difficulty) * 50.0)
+		
+		# Calculate kinetic portion
+		var k_hull_pot = atk_k * 1.2
+		var k_mitigation = float(armor_for_kinetic) / (float(armor_for_kinetic) + k)
+		var k_damage = k_hull_pot * (1.0 - k_mitigation)
+		
+		# Calculate energy portion (buffed from 0.7 to 0.9)
+		var e_hull_pot = atk_e * 0.9
+		var e_mitigation = float(armor_for_energy) / (float(armor_for_energy) + k)
+		var e_damage = e_hull_pot * (1.0 - e_mitigation)
+		
+		damage_to_hull = (k_damage + e_damage) * bleed_ratio
 		
 		# Minimum 1 damage if anything bled through
-		if damage_to_hull < 1.0 and hull_dmg_pot > 0:
+		if damage_to_hull < 1.0 and (atk_k + atk_e) > 0:
 			damage_to_hull = 1.0
-		
+			
 	var variance = randf_range(0.9, 1.1)
 	var is_crit = false
 	if randf() < 0.05:
@@ -864,7 +979,7 @@ func get_save_data_manager() -> Dictionary:
 func load_save_data_manager(data: Dictionary):
 	load_save_data(data)
 
-func reset():
-	super.reset()
+func reset(decay_factor: float = 1.0) -> void:
+	super.reset(decay_factor)
 	retreat()
 	log_msg("Combat Reset.")

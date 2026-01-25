@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends GridContainer
 
 # Handle drops for unequipping (dragging from ship slots back to storage)
 

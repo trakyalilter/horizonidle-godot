@@ -4,6 +4,7 @@ var slot_idx: int
 var slot_type: String
 var parent_ui: Node
 var manager: RefCounted
+var is_occupied: bool = false
 
 @onready var type_lbl = $MarginContainer/VBoxContainer/TypeLabel
 @onready var name_lbl = $MarginContainer/VBoxContainer/NameLabel
@@ -38,6 +39,7 @@ func refresh_state():
 	option_btn.set_item_metadata(0, null)
 	
 	var equipped_id = manager.loadout.get(slot_idx)
+	is_occupied = equipped_id != null
 	
 	# Current Item Display
 	if equipped_id:
@@ -104,6 +106,7 @@ func _can_drop_data(at_position, data):
 func _drop_data(at_position, data):
 	var mid = data.get("mid")
 	if manager.equip_module(slot_idx, mid):
+		UITheme.trigger_circuit_surge(self)
 		parent_ui.trigger_refresh()
 
 func _on_option_button_item_selected(index):
@@ -114,6 +117,7 @@ func _on_option_button_item_selected(index):
 		parent_ui.trigger_refresh()
 	elif data:
 		if manager.equip_module(slot_idx, data):
+			UITheme.trigger_circuit_surge(self)
 			parent_ui.trigger_refresh()
 	
 	option_btn.select(0)
